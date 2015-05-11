@@ -9,11 +9,6 @@ class CustomSplitDateTimeWidget(SplitDateTimeWidget):
         return '<p></p>'.join(rendered_widgets)
 
 class EstacionamientoForm(forms.Form):
-
-    phone_validator = RegexValidator(
-        regex   = '^((0212)|(0412)|(0416)|(0414)|(0424)|(0426))-?\d{7}',
-        message = 'Debe introducir un formato válido de teléfono.'
-    )
     
     name_validator = RegexValidator(
         regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
@@ -46,6 +41,73 @@ class EstacionamientoForm(forms.Form):
         widget   = forms.TextInput(attrs =
             { 'class'       : 'form-control'
             , 'placeholder' : 'Nombre del Estacionamiento'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+
+    direccion = forms.CharField(
+        required = True,
+        label    = "Direccion",
+        widget   = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Dirección'
+            , 'message'     : 'La entrada no puede quedar vacía.'
+            }
+        )
+    )
+    
+    rif = forms.CharField(
+        required   = True,
+        label      = "RIF",
+        validators = [rif_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'RIF: X-xxxxxxxxx'
+            , 'pattern'     : rif_validator.regex.pattern
+            , 'message'     : rif_validator.message
+            }
+        )
+    )
+    
+class PropietarioForm(forms.Form):
+
+    phone_validator = RegexValidator(
+        regex   = '^((0212)|(0412)|(0416)|(0414)|(0424)|(0426))-?\d{7}',
+        message = 'Debe introducir un formato válido de teléfono.'
+    )
+    
+    name_validator = RegexValidator(
+        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
+        message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
+    )
+    
+    rif_validator = RegexValidator(
+        regex   = '^[JVD]-\d{8}-?\d$',
+        message = 'Introduzca un RIF con un formato válido de la forma X-xxxxxxxxx.'
+    )
+
+    nombres = forms.CharField(
+        required = True,
+        label    = "Nombres del propietario",
+        validators = [name_validator],
+        widget   = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Nombres del propietario'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+    
+    apellidos = forms.CharField(
+        required = True,
+        label    = "Apellidos del propietario",
+        validators = [name_validator],
+        widget   = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Apellidos del propietario'
             , 'pattern'     : name_validator.regex.pattern
             , 'message'     : name_validator.message
             }

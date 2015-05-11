@@ -11,7 +11,7 @@
     <hr>
     <div class="col-md-8">
       <table class="table table-striped">
-        {% if estacionamientos %}
+        {% if estacionamientos %} 
         <thead>
           <tr>
             <th></th>
@@ -27,7 +27,7 @@
               <td>{{forloop.counter}}</td>
               <td>{{obj.propietario}}</td>
               <td>{{obj.nombre}}</td>
-              <td>{{obj.rif}}</td>
+              <td>{{obj.direccion}}</td>
               <td><a href="./{{obj.id}}">
                   <i class="fa fa-search"></i>
               </a></td>
