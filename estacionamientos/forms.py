@@ -20,20 +20,6 @@ class EstacionamientoForm(forms.Form):
         message = 'Introduzca un RIF con un formato válido de la forma X-xxxxxxxxx.'
     )
 
-    # Nombre del dueno del estacionamiento (no se permiten digitos)
-    propietario = forms.CharField(
-        required   = True,
-        label      = "Propietario",
-        validators = [name_validator],
-        widget = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Propietario'
-            , 'pattern'     : name_validator.regex.pattern
-            , 'message'     : name_validator.message
-            }
-        )
-    )
-
     nombre = forms.CharField(
         required = True,
         label    = "Nombre del Estacionamiento",
@@ -71,60 +57,11 @@ class EstacionamientoForm(forms.Form):
         )
     )
     
-class PropietarioForm(forms.Form):
-
     phone_validator = RegexValidator(
         regex   = '^((0212)|(0412)|(0416)|(0414)|(0424)|(0426))-?\d{7}',
         message = 'Debe introducir un formato válido de teléfono.'
     )
     
-    name_validator = RegexValidator(
-        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
-        message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
-    )
-    
-    rif_validator = RegexValidator(
-        regex   = '^[JVD]-\d{8}-?\d$',
-        message = 'Introduzca un RIF con un formato válido de la forma X-xxxxxxxxx.'
-    )
-
-    nombres = forms.CharField(
-        required = True,
-        label    = "Nombres del propietario",
-        validators = [name_validator],
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Nombres del propietario'
-            , 'pattern'     : name_validator.regex.pattern
-            , 'message'     : name_validator.message
-            }
-        )
-    )
-    
-    apellidos = forms.CharField(
-        required = True,
-        label    = "Apellidos del propietario",
-        validators = [name_validator],
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Apellidos del propietario'
-            , 'pattern'     : name_validator.regex.pattern
-            , 'message'     : name_validator.message
-            }
-        )
-    )
-
-    direccion = forms.CharField(
-        required = True,
-        label    = "Direccion",
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Dirección'
-            , 'message'     : 'La entrada no puede quedar vacía.'
-            }
-        )
-    )
-
     telefono_1 = forms.CharField(
         required   = False,
         validators = [phone_validator],
@@ -180,8 +117,46 @@ class PropietarioForm(forms.Form):
             }
         )
     )
+    
+class PropietarioForm(forms.Form):
 
-####hay que cambiar ciertas cosas de aqui
+    name_validator = RegexValidator(
+        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
+        message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
+    )
+    
+    rif_validator = RegexValidator(
+        regex   = '^[JVD]-\d{8}-?\d$',
+        message = 'Introduzca un RIF con un formato válido de la forma X-xxxxxxxxx.'
+    )
+
+    nombres = forms.CharField(
+        required = True,
+        label    = "Nombres del propietario",
+        validators = [name_validator],
+        widget   = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Nombres del propietario'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+    
+    apellidos = forms.CharField(
+        required = True,
+        label    = "Apellidos del propietario",
+        validators = [name_validator],
+        widget   = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Apellidos del propietario'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+    
+    ####hay que cambiar ciertas cosas de aqui
     cedula = forms.CharField(
         required   = True,
         label      = "CI",

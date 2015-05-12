@@ -9,12 +9,7 @@ from datetime import timedelta
 class Propietario(models.Model):
 	nombres     = models.CharField(max_length = 50, help_text = "Nombre Propio")
 	apellidos   = models.CharField(max_length = 50)
-	telefono1   = models.CharField(blank = True, null = True, max_length = 30)
-	telefono2   = models.CharField(blank = True, null = True, max_length = 30)
-	telefono3   = models.CharField(blank = True, null = True, max_length = 30)
-	email1      = models.EmailField(blank = True, null = True)
-	email2      = models.EmailField(blank = True, null = True)
-	cedula_id      = models.CharField(max_length = 12)
+	cedula      = models.CharField(max_length = 12, primary_key=True)
 
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
@@ -23,10 +18,16 @@ class Estacionamiento(models.Model):
 	nombre      = models.CharField(max_length = 50)
 	direccion   = models.TextField(max_length = 120)
 	rif         = models.CharField(max_length = 12)
+	telefono1   = models.CharField(blank = True, null = True, max_length = 30)
+	telefono2   = models.CharField(blank = True, null = True, max_length = 30)
+	telefono3   = models.CharField(blank = True, null = True, max_length = 30)
+	email1      = models.EmailField(blank = True, null = True)
+	email2      = models.EmailField(blank = True, null = True)
 	
 	# Campo que referencia al propietario del estacionamiento
-	propietario = models.ForeignKey(Propietario)
-	
+	#propietario = models.ForeignKey(Propietario)
+	propietario = models.CharField(max_length = 50, help_text = "Nombre Propio")
+
 	# Campos para referenciar al esquema de tarifa
 	content_type = models.ForeignKey(ContentType, null = True)
 	object_id    = models.PositiveIntegerField(null = True)

@@ -74,12 +74,7 @@ def propietario_all(request):
             obj = Propietario(
                 nombres     = form.cleaned_data['nombres'],
                 apellidos   = form.cleaned_data['apellidos'],
-                telefono1   = form.cleaned_data['(00)(000)0000000'],
-                telefono2   = form.cleaned_data['(00)(000)0000000'],
-                telefono3   = form.cleaned_data['(00)(000)0000000'],
-                email1      = form.cleaned_data['email'],
-                email2      = form.cleaned_data['email2'],
-                cedula_id   = form.cleaned_data['V-00000000']
+                cedula      = form.cleaned_data['V-00000000']
             )
             obj.save()
             # Recargamos los propietarios ya que acabamos de agregar
@@ -121,10 +116,14 @@ def estacionamientos_all(request):
         # el constructor del modelo
         if form.is_valid():
             obj = Estacionamiento(
-                propietario = form.cleaned_data['propietario'],
                 nombre      = form.cleaned_data['nombre'],
                 direccion   = form.cleaned_data['direccion'],
-                rif   = form.cleaned_data['rif'],
+                rif         = form.cleaned_data['rif'],
+                telefono1   = form.cleaned_data['telefono_1'],
+                telefono2   = form.cleaned_data['telefono_2'],
+                telefono3   = form.cleaned_data['telefono_3'],
+                email1      = form.cleaned_data['email_1'],
+                email2      = form.cleaned_data['email_2']
             )
             obj.save()
             # Recargamos los estacionamientos ya que acabamos de agregar

@@ -11,6 +11,39 @@
     <hr>
     <div class="col-md-8">
       <table class="table table-striped">
+      {% if propietarios %} 
+        <thead>
+          <tr>
+            <th></th>
+            <th>Nombres</th>
+            <th>Apillidos</th>
+            <th>Cedula</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in propietarios %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td>{{obj.nombres}}</td>
+              <td>{{obj.apellidos}}</td>
+              <td>{{obj.cedula}}</td>
+              <td><a href="./{{obj.id}}">
+                  <i class="fa fa-search"></i>
+              </a></td>
+              <td><a href="./{{obj.id}}/tasa">
+                  <i class="fa fa-bar-chart"></i>
+              </a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        {% else %}
+          <h3>No hay propietarios</h3>
+        {% endif %}
+      </table>
+      <hr>
+      
+      <table class="table table-striped">
         {% if estacionamientos %} 
         <thead>
           <tr>
