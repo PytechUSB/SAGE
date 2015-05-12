@@ -9,7 +9,9 @@
       Estacionamientos
     </h3>
     <hr>
+    
     <div class="col-md-8">
+      <!-- TABLA CON LOS PROPIETARIOS ALMACENADOS EN LA BASE DE DATOS -->
       <table class="table table-striped">
       {% if propietarios %} 
         <thead>
@@ -42,7 +44,7 @@
         {% endif %}
       </table>
       <hr>
-      
+      <!-- TABLA CON LOS ESTACIONAMIENTOS DE LA BASE DE DATOS -->
       <table class="table table-striped">
         {% if estacionamientos %} 
         <thead>
@@ -76,6 +78,46 @@
       </table>
       <hr>
     </div>
+    
+    <!-- FORMULARIO PARA AGREGAR PROPIETARIOS -->
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <i class="glyphicon glyphicon-wrench pull-right"></i>
+            <h4>
+              Agregar Propietario
+            </h4>
+          </div>
+        </div>
+        <div class="panel-body">
+          <form action="." method="post" class="form form-vertical">
+            {% csrf_token %}
+            {% for field in form %}
+              <div class="control-group">
+                <div class="controls">
+                  {{ field }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% endfor %}
+            <div class="control-group">
+              <label></label>
+              <div class="controls">
+                <button type="submit" class="btn btn-primary">
+                  Agregar
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- FORMULARIO PARA AGREGAR ESTACIONAMIENTOS -->
     <div class="col-md-4">
       <div class="panel panel-default">
         <div class="panel-heading">
@@ -104,7 +146,7 @@
               <label></label>
               <div class="controls">
                 <button type="submit" class="btn btn-primary">
-                  Crear estacionamiento
+                  Crear 
                 </button>
               </div>
             </div>
@@ -112,6 +154,7 @@
         </div>
       </div>
     </div>
+    
   </div>
 {% endblock %}
 {% block scripts %}

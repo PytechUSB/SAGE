@@ -125,11 +125,6 @@ class PropietarioForm(forms.Form):
         message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
     )
     
-    rif_validator = RegexValidator(
-        regex   = '^[JVD]-\d{8}-?\d$',
-        message = 'Introduzca un RIF con un formato válido de la forma X-xxxxxxxxx.'
-    )
-
     nombres = forms.CharField(
         required = True,
         label    = "Nombres del propietario",
@@ -156,16 +151,20 @@ class PropietarioForm(forms.Form):
         )
     )
     
-    ####hay que cambiar ciertas cosas de aqui
+    id_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'La cédula solo puede contener caracteres numéricos.'
+    )
+    
     cedula = forms.CharField(
         required   = True,
-        label      = "CI",
-        validators = [rif_validator],
+        label      = "Cédula",
+        validators = [id_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'CI: X-xxxxxxxxx'
-            , 'pattern'     : rif_validator.regex.pattern
-            , 'message'     : rif_validator.message
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
             }
         )
     )
