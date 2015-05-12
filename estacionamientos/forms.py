@@ -345,7 +345,7 @@ class PagoForm(forms.Form):
             ('Vista',  ' VISTA '),
             ('Mister', ' MISTER '),
             ('Xpress', ' XPRESS '),
-            ('BilleteraElectronica', ' E-Wallet ')
+            ('Billetera Electronica', ' E-Wallet ')
         ),
         widget   = forms.RadioSelect()
     )
@@ -418,13 +418,13 @@ class BilleteraForm(forms.Form):
         message = 'El apellido no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
     )
     
-    id_validator = RegexValidator(
+    ci_validator = RegexValidator(
         regex   = '^[0-9]+$',
         message = 'La cédula solo puede contener caracteres numéricos.'
     )
     
     PIN_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '^[0-9]{4}$',
         message = 'Su PIN solo puede contener caracteres numéricos.'
     )
     
@@ -462,12 +462,12 @@ class BilleteraForm(forms.Form):
     cedula = forms.CharField(
         required   = True,
         label      = "Cédula",
-        validators = [id_validator],
+        validators = [ci_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
             , 'placeholder' : 'Cédula'
-            , 'pattern'     : id_validator.regex.pattern
-            , 'message'     : id_validator.message
+            , 'pattern'     : ci_validator.regex.pattern
+            , 'message'     : ci_validator.message
             }
         )
     )
@@ -478,7 +478,7 @@ class BilleteraForm(forms.Form):
         validators = [PIN_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Cédula'
+            , 'placeholder' : 'PIN'
             , 'pattern'     : PIN_validator.regex.pattern
             , 'message'     : PIN_validator.message
             }
@@ -487,11 +487,11 @@ class BilleteraForm(forms.Form):
     
     identificador = forms.CharField(
         required   = True,
-        label      = "Billetera Electronica", 
+        label      = " Numero de Billetera Electronica", 
         validators = [card_id_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Numero de Tarjeta' # ya cambie lo que dice
+            , 'placeholder' : 'Numero de Tarjeta'
             , 'pattern'     : card_id_validator.regex.pattern
             , 'message'     : card_id_validator.message
             }

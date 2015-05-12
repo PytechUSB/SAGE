@@ -513,30 +513,42 @@ def billetera_all(request):
     elif request.method == 'POST':
         # Creamos un formulario con los datos que recibimos
         form =BilleteraForm(request.POST)
-        
-        # solo puede haber una billetera por usuario 
-        if len(billetera) >= 2:
-            return render(
-                request, 'template-mensaje.html',
-                {'color' : 'red'
-                 , 'mensaje' : 'Ya posee una billetera asociada'
-                 }
-            )
-            
+         
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
         if form.is_valid():
-            obj = BilleteraElectronica(
-                nombre = form.cleaned_data['nombre'],
-                apellido = form.cleaned_data['apellido'],
-                PIN = form.cleaned_data['Contraseña (PIN)'],
-                cedula = form.cleaned_data['V-00000000']
-                # aqui falta el identificador de la billetera o nujero de tarjeta que genera el software
-            )    
-            obj.save()
-            # Recargamos los propietarios ya que acabamos de agregar
-            billetera = BilleteraElectronica.objects.all()
-            form = BilleteraForm()
+            inicial = "1000100010001000"
+            if len(billetera) == 0:
+                obj = BilleteraElectronica(
+                    nombre = form.cleaned_data['nombre'],
+                    apellido = form.cleaned_data['apellido'],
+                    PIN = form.cleaned_data['PIN'],
+                    cedula = form.cleaned_data['cedula'],
+                    identificador = inicial
+                )    
+                obj.save()
+                
+            elif not BilleteraElectronica.objects.exists(cedula=form.cleaned_data['cedula']):
+                siguiente_numero = int(inicial)
+                siguiente_numero += len(billetera)
+                obj = BilleteraElectronica(
+                    nombre = form.cleaned_data['nombre'],
+                    apellido = form.cleaned_data['apellido'],
+                    PIN = form.cleaned_data['PIN'],
+                    cedula = form.cleaned_data['cedula'],
+                    identificador = str(siguiente_numero)
+                )    
+                obj.save()
+                
+            # solo puede haber una billetera por usuario 
+            else:
+                return render(
+                    request, 'template-mensaje.html',
+                    {'color' : 'red'
+                     , 'mensaje' : 'Ya posee una billetera asociada'
+                     }
+                )
+            
 
     return render(
         request,
