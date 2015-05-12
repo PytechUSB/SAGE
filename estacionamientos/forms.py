@@ -22,7 +22,8 @@ class EstacionamientoForm(forms.Form):
     )
 
     propietario = forms.ModelChoiceField(
-        Propietario.objects.all()
+        Propietario.objects.all(),
+        empty_label    = "Introduzca Propietario"
     )
     
     nombre = forms.CharField(
