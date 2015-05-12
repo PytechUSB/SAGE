@@ -7,12 +7,12 @@ from decimal import Decimal
 from datetime import timedelta
 
 class Propietario(models.Model):
-	nombres     = models.CharField(max_length = 50, help_text = "Nombre Propio")
+	nombres     = models.CharField(max_length = 50)
 	apellidos   = models.CharField(max_length = 50)
-	cedula      = models.CharField(max_length = 12, primary_key=True)
+	cedula      = models.CharField(max_length = 12)
 
 	def __str__(self):
-		return self.nombre+' '+str(self.id)
+		return self.nombres+' '+str(self.cedula)
 
 class Estacionamiento(models.Model):
 	nombre      = models.CharField(max_length = 50)
@@ -26,7 +26,7 @@ class Estacionamiento(models.Model):
 	
 	# Campo que referencia al propietario del estacionamiento
 	#propietario = models.ForeignKey(Propietario)
-	propietario = models.CharField(max_length = 50, help_text = "Nombre Propio")
+	propietario = models.ForeignKey(Propietario)
 
 	# Campos para referenciar al esquema de tarifa
 	content_type = models.ForeignKey(ContentType, null = True)

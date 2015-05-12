@@ -48,6 +48,7 @@ from estacionamientos.models import (
 # Vista para procesar los propietarios
 def propietario_all(request):
     propietarios = Propietario.objects.all()
+    estacionamientos = Estacionamiento.objects.all()
 
     # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
@@ -74,7 +75,7 @@ def propietario_all(request):
             obj = Propietario(
                 nombres     = form.cleaned_data['nombres'],
                 apellidos   = form.cleaned_data['apellidos'],
-                cedula      = form.cleaned_data['V-00000000']
+                cedula      = form.cleaned_data['cedula']
             )
             obj.save()
             # Recargamos los propietarios ya que acabamos de agregar
@@ -84,15 +85,17 @@ def propietario_all(request):
     return render(
         request,
         'catalogo-estacionamientos.html',
-        { 'form': form
+        { 'formP': form
         , 'propietarios': propietarios
+        , 'estacionamientos': estacionamientos
         }
     )
 
 # Usamos esta vista para procesar todos los estacionamientos
 def estacionamientos_all(request):
     estacionamientos = Estacionamiento.objects.all()
-
+    propietarios = Propietario.objects.all()
+    
     # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
         form = EstacionamientoForm()
@@ -123,7 +126,8 @@ def estacionamientos_all(request):
                 telefono2   = form.cleaned_data['telefono_2'],
                 telefono3   = form.cleaned_data['telefono_3'],
                 email1      = form.cleaned_data['email_1'],
-                email2      = form.cleaned_data['email_2']
+                email2      = form.cleaned_data['email_2'],
+                propietario = form.cleaned_data['propietario']
             )
             obj.save()
             # Recargamos los estacionamientos ya que acabamos de agregar
@@ -134,6 +138,7 @@ def estacionamientos_all(request):
         request,
         'catalogo-estacionamientos.html',
         { 'form': form
+        , 'propietarios': propietarios
         , 'estacionamientos': estacionamientos
         }
     )

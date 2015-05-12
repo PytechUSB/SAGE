@@ -58,9 +58,9 @@
           </div>
         </div>
         <div class="panel-body">
-          <form action="." method="post" class="form form-vertical">
+          <form action="propietario" method="post" class="form form-vertical">
             {% csrf_token %}
-            {% for field in form %}
+            {% for field in formP %}
               <div class="control-group">
                 <div class="controls">
                   {{ field }}

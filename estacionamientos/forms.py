@@ -2,6 +2,7 @@
 from django import forms
 from django.core.validators import RegexValidator
 from django.forms.widgets import SplitDateTimeWidget
+from estacionamientos.models import Propietario
 
 class CustomSplitDateTimeWidget(SplitDateTimeWidget):
 
@@ -20,6 +21,10 @@ class EstacionamientoForm(forms.Form):
         message = 'Introduzca un RIF con un formato válido de la forma X-xxxxxxxxx.'
     )
 
+    propietario = forms.ModelChoiceField(
+        Propietario.objects.all()
+    )
+    
     nombre = forms.CharField(
         required = True,
         label    = "Nombre del Estacionamiento",
