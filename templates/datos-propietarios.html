@@ -1,0 +1,33 @@
+<table class="table table-striped">
+  <thead></thead>
+  <tbody>
+    <tr><td><b><i class="fa fa-user"></i>
+      Nombre:
+    </b></td></tr>
+    <tr><td>
+      {{propietario.nombres}} {{propietario.apellidos}}
+    </td></tr>
+    <tr><td><b><i class="fa fa-circle"></i>
+      Cédula:
+    </b></td></tr>
+    <tr><td>
+      {{propietario.cedula}}
+    </td></tr>
+    
+	<tr><td><b><i class="fa fa-car"></i>
+        Estacionamientos:
+	</b></td></tr>
+    <tr><td>
+      {% if estacionamiento.propietario = propietario %}
+        <ul>
+        {% for obj in estacionamientos %}
+          <li>{{obj.nombre}}</li>
+        {% endfor %}
+        </ul> 
+      {% else %}
+        <h3>No tiene estacionamientos</h3>
+      {% endif %}
+    </td></tr>
+    
+  </tbody>
+</table>
