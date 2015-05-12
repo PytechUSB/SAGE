@@ -29,6 +29,20 @@ class Estacionamiento(models.Model):
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
 
+# clase billetera con los datos necesario para crearla
+# faltan los credito y debitos
+
+class BilleteraElectronica (models.Model): # aqui va la clase billetera
+	nombre = models.CharField(max_length = 30, help_text = "Nombre Propio")
+	apellido = models.CharField(max_length = 30)
+	cedula = models.CharField(max_length = 12)
+	identificador = models.CharField(max_length = 16)
+	PIN = models.CharField(max_length = 8)
+	
+	def __str__(self):
+		return self.nombre+' '+str(self.id)
+
+
 class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()

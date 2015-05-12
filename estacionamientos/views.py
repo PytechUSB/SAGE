@@ -31,9 +31,11 @@ from estacionamientos.forms import (
     PagoForm,
     RifForm,
     CedulaForm,
+    BilleteraForm, # aun no creo el form de billetera
 )
 from estacionamientos.models import (
     Estacionamiento,
+    BilleteraElectronica,
     Reserva,
     Pago,
     TarifaHora,
@@ -268,6 +270,9 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
+# agregar aqui la billetera electronica
+# se solicita el pin?
+
 def estacionamiento_pago(request,_id):
     form = PagoForm()
     
@@ -495,3 +500,48 @@ def grafica_tasa_de_reservacion(request):
     pyplot.close()
     
     return response
+
+# vista para procesar los datos de la billetera
+def billetera_all(request):
+    billetera = BilleteraElectronica.objects.all()
+    
+    # Si es un GET, mandamos un formulario vacio
+    if request.method == 'GET':
+        form = BilleteraForm()
+
+    # Si es POST, se verifica la información recibida
+    elif request.method == 'POST':
+        # Creamos un formulario con los datos que recibimos
+        form =BilleteraForm(request.POST)
+        
+        # solo puede haber una billetera por usuario 
+        if len(billetera) >= 2:
+            return render(
+                request, 'template-mensaje.html',
+                {'color' : 'red'
+                 , 'mensaje' : 'Ya posee una billetera asociada'
+                 }
+            )
+            
+        # Si el formulario es valido, entonces creamos un objeto con
+        # el constructor del modelo
+        if form.is_valid():
+            obj = BilleteraElectronica(
+                nombre = form.cleaned_data['nombre'],
+                apellido = form.cleaned_data['apellido'],
+                PIN = form.cleaned_data['Contraseña (PIN)'],
+                cedula = form.cleaned_data['V-00000000']
+                # aqui falta el identificador de la billetera o nujero de tarjeta que genera el software
+            )    
+            obj.save()
+            # Recargamos los propietarios ya que acabamos de agregar
+            billetera = BilleteraElectronica.objects.all()
+            form = BilleteraForm()
+
+    return render(
+        request,
+        'catalogo-estacionamientos.html',
+        { 'form': form
+        , 'billetera': billetera
+        }
+    )
