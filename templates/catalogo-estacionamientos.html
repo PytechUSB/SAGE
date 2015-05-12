@@ -11,7 +11,7 @@
     <hr>
     
     <!-- TABLA CON LOS PROPIETARIOS ALMACENADOS EN LA BASE DE DATOS -->
-    <div class="col-md-8">
+    <div class="col-md-6">
       <table class="table table-striped">
       {% if propietarios %} 
         <thead>
@@ -41,52 +41,6 @@
         {% endif %}
       </table>
       <hr>
-    </div>
-    
-    <!-- FORMULARIO PARA AGREGAR PROPIETARIOS -->
-    <div class="col-md-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="panel-title">
-            <i class="glyphicon glyphicon-wrench pull-right"></i>
-            <h4>
-              Agregar Propietario
-            </h4>
-          </div>
-        </div>
-        <div class="panel-body">
-          <form action="propietario" method="post" class="form form-vertical">
-            {% csrf_token %}
-            {% for field in formP %}
-              <div class="control-group">
-                <div class="controls">
-                  {{ field }}
-                  <span class='error' id='{{field.name}}_error' aria-live="polite">
-                    {{ field.errors }}
-                  </span>
-                  <p>
-                </div>
-              </div>
-            {% endfor %}
-            <div class="control-group">
-              <label></label>
-              <div class="controls" align="center">
-                <button type="submit" class="btn btn-primary">
-                    {% if formP %} 
-        				Agregar
-        			{% else %} 
-        				Expandir
-        			{% endif %} 
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    
-    <!-- TABLA CON LOS ESTACIONAMIENTOS DE LA BASE DE DATOS -->
-    <div class="col-md-8">
       <table class="table table-striped">
         {% if estacionamientos %} 
         <thead>
@@ -120,49 +74,92 @@
       </table>
       <hr>
     </div>
-    
-    <!-- FORMULARIO PARA AGREGAR ESTACIONAMIENTOS -->
-    <div class="col-md-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="panel-title">
-            <i class="glyphicon glyphicon-wrench pull-right"></i>
-            <h4>
-              Crear estacionamiento
-            </h4>
-          </div>
-        </div>
-        <div class="panel-body">
-          <form action="." method="post" class="form form-vertical">
-            {% csrf_token %}
-            {% for field in form %}
-              <div class="control-group">
-                <div class="controls">
-                  {{ field }}
-                  <span class='error' id='{{field.name}}_error' aria-live="polite">
-                    {{ field.errors }}
-                  </span>
-                  <p>
-                </div>
-              </div>
-            {% endfor %}
-            <div class="control-group">
-              <label></label>
-              <div class="controls" align="center">
-                <button type="submit" class="btn btn-primary">
-                    {% if form %} 
-        				Crear
-        			{% else %} 
-        				Expandir
-        			{% endif %} 
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    
+	  <div class="col-sm-6">  
+	    <!-- FORMULARIO PARA AGREGAR PROPIETARIOS -->
+	    <div class="col-md-8">
+	      <div class="panel panel-default">
+	        <div class="panel-heading">
+	          <div class="panel-title">
+	            <i class="glyphicon glyphicon-wrench pull-right"></i>
+	            <h4>
+	              Agregar Propietario
+	            </h4>
+	          </div>
+	        </div>
+	        <div class="panel-body">
+	          <form action="propietario" method="post" class="form form-vertical">
+	            {% csrf_token %}
+	            {% for field in formP %}
+	              <div class="control-group">
+	                <div class="controls">
+	                  {{ field }}
+	                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+	                    {{ field.errors }}
+	                  </span>
+	                  <p>
+	                </div>
+	              </div>
+	            {% endfor %}
+	            <div class="control-group">
+	              <label></label>
+	              <div class="controls" align="center">
+	                <button type="submit" class="btn btn-primary">
+	                    {% if formP %} 
+	        				Agregar
+	        			{% else %} 
+	        				Expandir
+	        			{% endif %} 
+	                </button>
+	              </div>
+	            </div>
+	          </form>
+	        </div>
+	      </div>
+	    </div>
+	    
+	    <!-- FORMULARIO PARA AGREGAR ESTACIONAMIENTOS -->
+	    <div class="col-md-8">
+	      <div class="panel panel-default">
+	        <div class="panel-heading">
+	          <div class="panel-title">
+	            <i class="glyphicon glyphicon-wrench pull-right"></i>
+	            <h4>
+	              Crear estacionamiento
+	            </h4>
+	          </div>
+	        </div>
+	        <div class="panel-body">
+	          <form action="." method="post" class="form form-vertical">
+	            {% csrf_token %}
+	            {% for field in form %}
+	              <div class="control-group">
+	                <div class="controls">
+	                  {{ field }}
+	                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+	                    {{ field.errors }}
+	                  </span>
+	                  <p>
+	                </div>
+	              </div>
+	            {% endfor %}
+	            <div class="control-group">
+	              <label></label>
+	              <div class="controls" align="center">
+	                <button type="submit" class="btn btn-primary">
+	                    {% if form %} 
+	        				Crear
+	        			{% else %} 
+	        				Expandir
+	        			{% endif %} 
+	                </button>
+	              </div>
+	            </div>
+	          </form>
+	        </div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
   </div>
 {% endblock %}
 {% block scripts %}
