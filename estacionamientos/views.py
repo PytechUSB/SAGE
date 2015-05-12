@@ -91,6 +91,21 @@ def propietario_all(request):
         }
     )
 
+def propietario_detail(request, _id):
+    _id = int(_id)
+    # Verificamos que el objeto exista antes de continuar
+    try:
+        propietario = Propietario.objects.get(id = _id)
+    except ObjectDoesNotExist:
+        raise Http404
+
+    return render(
+        request,
+        'detalle-propietario.html',
+        { 'propietario': propietario
+        }
+    )
+    
 # Usamos esta vista para procesar todos los estacionamientos
 def estacionamientos_all(request):
     estacionamientos = Estacionamiento.objects.all()
