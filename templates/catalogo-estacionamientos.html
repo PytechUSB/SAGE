@@ -70,9 +70,13 @@
             {% endfor %}
             <div class="control-group">
               <label></label>
-              <div class="controls">
+              <div class="controls" align="center">
                 <button type="submit" class="btn btn-primary">
-                  Agregar
+                    {% if formP %} 
+        				Agregar
+        			{% else %} 
+        				Expandir
+        			{% endif %} 
                 </button>
               </div>
             </div>
@@ -144,9 +148,13 @@
             {% endfor %}
             <div class="control-group">
               <label></label>
-              <div class="controls">
+              <div class="controls" align="center">
                 <button type="submit" class="btn btn-primary">
-                  Crear 
+                    {% if form %} 
+        				Crear
+        			{% else %} 
+        				Expandir
+        			{% endif %} 
                 </button>
               </div>
             </div>
