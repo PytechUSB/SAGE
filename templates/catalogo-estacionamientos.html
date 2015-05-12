@@ -10,15 +10,15 @@
     </h3>
     <hr>
     
+    <!-- TABLA CON LOS PROPIETARIOS ALMACENADOS EN LA BASE DE DATOS -->
     <div class="col-md-8">
-      <!-- TABLA CON LOS PROPIETARIOS ALMACENADOS EN LA BASE DE DATOS -->
       <table class="table table-striped">
       {% if propietarios %} 
         <thead>
           <tr>
             <th></th>
             <th>Nombres</th>
-            <th>Apillidos</th>
+            <th>Apellidos</th>
             <th>Cedula</th>
             <th></th>
           </tr>
@@ -41,39 +41,6 @@
         </tbody>
         {% else %}
           <h3>No hay propietarios</h3>
-        {% endif %}
-      </table>
-      <hr>
-      <!-- TABLA CON LOS ESTACIONAMIENTOS DE LA BASE DE DATOS -->
-      <table class="table table-striped">
-        {% if estacionamientos %} 
-        <thead>
-          <tr>
-            <th></th>
-            <th>Dueño</th>
-            <th>Nombre</th>
-            <th>RIF</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for obj in estacionamientos %}
-            <tr>
-              <td>{{forloop.counter}}</td>
-              <td>{{obj.propietario}}</td>
-              <td>{{obj.nombre}}</td>
-              <td>{{obj.direccion}}</td>
-              <td><a href="./{{obj.id}}">
-                  <i class="fa fa-search"></i>
-              </a></td>
-              <td><a href="./{{obj.id}}/tasa">
-                  <i class="fa fa-bar-chart"></i>
-              </a></td>
-            </tr>
-          {% endfor %}
-        </tbody>
-        {% else %}
-          <h3>No hay estacionamientos</h3>
         {% endif %}
       </table>
       <hr>
@@ -115,6 +82,42 @@
           </form>
         </div>
       </div>
+    </div>
+    
+    <!-- TABLA CON LOS ESTACIONAMIENTOS DE LA BASE DE DATOS -->
+    <div class="col-md-8">
+      <table class="table table-striped">
+        {% if estacionamientos %} 
+        <thead>
+          <tr>
+            <th></th>
+            <th>Dueño</th>
+            <th>Nombre</th>
+            <th>RIF</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in estacionamientos %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td>{{obj.propietario}}</td>
+              <td>{{obj.nombre}}</td>
+              <td>{{obj.direccion}}</td>
+              <td><a href="./{{obj.id}}">
+                  <i class="fa fa-search"></i>
+              </a></td>
+              <td><a href="./{{obj.id}}/tasa">
+                  <i class="fa fa-bar-chart"></i>
+              </a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        {% else %}
+          <h3>No hay estacionamientos</h3>
+        {% endif %}
+      </table>
+      <hr>
     </div>
     
     <!-- FORMULARIO PARA AGREGAR ESTACIONAMIENTOS -->
