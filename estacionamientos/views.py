@@ -27,12 +27,14 @@ from estacionamientos.controller import (
 from estacionamientos.forms import (
     EstacionamientoExtendedForm,
     EstacionamientoForm,
+    PropietarioForm,
     ReservaForm,
     PagoForm,
     RifForm,
     CedulaForm,
 )
 from estacionamientos.models import (
+    Propietario,
     Estacionamiento,
     Reserva,
     Pago,
@@ -42,6 +44,55 @@ from estacionamientos.models import (
     TarifaFinDeSemana,
     TarifaHoraPico
 )
+
+# Vista para procesar los propietarios
+def propietario_all(request):
+    propietarios = Propietario.objects.all()
+
+    # Si es un GET, mandamos un formulario vacio
+    if request.method == 'GET':
+        form = PropietarioForm()
+
+    # Si es POST, se verifica la información recibida
+    elif request.method == 'POST':
+        # Creamos un formulario con los datos que recibimos
+        form = PropietarioForm(request.POST)
+
+        # Parte de la entrega era limitar la cantidad maxima de
+        # estacionamientos a 5
+        if len(propietarios) >= 5:
+            return render(
+                request, 'template-mensaje.html',
+                { 'color'   : 'red'
+                , 'mensaje' : 'No se pueden agregar más propietarios'
+                }
+            )
+
+        # Si el formulario es valido, entonces creamos un objeto con
+        # el constructor del modelo
+        if form.is_valid():
+            obj = Propietario(
+                nombres     = form.cleaned_data['nombres'],
+                apellidos   = form.cleaned_data['apellidos'],
+                telefono1   = form.cleaned_data['(00)(000)0000000'],
+                telefono2   = form.cleaned_data['(00)(000)0000000'],
+                telefono3   = form.cleaned_data['(00)(000)0000000'],
+                email1      = form.cleaned_data['email'],
+                email2      = form.cleaned_data['email2'],
+                cedula_id   = form.cleaned_data['V-00000000']
+            )
+            obj.save()
+            # Recargamos los propietarios ya que acabamos de agregar
+            propietarios = Propietario.objects.all()
+            form = PropietarioForm()
+
+    return render(
+        request,
+        'catalogo-estacionamientos.html',
+        { 'form': form
+        , 'propietarios': propietarios
+        }
+    )
 
 # Usamos esta vista para procesar todos los estacionamientos
 def estacionamientos_all(request):

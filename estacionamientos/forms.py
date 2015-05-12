@@ -181,13 +181,14 @@ class PropietarioForm(forms.Form):
         )
     )
 
-    rif = forms.CharField(
+####hay que cambiar ciertas cosas de aqui
+    cedula = forms.CharField(
         required   = True,
-        label      = "RIF",
+        label      = "CI",
         validators = [rif_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'RIF: X-xxxxxxxxx'
+            , 'placeholder' : 'CI: X-xxxxxxxxx'
             , 'pattern'     : rif_validator.regex.pattern
             , 'message'     : rif_validator.message
             }
