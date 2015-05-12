@@ -17,17 +17,23 @@
 	<tr><td><b><i class="fa fa-car"></i>
         Estacionamientos:
 	</b></td></tr>
-    <tr><td>
-      {% if estacionamiento.propietario = propietario %}
-        <ul>
+    <td>
+    {% if estacionamientos %}
+      <ul class="nav nav-stacked">
         {% for obj in estacionamientos %}
-          <li>{{obj.nombre}}</li>
-        {% endfor %}
-        </ul> 
+          {% if obj.propietario.id = propietario.id %}
+            <li>
+              <a href="/estacionamientos/{{obj.id}}">
+                <i class="fa fa-search"></i>
+                {{obj.nombre}}
+              </a>
+            </li>
+          {% endif %}
+        {% endfor %} 
+      </ul>
       {% else %}
-        <h3>No tiene estacionamientos</h3>
+        <h3>No hay estacionamientos</h3>
       {% endif %}
-    </td></tr>
-    
+    </td>
   </tbody>
 </table>

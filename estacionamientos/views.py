@@ -92,6 +92,8 @@ def propietario_all(request):
     )
 
 def propietario_detail(request, _id):
+    estacionamientos = Estacionamiento.objects.all()
+    
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
     try:
@@ -102,7 +104,8 @@ def propietario_detail(request, _id):
     return render(
         request,
         'detalle-propietario.html',
-        { 'propietario': propietario
+        { 'propietario': propietario,
+          'estacionamientos': estacionamientos
         }
     )
     
