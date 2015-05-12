@@ -552,7 +552,7 @@ def billetera_all(request):
 
     return render(
         request,
-        'catalogo-estacionamientos.html',
+        'crear-billetera.html',
         { 'form': form
         , 'billetera': billetera
         }
