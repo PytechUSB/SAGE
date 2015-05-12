@@ -20,9 +20,15 @@ class EstacionamientoForm(forms.Form):
         regex   = '^[JVD]-\d{8}-?\d$',
         message = 'Introduzca un RIF con un formato válido de la forma X-xxxxxxxxx.'
     )
-
+    
+    phone_validator = RegexValidator(
+        regex   = '^((0212)|(0412)|(0416)|(0414)|(0424)|(0426))-?\d{7}',
+        message = 'Debe introducir un formato válido de teléfono.'
+    )
+    
     propietario = forms.ModelChoiceField(
         Propietario.objects.all(),
+        required = True,
         empty_label    = "Introduzca Propietario"
     )
     
@@ -61,11 +67,6 @@ class EstacionamientoForm(forms.Form):
             , 'message'     : rif_validator.message
             }
         )
-    )
-    
-    phone_validator = RegexValidator(
-        regex   = '^((0212)|(0412)|(0416)|(0414)|(0424)|(0426))-?\d{7}',
-        message = 'Debe introducir un formato válido de teléfono.'
     )
     
     telefono_1 = forms.CharField(

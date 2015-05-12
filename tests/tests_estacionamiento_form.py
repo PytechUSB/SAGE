@@ -3,31 +3,40 @@
 from django.test import TestCase
 
 from estacionamientos.forms import EstacionamientoForm
+from estacionamientos.models import Propietario
 
 ###################################################################
 #                    ESTACIONAMIENTO_ALL FORM
 ###################################################################
 
-class EstacionamientoAllFormTestCase(TestCase):
 
+class EstacionamientoAllFormTestCase(TestCase):
+    
+    
     # malicia
     def test_campos_vacios(self):
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop.save()
         form_data = {}
         form = EstacionamientoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
     # caso borde
     def test_solo_un_campo_necesario(self):
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop.save()
         form_data = {
-            'propietario': 'Pedro'
+            'propietario': prop.id
         }
         form = EstacionamientoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
     # caso borde
     def test_dos_campos_necesarios(self):
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop.save()
         form_data = {
-            'propietario': 'Pedro',
+            'propietario': prop.id,
             'nombre': 'Orinoco'
         }
         form = EstacionamientoForm(data = form_data)
@@ -35,8 +44,10 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # caso borde
     def test_tres_campos_necesarios(self):
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop.save()
         form_data = {
-            'propietario': 'Pedro',
+            'propietario': prop.id,
             'nombre': 'Orinoco',
             'direccion': 'Caracas'
         }
@@ -45,8 +56,10 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # caso borde
     def test_todos_los_campos_necesarios(self):
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop.save()
         form_data = {
-            'propietario': 'Pedro',
+            'propietario': prop.id,
             'nombre': 'Orinoco',
             'direccion': 'Caracas',
             'rif': 'V-123456789'
@@ -54,32 +67,12 @@ class EstacionamientoAllFormTestCase(TestCase):
         form = EstacionamientoForm(data = form_data)
         self.assertTrue(form.is_valid())
 
-    # malicia
-    def test_propietario_invalido_digitos_en_campo(self):
-        form_data = {
-            'propietario': 'Pedro132',
-            'nombre': 'Orinoco',
-            'direccion': 'Caracas',
-            'rif': 'V-123456789'
-        }
-        form = EstacionamientoForm(data = form_data)
-        self.assertFalse(form.is_valid())
-
-    # malicia
-    def test_propietario_invalido_simbolos_especiales(self):
-        form_data = {
-            'propietario': 'Pedro!',
-            'nombre': 'Orinoco',
-            'direccion': 'Caracas',
-            'rif': 'V-123456789'
-        }
-        form = EstacionamientoForm(data = form_data)
-        self.assertFalse(form.is_valid())
-
     # caso borde
     def test_RIF_tamano_invalido(self):
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop.save()
         form_data = {
-            'propietario': 'Pedro132',
+            'propietario': prop.id,
             'nombre': 'Orinoco',
             'direccion': 'Caracas',
             'rif': 'V-1234567'
@@ -89,8 +82,9 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # malicia
     def test_RIF_formato_invalido(self):
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop.save()
         form_data = {
-            'propietario': 'Pedro132',
             'nombre': 'Orinoco',
             'direccion': 'Caracas',
             'rif': 'Kaa123456789'
@@ -100,8 +94,10 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # malicia
     def test_agregar_telefonos(self):
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop.save()
         form_data = {
-            'propietario': 'Pedro',
+            'propietario': prop.id,
             'nombre': 'Orinoco',
             'direccion': 'Caracas',
             'rif': 'V-123456789',
@@ -114,8 +110,10 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # malicia
     def test_formato_invalido_telefono(self):
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop.save()
         form_data = {
-            'propietario': 'Pedro',
+            'propietario': prop.id,
             'nombre': 'Orinoco',
             'direccion': 'Caracas',
             'rif': 'V-123456789',
@@ -126,8 +124,10 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # caso borde
     def test_tamano_invalido_telefono(self):
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop.save()
         form_data = {
-            'propietario': 'Pedro',
+            'propietario': prop.id,
             'nombre': 'Orinoco',
             'direccion': 'Caracas',
             'rif': 'V-123456789',
@@ -138,8 +138,10 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # malicia
     def test_agregar_correos_electronicos(self):
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop.save()
         form_data = {
-            'propietario': 'Pedro',
+            'propietario': prop.id,
             'nombre': 'Orinoco',
             'direccion': 'Caracas',
             'rif': 'V-123456789',
@@ -154,8 +156,10 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # malicia
     def test_correo_electronico_invalido(self):
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop.save()
         form_data = {
-            'propietario': 'Pedro',
+            'propietario': prop.id,
             'nombre': 'Orinoco',
             'direccion': 'Caracas',
             'rif': 'V-123456789',
