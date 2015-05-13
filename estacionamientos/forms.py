@@ -425,7 +425,7 @@ class BilleteraForm(forms.Form):
     
     PIN_validator = RegexValidator(
         regex   = '^[0-9]{4}$',
-        message = 'Su PIN solo puede contener caracteres numéricos.'
+        message = 'Su PIN solo puede contener 4 caracteres numéricos.'
     )
     
     card_id_validator = RegexValidator(

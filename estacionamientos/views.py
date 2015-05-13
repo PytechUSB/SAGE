@@ -167,7 +167,7 @@ def estacionamiento_detail(request, _id):
         , 'estacionamiento': estacionamiento
         }
     )
-
+    
 
 def estacionamiento_reserva(request, _id):
     _id = int(_id)
@@ -517,20 +517,19 @@ def billetera_all(request):
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
         if form.is_valid():
-            inicial = "1000100010001000"
+            inicial = 1000100010001000
             if len(billetera) == 0:
                 obj = BilleteraElectronica(
                     nombre = form.cleaned_data['nombre'],
                     apellido = form.cleaned_data['apellido'],
                     PIN = form.cleaned_data['PIN'],
                     cedula = form.cleaned_data['cedula'],
-                    identificador = inicial
+                    identificador = str(inicial)
                 )    
                 obj.save()
                 
-            elif not BilleteraElectronica.objects.exists(cedula=form.cleaned_data['cedula']):
-                siguiente_numero = int(inicial)
-                siguiente_numero += len(billetera)
+            elif not BilleteraElectronica.objects.filter(cedula=form.cleaned_data['cedula']).exists():
+                siguiente_numero = inicial + len(billetera)
                 obj = BilleteraElectronica(
                     nombre = form.cleaned_data['nombre'],
                     apellido = form.cleaned_data['apellido'],
