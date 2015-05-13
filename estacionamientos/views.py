@@ -61,7 +61,7 @@ def propietario_all(request):
 
         # Parte de la entrega era limitar la cantidad maxima de
         # estacionamientos a 5
-        if len(propietarios) >= 5:
+        if len(propietarios) >= 5-len(estacionamientos):
             return render(
                 request, 'template-mensaje.html',
                 { 'color'   : 'red'

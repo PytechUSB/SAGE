@@ -7,9 +7,9 @@ from decimal import Decimal
 from datetime import timedelta
 
 class Propietario(models.Model):
-	nombres     = models.CharField(max_length = 50)
-	apellidos   = models.CharField(max_length = 50)
-	cedula      = models.CharField(max_length = 12,unique=True)
+	nombres     = models.CharField(max_length = 30)
+	apellidos   = models.CharField(max_length = 30)
+	cedula      = models.CharField(max_length = 12)
 
 	def __str__(self):
 		return self.nombres+' '+str(self.cedula)
@@ -17,7 +17,7 @@ class Propietario(models.Model):
 class Estacionamiento(models.Model):
 	nombre      = models.CharField(max_length = 50)
 	direccion   = models.TextField(max_length = 120)
-	rif         = models.CharField(max_length = 12,unique=True)
+	rif         = models.CharField(max_length = 12)
 	telefono1   = models.CharField(blank = True, null = True, max_length = 30)
 	telefono2   = models.CharField(blank = True, null = True, max_length = 30)
 	telefono3   = models.CharField(blank = True, null = True, max_length = 30)
