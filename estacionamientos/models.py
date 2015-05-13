@@ -7,8 +7,8 @@ from decimal import Decimal
 from datetime import timedelta
 
 class Propietario(models.Model):
-	nombres     = models.CharField(max_length = 50)
-	apellidos   = models.CharField(max_length = 50)
+	nombres     = models.CharField(max_length = 30)
+	apellidos   = models.CharField(max_length = 30)
 	cedula      = models.CharField(max_length = 12)
 
 	def __str__(self):

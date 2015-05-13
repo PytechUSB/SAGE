@@ -15,7 +15,7 @@ class EstacionamientoAllFormTestCase(TestCase):
     
     # malicia
     def test_campos_vacios(self):
-        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="19345678")
         prop.save()
         form_data = {}
         form = EstacionamientoForm(data = form_data)
@@ -23,7 +23,7 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # caso borde
     def test_solo_un_campo_necesario(self):
-        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="19345678")
         prop.save()
         form_data = {
             'propietario': prop.id
@@ -33,7 +33,7 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # caso borde
     def test_dos_campos_necesarios(self):
-        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="19345678")
         prop.save()
         form_data = {
             'propietario': prop.id,
@@ -44,7 +44,7 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # caso borde
     def test_tres_campos_necesarios(self):
-        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="19345678")
         prop.save()
         form_data = {
             'propietario': prop.id,
@@ -56,7 +56,7 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # caso borde
     def test_todos_los_campos_necesarios(self):
-        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="19345678")
         prop.save()
         form_data = {
             'propietario': prop.id,
@@ -69,7 +69,7 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # caso borde
     def test_RIF_tamano_invalido(self):
-        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="19345678")
         prop.save()
         form_data = {
             'propietario': prop.id,
@@ -82,7 +82,7 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # malicia
     def test_RIF_formato_invalido(self):
-        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="19345678")
         prop.save()
         form_data = {
             'nombre': 'Orinoco',
@@ -94,7 +94,7 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # malicia
     def test_agregar_telefonos(self):
-        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="19345678")
         prop.save()
         form_data = {
             'propietario': prop.id,
@@ -110,7 +110,7 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # malicia
     def test_formato_invalido_telefono(self):
-        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="19345678")
         prop.save()
         form_data = {
             'propietario': prop.id,
@@ -124,7 +124,7 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # caso borde
     def test_tamano_invalido_telefono(self):
-        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="19345678")
         prop.save()
         form_data = {
             'propietario': prop.id,
@@ -138,7 +138,7 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # malicia
     def test_agregar_correos_electronicos(self):
-        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="19345678")
         prop.save()
         form_data = {
             'propietario': prop.id,
@@ -156,7 +156,7 @@ class EstacionamientoAllFormTestCase(TestCase):
 
     # malicia
     def test_correo_electronico_invalido(self):
-        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="")
+        prop=Propietario(nombres="Pedro",apellidos="Perez",cedula="19345678")
         prop.save()
         form_data = {
             'propietario': prop.id,

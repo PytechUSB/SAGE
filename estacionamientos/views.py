@@ -61,11 +61,11 @@ def propietario_all(request):
 
         # Parte de la entrega era limitar la cantidad maxima de
         # estacionamientos a 5
-        if len(propietarios) >= 5:
+        if len(propietarios) >= 5 or 5-len(estacionamientos) <=0:
             return render(
                 request, 'template-mensaje.html',
                 { 'color'   : 'red'
-                , 'mensaje' : 'No se pueden agregar más propietarios'
+                , 'mensaje' : 'No se pueden agregar más propietarios.'
                 }
             )
 
