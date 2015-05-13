@@ -1,39 +1,38 @@
 <table class="table table-striped">
   <thead></thead>
   <tbody>
-    <tr><td><b><i class="fa fa-user"></i>
+    <tr><td colspan="3"><b><i class="fa fa-user"></i>
       Nombre:
     </b></td></tr>
-    <tr><td>
+    <tr><td colspan="3">
       {{propietario.nombres}} {{propietario.apellidos}}
     </td></tr>
-    <tr><td><b><i class="fa fa-circle"></i>
+    <tr><td colspan="3"><b><i class="fa fa-circle"></i>
       Cédula:
     </b></td></tr>
-    <tr><td>
+    <tr><td colspan="3">
       {{propietario.cedula}}
     </td></tr>
     
-	<tr><td><b><i class="fa fa-car"></i>
+	<tr><td colspan="3"><b><i class="fa fa-car"></i>
         Estacionamientos:
 	</b></td></tr>
-    <td>
     {% if estacionamientos %}
       <ul class="nav nav-stacked">
         {% for obj in estacionamientos %}
           {% if obj.propietario.id = propietario.id %}
-            <li>
-              <a href="/estacionamientos/{{obj.id}}" class="text-muted">
-                <i class="fa fa-search"></i>
-                {{obj.nombre}}
-              </a>
-            </li>
+            <tr>
+              <td>{{obj.nombre}}</td>
+              <td>{{obj.rif}}</td>
+              <td><a href="/estacionamientos/{{obj.id}}" class="text-muted">
+                <i class="fa fa-search"></i></a>
+              </td>
+            </tr>
           {% endif %}
         {% endfor %} 
       </ul>
       {% else %}
         <h3>No hay estacionamientos</h3>
       {% endif %}
-    </td>
   </tbody>
 </table>
