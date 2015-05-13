@@ -23,7 +23,7 @@
         {% for obj in estacionamientos %}
           {% if obj.propietario.id = propietario.id %}
             <li>
-              <a href="/estacionamientos/{{obj.id}}">
+              <a href="/estacionamientos/{{obj.id}}" class="text-muted">
                 <i class="fa fa-search"></i>
                 {{obj.nombre}}
               </a>
