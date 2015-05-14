@@ -10,9 +10,7 @@ from matplotlib import pyplot
 from decimal import Decimal
 from collections import OrderedDict
 
-from datetime import (
-    datetime,
-)
+from datetime import datetime
 
 from estacionamientos.controller import (
     HorarioEstacionamiento,
@@ -72,11 +70,21 @@ def propietario_all(request):
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
         if form.is_valid():
+            CI      = form.cleaned_data['cedula'] # Verificamos que sea unica
             obj = Propietario(
                 nombres     = form.cleaned_data['nombres'],
                 apellidos   = form.cleaned_data['apellidos'],
-                cedula      = form.cleaned_data['cedula']
+                cedula      = CI
             )
+            for propietario in propietarios:
+                if propietario.cedula==CI:
+                    return render(
+                        request, 'template-mensaje.html',
+                        { 'color'   : 'red'
+                        , 'mensaje' : 'Cédula ya existente.'
+                        }
+                    )
+                    
             obj.save()
             # Recargamos los propietarios ya que acabamos de agregar
             propietarios = Propietario.objects.all()
