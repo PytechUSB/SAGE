@@ -43,6 +43,7 @@ class BilleteraElectronica (models.Model):
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
 
+# Consumos asociados a la billetera
 class Consumos(models.Model):
 	billetera = models.ForeignKey(BilleteraElectronica)
 	monto = models.DecimalField(max_digits=20, decimal_places=2)
