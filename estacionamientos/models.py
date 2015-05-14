@@ -32,15 +32,40 @@ class Estacionamiento(models.Model):
 # clase billetera con los datos necesario para crearla
 # faltan los credito y debitos
 
-class BilleteraElectronica (models.Model): # aqui va la clase billetera
+class BilleteraElectronica (models.Model):
 	nombre = models.CharField(max_length = 30, help_text = "Nombre Propio")
 	apellido = models.CharField(max_length = 30)
+	saldo = models.DecimalField(max_digits=20, decimal_places=2)
 	cedula = models.CharField(max_length = 12, unique = True)
 	identificador = models.CharField(max_length = 16)
 	PIN = models.CharField(max_length = 8)
 	
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
+
+class Consumos(models.Model):
+	billetera = models.ForeignKey(BilleteraElectronica)
+	monto = models.DecimalField(max_digits=20, decimal_places=2)
+	fecha = models.DateTimeField()
+	id_estacionamiento = models.ForeignKey(Estacionamiento)
+	
+	class Meta:
+		unique_together = (("billetera", "fecha"),)
+		
+	def _str_(self):
+		return str(self.billetera)+' '+str(self.fecha)
+	
+class Recargas(models.Model):
+	billetera = models.ForeignKey(BilleteraElectronica)
+	monto = models.DecimalField(max_digits=20, decimal_places=2)
+	fecha = models.DateTimeField()
+	id_punto_recarga = models.IntegerField()
+	
+	class Meta:
+		unique_together = (("billetera", "fecha"),)
+		
+	def _str_(self):
+		return str(self.billetera)+' '+str(self.fecha)
 
 
 class Reserva(models.Model):

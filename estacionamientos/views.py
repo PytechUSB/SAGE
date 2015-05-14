@@ -527,7 +527,8 @@ def billetera_all(request):
                 apellido = form.cleaned_data['apellido'],
                 PIN = form.cleaned_data['PIN'],
                 cedula = form.cleaned_data['cedula'],
-                identificador = str(inicial)
+                identificador = str(inicial),
+                saldo = 0.00
                 )    
             obj.save()
             return render(
@@ -545,7 +546,8 @@ def billetera_all(request):
                     apellido = form.cleaned_data['apellido'],
                     PIN = form.cleaned_data['PIN'],
                     cedula = form.cleaned_data['cedula'],
-                    identificador = str(siguiente_numero)
+                    identificador = str(siguiente_numero),
+                    saldo = 0.00
                 )
             
             try:
