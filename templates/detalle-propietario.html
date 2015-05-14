@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}
+  SAGE - Propietario {{propietario.nombres}} {{propietario.apellidos}}
+{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-user"></i>
+      Propietario {{propietario.nombres}} {{propietario.apellidos}}
+    </h3>
+    <hr>
+    <div class="col-md-8">
+      {% include "datos-propietarios.html" %}
+    </div>
+  </div>
+{% endblock %}

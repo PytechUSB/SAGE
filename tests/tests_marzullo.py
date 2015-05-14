@@ -9,7 +9,7 @@ from estacionamientos.controller import marzullo
 from estacionamientos.models import (
     Estacionamiento,
     Reserva
-)
+, Propietario)
 
 ###############################################################################
 # Marzullo
@@ -66,8 +66,10 @@ class MarzulloTestCase(TestCase):
         que el borde count=capacidad se alcanza entre las horas 10am y 11am.
     '''
     def crear_estacionamiento(self, puestos):
+        prop=Propietario(nombres="prop",apellidos="",cedula="")
+        prop.save()
         e = Estacionamiento(
-            propietario = "prop",
+            propietario = prop,
             nombre = "nom",
             direccion = "dir",
             rif = "rif",

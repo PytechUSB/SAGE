@@ -5,75 +5,58 @@
 {% endblock %}
 {% block innerContents%}
     <div class="col-sm-10">
-    <h3><i class="fa fa-bus"></i>
-        Estacionamientos
+    <h3><i class="fa fa-users"></i>
+        Propietarios
     </h3>
     <hr>
+    <!-- TABLA CON LOS PROPIETARIOS ALMACENADOS EN LA BASE DE DATOS -->
     <div class="col-md-8">
-      <!-- TABLA CON LOS ESTACIONAMIENTOS DE LA BASE DE DATOS -->
       <table class="table table-striped">
-        {% if estacionamientos %} 
+      {% if propietarios %} 
         <thead>
           <tr>
             <th></th>
-            <th>Nombre</th>
-            <th>RIF</th>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th>Cedula</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          {% for obj in estacionamientos %}
+          {% for obj in propietarios %}
             <tr>
               <td>{{forloop.counter}}</td>
-              <td>{{obj.nombre}}</td>
-              <td>{{obj.rif}}</td>
-              <td><a href="./{{obj.id}}">
+              <td>{{obj.nombres}}</td>
+              <td>{{obj.apellidos}}</td>
+              <td>{{obj.cedula}}</td>
+              <td><a href="./propietario/{{obj.id}}">
                   <i class="fa fa-search"></i>
-              </a></td>
-              <td><a href="./{{obj.id}}/tasa">
-                  <i class="fa fa-bar-chart"></i>
               </a></td>
             </tr>
           {% endfor %}
         </tbody>
         {% else %}
-          <h3>No hay estacionamientos</h3>
+          <h3>No hay propietarios</h3>
         {% endif %}
       </table>
       <hr>
     </div>
     
-    <!-- OPCION AGREGAR PROPIETARIOS -->
+    <!-- FORMULARIO PARA AGREGAR PROPIETARIOS -->
     <div class="col-md-4">
       <div class="panel panel-default">
         <div class="panel-heading">
           <div class="panel-title">
             <i class="glyphicon glyphicon-wrench pull-right"></i>
             <h4>
-              Propietario
-            </h4>
-          </div>
-        </div>
-        <div class="panel-body" align="center">
-            <a href="propietario-crear">
-                <button type="button" class="btn btn-primary">Agregar</button> 
-            </a>
-        </div>
-      </div>
-      <!-- FORMULARIO PARA AGREGAR ESTACIONAMIENTOS -->
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="panel-title">
-            <i class="glyphicon glyphicon-wrench pull-right"></i>
-            <h4>
-              Crear estacionamiento
+              Agregar Propietario
             </h4>
           </div>
         </div>
         <div class="panel-body">
-          <form action="." method="post" class="form form-vertical">
+          <form action="propietario-crear" method="post" class="form form-vertical">
             {% csrf_token %}
-            {% for field in form %}
+            {% for field in formP %}
               <div class="control-group">
                 <div class="controls">
                   {{ field }}
@@ -86,10 +69,27 @@
             {% endfor %}
             <div class="control-group" align="center">
                 <button type="submit" class="btn btn-primary">
-                    Crear
+                    Agregar
                 </button>
             </div>
           </form>
+        </div>
+      </div>
+      
+      <!-- OPCION AGREGAR ESTACIONAMIENTOS -->
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <i class="glyphicon glyphicon-wrench pull-right"></i>
+            <h4>
+              Estacionamiento
+            </h4>
+          </div>
+        </div>
+        <div class="panel-body" align="center">
+            <a href="/estacionamientos/">
+                <button type="button" class="btn btn-primary">Agregar</button> 
+            </a>
         </div>
       </div>
     </div>

@@ -12,9 +12,7 @@ from collections import OrderedDict
 from django.db import transaction
 from django.db.utils import IntegrityError
 
-from datetime import (
-    datetime,
-)
+from datetime import datetime
 
 from estacionamientos.controller import (
     HorarioEstacionamiento,
@@ -29,6 +27,7 @@ from estacionamientos.controller import (
 from estacionamientos.forms import (
     EstacionamientoExtendedForm,
     EstacionamientoForm,
+    PropietarioForm,
     ReservaForm,
     PagoForm,
     RifForm,
@@ -36,6 +35,7 @@ from estacionamientos.forms import (
     BilleteraForm, # aun no creo el form de billetera
 )
 from estacionamientos.models import (
+    Propietario,
     Estacionamiento,
     BilleteraElectronica,
     Reserva,
@@ -46,11 +46,85 @@ from estacionamientos.models import (
     TarifaFinDeSemana,
     TarifaHoraPico
 )
+from _sqlite3 import IntegrityError
 
+# Vista para procesar los propietarios
+def propietario_all(request):
+    propietarios = Propietario.objects.all()
+    estacionamientos = Estacionamiento.objects.all()
+
+    # Si es un GET, mandamos un formulario vacio
+    if request.method == 'GET':
+        form = PropietarioForm()
+
+    # Si es POST, se verifica la información recibida
+    elif request.method == 'POST':
+        # Creamos un formulario con los datos que recibimos
+        form = PropietarioForm(request.POST)
+
+        # Parte de la entrega era limitar la cantidad maxima de
+        # estacionamientos a 5
+        if len(propietarios) >= 5 or 5-len(estacionamientos) <=0:
+            return render(
+                request, 'template-mensaje.html',
+                { 'color'   : 'red'
+                , 'mensaje' : 'No se pueden agregar más propietarios.'
+                }
+            )
+
+        # Si el formulario es valido, entonces creamos un objeto con
+        # el constructor del modelo
+        if form.is_valid():
+            obj = Propietario(
+                nombres     = form.cleaned_data['nombres'],
+                apellidos   = form.cleaned_data['apellidos'],
+                cedula      = form.cleaned_data['cedula']
+            )     
+            try:
+                obj.save()
+            except:
+                return render(
+                    request, 'template-mensaje.html',
+                    { 'color'   : 'red'
+                    , 'mensaje' : 'Cédula ya existente'
+                    }
+                )
+            # Recargamos los propietarios ya que acabamos de agregar
+            propietarios = Propietario.objects.all()
+            form = PropietarioForm()
+
+    return render(
+        request,
+        'propietario-crear.html',
+        { 'formP': form
+        , 'propietarios': propietarios
+        , 'estacionamientos': estacionamientos
+        }
+    )
+
+def propietario_detail(request, _id):
+    estacionamientos = Estacionamiento.objects.all()
+    
+    _id = int(_id)
+    # Verificamos que el objeto exista antes de continuar
+    try:
+        propietario = Propietario.objects.get(id = _id)
+    except ObjectDoesNotExist:
+        raise Http404
+
+    return render(
+        request,
+        'detalle-propietario.html',
+        { 'propietario': propietario,
+          'estacionamientos': estacionamientos
+        }
+    )
+    
 # Usamos esta vista para procesar todos los estacionamientos
 def estacionamientos_all(request):
     estacionamientos = Estacionamiento.objects.all()
-
+    propietarios = Propietario.objects.all()
+    
     # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
         form = EstacionamientoForm()
@@ -74,7 +148,6 @@ def estacionamientos_all(request):
         # el constructor del modelo
         if form.is_valid():
             obj = Estacionamiento(
-                propietario = form.cleaned_data['propietario'],
                 nombre      = form.cleaned_data['nombre'],
                 direccion   = form.cleaned_data['direccion'],
                 rif         = form.cleaned_data['rif'],
@@ -82,7 +155,8 @@ def estacionamientos_all(request):
                 telefono2   = form.cleaned_data['telefono_2'],
                 telefono3   = form.cleaned_data['telefono_3'],
                 email1      = form.cleaned_data['email_1'],
-                email2      = form.cleaned_data['email_2']
+                email2      = form.cleaned_data['email_2'],
+                propietario = form.cleaned_data['propietario']
             )
             obj.save()
             # Recargamos los estacionamientos ya que acabamos de agregar
@@ -93,6 +167,7 @@ def estacionamientos_all(request):
         request,
         'catalogo-estacionamientos.html',
         { 'form': form
+        , 'propietarios': propietarios
         , 'estacionamientos': estacionamientos
         }
     )

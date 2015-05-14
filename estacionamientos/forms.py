@@ -2,6 +2,7 @@
 from django import forms
 from django.core.validators import RegexValidator
 from django.forms.widgets import SplitDateTimeWidget
+from estacionamientos.models import Propietario
 
 class CustomSplitDateTimeWidget(SplitDateTimeWidget):
 
@@ -9,11 +10,6 @@ class CustomSplitDateTimeWidget(SplitDateTimeWidget):
         return '<p></p>'.join(rendered_widgets)
 
 class EstacionamientoForm(forms.Form):
-
-    phone_validator = RegexValidator(
-        regex   = '^((0212)|(0412)|(0416)|(0414)|(0424)|(0426))-?\d{7}',
-        message = 'Debe introducir un formato válido de teléfono.'
-    )
     
     name_validator = RegexValidator(
         regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
@@ -24,21 +20,18 @@ class EstacionamientoForm(forms.Form):
         regex   = '^[JVD]-\d{8}-?\d$',
         message = 'Introduzca un RIF con un formato válido de la forma X-xxxxxxxxx.'
     )
-
-    # Nombre del dueno del estacionamiento (no se permiten digitos)
-    propietario = forms.CharField(
-        required   = True,
-        label      = "Propietario",
-        validators = [name_validator],
-        widget = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Propietario'
-            , 'pattern'     : name_validator.regex.pattern
-            , 'message'     : name_validator.message
-            }
-        )
+    
+    phone_validator = RegexValidator(
+        regex   = '^((0212)|(0412)|(0416)|(0414)|(0424)|(0426))-?\d{7}',
+        message = 'Debe introducir un formato válido de teléfono.'
     )
-
+    
+    propietario = forms.ModelChoiceField(
+        Propietario.objects.all(),
+        required = True,
+        empty_label    = "Introduzca Propietario"
+    )
+    
     nombre = forms.CharField(
         required = True,
         label    = "Nombre del Estacionamiento",
@@ -62,7 +55,20 @@ class EstacionamientoForm(forms.Form):
             }
         )
     )
-
+    
+    rif = forms.CharField(
+        required   = True,
+        label      = "RIF",
+        validators = [rif_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'RIF: X-xxxxxxxxx'
+            , 'pattern'     : rif_validator.regex.pattern
+            , 'message'     : rif_validator.message
+            }
+        )
+    )
+    
     telefono_1 = forms.CharField(
         required   = False,
         validators = [phone_validator],
@@ -118,16 +124,54 @@ class EstacionamientoForm(forms.Form):
             }
         )
     )
+    
+class PropietarioForm(forms.Form):
 
-    rif = forms.CharField(
+    name_validator = RegexValidator(
+        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
+        message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
+    )
+    
+    nombres = forms.CharField(
+        required = True,
+        label    = "Nombres del propietario",
+        validators = [name_validator],
+        widget   = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Nombres del propietario'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+    
+    apellidos = forms.CharField(
+        required = True,
+        label    = "Apellidos del propietario",
+        validators = [name_validator],
+        widget   = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Apellidos del propietario'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+    
+    id_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'La cédula solo puede contener caracteres numéricos.'
+    )
+    
+    cedula = forms.CharField(
         required   = True,
-        label      = "RIF",
-        validators = [rif_validator],
+        label      = "Cédula",
+        validators = [id_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'RIF: X-xxxxxxxxx'
-            , 'pattern'     : rif_validator.regex.pattern
-            , 'message'     : rif_validator.message
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
             }
         )
     )
