@@ -4,6 +4,10 @@ from estacionamientos.models import BilleteraElectronica
 
 from estacionamientos.forms import BilleteraForm
 
+from django.db import transaction
+
+from django.db.utils import IntegrityError
+
 def crearBilletera(cedul):
     form_data = {
         'nombre': 'Carlos',
@@ -28,7 +32,8 @@ def crearBilletera(cedul):
                 )    
             obj.save()
                 
-        elif not BilleteraElectronica.objects.filter(cedula=form.cleaned_data['cedula']).exists():
+        #elif not BilleteraElectronica.objects.filter(cedula=form.cleaned_data['cedula']).exists():
+        else:    
             siguiente_numero = inicial + len(billetera)
             obj = BilleteraElectronica(
                     nombre = form.cleaned_data['nombre'],
@@ -36,10 +41,13 @@ def crearBilletera(cedul):
                     PIN = form.cleaned_data['PIN'],
                     cedula = form.cleaned_data['cedula'],
                     identificador = str(siguiente_numero)
-                )    
-            obj.save()
+                )
             
-            
+            try:
+                with transaction.atomic():    
+                    obj.save()
+            except (IntegrityError):
+                pass 
 
 class CrearBilleteraTestCase(TestCase):
     

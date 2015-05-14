@@ -9,6 +9,8 @@ from urllib.parse import urlencode
 from matplotlib import pyplot
 from decimal import Decimal
 from collections import OrderedDict
+from django.db import transaction
+from django.db.utils import IntegrityError
 
 from datetime import (
     datetime,
@@ -516,43 +518,58 @@ def billetera_all(request):
          
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
-        if form.is_valid():
-            inicial = 1000100010001000
-            if len(billetera) == 0:
-                obj = BilleteraElectronica(
-                    nombre = form.cleaned_data['nombre'],
-                    apellido = form.cleaned_data['apellido'],
-                    PIN = form.cleaned_data['PIN'],
-                    cedula = form.cleaned_data['cedula'],
-                    identificador = str(inicial)
+    if form.is_valid():
+        inicial = 1000100010001000
+        
+        if len(billetera) == 0:
+            obj = BilleteraElectronica(
+                nombre = form.cleaned_data['nombre'],
+                apellido = form.cleaned_data['apellido'],
+                PIN = form.cleaned_data['PIN'],
+                cedula = form.cleaned_data['cedula'],
+                identificador = str(inicial)
                 )    
-                obj.save()
+            obj.save()
+            return render(
+                    request, 'template-mensaje.html',
+                    {'color' : 'green'
+                     ,'billetera': obj
+                     , 'mensaje' : 'Billetera Creada Satisfactoriamente'
+                     }
+                )
                 
-            elif not BilleteraElectronica.objects.filter(cedula=form.cleaned_data['cedula']).exists():
-                siguiente_numero = inicial + len(billetera)
-                obj = BilleteraElectronica(
+        else:    
+            siguiente_numero = inicial + len(billetera)
+            obj = BilleteraElectronica(
                     nombre = form.cleaned_data['nombre'],
                     apellido = form.cleaned_data['apellido'],
                     PIN = form.cleaned_data['PIN'],
                     cedula = form.cleaned_data['cedula'],
                     identificador = str(siguiente_numero)
-                )    
-                obj.save()
-                
-            # solo puede haber una billetera por usuario 
-            else:
+                )
+            
+            try:
+                with transaction.atomic():    
+                    obj.save()
+                    return render(
+                        request, 'template-mensaje.html',
+                        {'color' : 'green'
+                         ,'billetera': obj
+                         , 'mensaje' : 'Billetera Creada Satisfactoriamente'
+                         }
+                    )
+            except (IntegrityError):
                 return render(
                     request, 'template-mensaje.html',
                     {'color' : 'red'
                      , 'mensaje' : 'Ya posee una billetera asociada'
                      }
                 )
-            
-
+                
+    form = BilleteraForm()
     return render(
         request,
-        'crear-billetera.html',
-        { 'form': form
-        , 'billetera': billetera
+        'crear-billetera.html', 
+        { 'formB': form
         }
     )

@@ -4,7 +4,7 @@ from math import ceil, floor
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from decimal import Decimal
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 class Estacionamiento(models.Model):
 	propietario = models.CharField(max_length = 50, help_text = "Nombre Propio")
@@ -35,7 +35,7 @@ class Estacionamiento(models.Model):
 class BilleteraElectronica (models.Model): # aqui va la clase billetera
 	nombre = models.CharField(max_length = 30, help_text = "Nombre Propio")
 	apellido = models.CharField(max_length = 30)
-	cedula = models.CharField(max_length = 12)
+	cedula = models.CharField(max_length = 12, unique = True)
 	identificador = models.CharField(max_length = 16)
 	PIN = models.CharField(max_length = 8)
 	

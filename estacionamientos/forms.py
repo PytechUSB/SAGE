@@ -484,16 +484,3 @@ class BilleteraForm(forms.Form):
             }
         )
     )
-    
-    identificador = forms.CharField(
-        required   = True,
-        label      = " Numero de Billetera Electronica", 
-        validators = [card_id_validator],
-        widget = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Numero de Tarjeta'
-            , 'pattern'     : card_id_validator.regex.pattern
-            , 'message'     : card_id_validator.message
-            }
-        )
-    )
