@@ -389,18 +389,18 @@ class PagoForm(forms.Form):
             ('Vista',  ' VISTA '),
             ('Mister', ' MISTER '),
             ('Xpress', ' XPRESS '),
-            ('BilleteraElectronica', ' E-Wallet ')
+            ('Billetera Electronica', ' E-Wallet ')
         ),
         widget   = forms.RadioSelect()
     )
 
     tarjeta = forms.CharField(
         required   = True,
-        label      = "Tarjeta de Credito",
+        label      = "Tarjeta de Credito", 
         validators = [card_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Tarjeta de Credito'
+            , 'placeholder' : 'Numero de Tarjeta' # ya cambie lo que dice
             , 'pattern'     : card_validator.regex.pattern
             , 'message'     : card_validator.message
             }
@@ -443,6 +443,88 @@ class CedulaForm(forms.Form):
             , 'placeholder' : 'Cédula'
             , 'pattern'     : id_validator.regex.pattern
             , 'message'     : id_validator.message
+            }
+        )
+    )
+
+# validacion del pin de la billetera
+# va aqui o dentro de pago?
+    
+class BilleteraForm(forms.Form):
+    
+    name_validator = RegexValidator(
+        regex   = '^[a-zA-ZáéíóúñÑÁÉÍÓÚ][a-zA-ZáéíóúñÑÁÉÍÓÚ ]*$',
+        message = 'El nombre no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
+    )
+    
+    surname_validator = RegexValidator(
+        regex   = '^[a-zA-ZáéíóúñÑÁÉÍÓÚ][a-zA-ZáéíóúñÑÁÉÍÓÚ ]*$',
+        message = 'El apellido no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
+    )
+    
+    ci_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'La cédula solo puede contener caracteres numéricos.'
+    )
+    
+    PIN_validator = RegexValidator(
+        regex   = '^[0-9]{4}$',
+        message = 'Su PIN solo puede contener 4 caracteres numéricos.'
+    )
+    
+    card_id_validator = RegexValidator(
+        regex   = '^[0-9]{16}$',
+        message = 'Introduzca un número de tarjeta válido de 16 dígitos.'
+    )
+    
+    nombre = forms.CharField(
+        required   = True,
+        label      = "Nombre del Tarjetahabiente",
+        validators = [name_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Nombre del Tarjetahabiente'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+
+    apellido = forms.CharField(
+        required   = True,
+        label      = "Apellido del Tarjetahabiente",
+        validators = [surname_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'      : 'form-control'
+            , 'placeholder' : 'Apellido del Tarjetahabiente'
+            , 'pattern'     : surname_validator.regex.pattern
+            , 'message'     : surname_validator.message
+            }
+        )
+    )
+    
+    cedula = forms.CharField(
+        required   = True,
+        label      = "Cédula",
+        validators = [ci_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : ci_validator.regex.pattern
+            , 'message'     : ci_validator.message
+            }
+        )
+    )
+    
+    PIN = forms.CharField(
+        required   = True,
+        label      = "PIN",
+        validators = [PIN_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'PIN'
+            , 'pattern'     : PIN_validator.regex.pattern
+            , 'message'     : PIN_validator.message
             }
         )
     )

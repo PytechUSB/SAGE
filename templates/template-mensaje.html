@@ -12,6 +12,22 @@
     <div style="color:{{color}}">
         {{mensaje}}
         <hr>
+<<<<<<< HEAD
+      </div>
+      <div>
+      	{%if billetera%}
+       <div class="col-sm-10">
+    	<h3><i class="fa fa-credit-card"></i>
+      		Billetera Electrónica 
+    	</h3>
+    	<hr>
+    	<div class="col-md-8">
+      		{% include "datos-billetera.html" %}
+    	</div>
+  		</div>
+      	{%endif%}
+      </div>
+=======
     </div>
     <form  method="get" class="form form-vertical">
         <div class="control-group" align="center">
@@ -20,5 +36,6 @@
 	        </button>
         </div>
     </form>
+>>>>>>> refs/remotes/origin/ExtraccionPropietario
   </div>
 {% endblock %}
