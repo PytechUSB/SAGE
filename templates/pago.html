@@ -4,6 +4,54 @@
 {% block title %}
   SAGE - Pago
 {% endblock %}
+   
+{% block scripts %}
+<script>
+		$('document').ready(function() {
+		
+			$('#id_pin_billetera').css("display", "none");
+				
+			$('input#id_tarjetaTipo_3').click(function() {
+				$('#id_pin_billetera').css("display", "block");
+				$('#id_pin_billetera').prop('required',true);
+			});
+									
+			$('input#id_tarjetaTipo_2').click(function() {
+				$('#id_pin_billetera').css("display", "none");
+				$('#id_pin_billetera').prop('required',false);
+			});
+		
+			$('input#id_tarjetaTipo_1').click(function() {
+				$('#id_pin_billetera').css("display", "none");
+				$('#id_pin_billetera').prop('required',false);
+			});
+			
+			$('input#id_tarjetaTipo_0').click(function() {
+				$('#id_pin_billetera').css("display", "none");
+				$('#id_pin_billetera').prop('required',false);
+			});
+		});
+</script>
+
+{% include "validator.js.html" %}
+  <script type="text/javascript">
+    function popuponclick(){
+      my_window = window.open("",
+       "mywindow","status=1,width=350,height=150");
+
+      my_window.document.write('<h1>The Popup Window</h1>');
+    }
+
+    function closepopup(){
+      window.close();
+    }
+
+    function openlink(){
+      opener.location='/estacionamientos/{{ id }}/reserva';
+    }
+  </script> 
+ 
+{% endblock %}
 
 {% block body%}
   <body {% if mensaje %} onunload="openlink()" {% endif %}>
@@ -82,6 +130,15 @@
                 ></span>
               </p>
               {{ form.tarjeta.errors }}
+              <p>
+                {{ form.pin_billetera }}
+                <span
+                  class='error'
+                  id='{{form.pin_billetera.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.pin_billetera.errors }}
             </div>
           </div>
           <input
@@ -169,23 +226,5 @@
     </div>
   </div>
 {% endblock %}
-{% block scripts %}
-  {% include "validator.js.html" %}
 
-  <script type="text/javascript">
-    function popuponclick(){
-      my_window = window.open("",
-       "mywindow","status=1,width=350,height=150");
 
-      my_window.document.write('<h1>The Popup Window</h1>');
-    }
-
-    function closepopup(){
-      window.close();
-    }
-
-    function openlink(){
-      opener.location='/estacionamientos/{{ id }}/reserva';
-    }
-  </script>
-{% endblock %}
