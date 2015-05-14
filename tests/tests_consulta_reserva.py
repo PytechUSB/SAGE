@@ -7,6 +7,7 @@ from estacionamientos.controller import consultar_ingresos
 from estacionamientos.models import (
                                         Pago,
                                         Estacionamiento,
+                                        Propietario,
                                         Reserva
                                     )
 
@@ -15,6 +16,7 @@ from estacionamientos.models import (
 ###################################################################
 class consultaReservaTestCase(TestCase):
     
+    
     #TDD
     def test_sin_estacionamiento(self):
         lista, total = consultar_ingresos("J-123456789")
@@ -22,8 +24,10 @@ class consultaReservaTestCase(TestCase):
 
     # TDD
     def test_estacionamiento_sin_pagos(self):
+        prop=Propietario(nombres="prop",apellidos="",cedula="")
+        prop.save()
         e = Estacionamiento(
-            propietario = "prop",
+            propietario = prop,
             nombre      = "nom",
             direccion   = "dir",
             rif         = "J-123456789",
@@ -37,8 +41,10 @@ class consultaReservaTestCase(TestCase):
 
     # TDD
     def test_un_estacionamiento_un_pago(self):
+        prop=Propietario(nombres="prop",apellidos="",cedula="")
+        prop.save()
         e = Estacionamiento(
-            propietario = "prop",
+            propietario = prop,
             nombre      = "nom",
             direccion   = "dir",
             rif         = "J-123456789",
@@ -67,8 +73,10 @@ class consultaReservaTestCase(TestCase):
     # TDD malicia
     def test_un_estacionamiento_muchos_pagos(self):
         n = 1000
+        prop=Propietario(nombres="prop",apellidos="",cedula="")
+        prop.save()
         e = Estacionamiento(
-            propietario = "prop",
+            propietario = prop,
             nombre      = "nom",
             direccion   = "dir",
             rif         = "J-123456789",
@@ -99,8 +107,10 @@ class consultaReservaTestCase(TestCase):
     # malicia
     def test_dos_estacionamiento_muchos_pagos(self):
         n  = 1000
+        prop=Propietario(nombres="prop",apellidos="",cedula="")
+        prop.save()
         e1 = Estacionamiento(
-            propietario = "prop1",
+            propietario = prop,
             nombre      = "nom1",
             direccion   = "dir1",
             rif         = "J-123456789",
@@ -109,7 +119,7 @@ class consultaReservaTestCase(TestCase):
             cierre      = time(23,59),
         )
         e2 = Estacionamiento(
-            propietario = "prop2",
+            propietario = prop,
             nombre      = "nom2",
             direccion   = "dir3",
             rif         = "J-123456789",
@@ -159,10 +169,12 @@ class consultaReservaTestCase(TestCase):
     def test_muchos_estacionamiento_mitad_sin_pagos(self):
         n  = 100
         m  = 10
+        prop=Propietario(nombres="prop",apellidos="",cedula="")
+        prop.save()
         for i in range(0,n):
 
             e1 = Estacionamiento(
-                propietario = "prop%d"%i,
+                propietario = prop,
                 nombre      = "nom%d"%i,
                 direccion   = "dir1",
                 rif         = "J-123456789",
@@ -171,7 +183,7 @@ class consultaReservaTestCase(TestCase):
                 cierre      = time(23,59),
             )
             e2 = Estacionamiento(
-                propietario = "pro%d"%i,
+                propietario = prop,
                 nombre      = "no%d"%i,
                 direccion   = "dir3",
                 rif         = "J-123456789",
@@ -203,9 +215,11 @@ class consultaReservaTestCase(TestCase):
 
     def test_muchos_estacionamiento_sin_pagos(self):
         n  = 1000
+        prop=Propietario(nombres="prop",apellidos="",cedula="")
+        prop.save()
         for i in range(0,n):
             e1 = Estacionamiento(
-                propietario = "prop%d"%i,
+                propietario = prop,
                 nombre      = "nom%d"%i,
                 direccion   = "dir1",
                 rif         = "J-123456789",
@@ -219,9 +233,11 @@ class consultaReservaTestCase(TestCase):
 
     def test_muchos_estacionamiento_con_disintos_rif(self):
         n  = 1000
+        prop=Propietario(nombres="prop",apellidos="",cedula="")
+        prop.save()
         for i in range(0,n):
             e1 = Estacionamiento(
-                propietario = "prop%d"%i,
+                propietario = prop,
                 nombre      = "nom%d"%i,
                 direccion   = "dir1",
                 rif         = "J-%i"%(123456789-i),
