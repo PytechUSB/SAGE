@@ -5,7 +5,7 @@ from django.test import TestCase
 from estacionamientos.forms import PropietarioForm
 
 ###################################################################
-#                    ESTACIONAMIENTO_ALL FORM
+#                    PROPIETARIO_ALL FORM
 ###################################################################
 
 
