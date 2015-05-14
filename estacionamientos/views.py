@@ -42,6 +42,7 @@ from estacionamientos.models import (
     TarifaFinDeSemana,
     TarifaHoraPico
 )
+from _sqlite3 import IntegrityError
 
 # Vista para procesar los propietarios
 def propietario_all(request):
@@ -70,22 +71,20 @@ def propietario_all(request):
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
         if form.is_valid():
-            CI      = form.cleaned_data['cedula'] # Verificamos que sea unica
             obj = Propietario(
                 nombres     = form.cleaned_data['nombres'],
                 apellidos   = form.cleaned_data['apellidos'],
-                cedula      = CI
-            )
-            for propietario in propietarios:
-                if propietario.cedula==CI:
-                    return render(
-                        request, 'template-mensaje.html',
-                        { 'color'   : 'red'
-                        , 'mensaje' : 'Cédula ya existente.'
-                        }
-                    )
-                    
-            obj.save()
+                cedula      = form.cleaned_data['cedula']
+            )     
+            try:
+                obj.save()
+            except:
+                return render(
+                    request, 'template-mensaje.html',
+                    { 'color'   : 'red'
+                    , 'mensaje' : 'Cédula ya existente'
+                    }
+                )
             # Recargamos los propietarios ya que acabamos de agregar
             propietarios = Propietario.objects.all()
             form = PropietarioForm()
