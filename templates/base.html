@@ -9,11 +9,6 @@
     <link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
     <link href="{% static 'css/font-awesome.min.css'%}" rel="stylesheet">
     <link href="{% static 'css/base.css'%}" rel="stylesheet">
-    <script type="text/javascript" src="{% static 'js/jquery-2.1.1.min.js'%}"></script>
-    <script type="text/javascript" src="{% static 'js/bootstrap.min.js'%}"></script>
-    {% block scripts %}
-
-    {% endblock %}
   </head>
   {% block body %}<body>{% endblock %}
     {% block header %}
@@ -39,5 +34,14 @@
       </div>
     </div>
     {% endblock %}
+    <script
+      type="text/javascript"
+      src="{% static 'js/jquery-2.1.1.min.js'%}"
+    ></script>
+    <script
+      type="text/javascript"
+      src="{% static 'js/bootstrap.min.js'%}"
+    ></script>
+    {% block scripts %}{% endblock %}
   </body>
 </html>
