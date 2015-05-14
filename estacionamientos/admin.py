@@ -9,4 +9,5 @@ admin.site.register(Pago)
 admin.site.register(TarifaHora)
 admin.site.register(TarifaMinuto)
 admin.site.register(TarifaHorayFraccion)
-admin.site.register(BilleteraElectronica) #no estoy clara de que hace esto
+admin.site.register(BilleteraElectronica)
+admin.site.register(Propietario)

@@ -46,7 +46,6 @@ from estacionamientos.models import (
     TarifaFinDeSemana,
     TarifaHoraPico
 )
-from _sqlite3 import IntegrityError
 
 # Vista para procesar los propietarios
 def propietario_all(request):

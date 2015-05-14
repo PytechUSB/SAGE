@@ -52,18 +52,6 @@ class CrearBilleteraFormTestCase(TestCase):
             'PIN': '1234'
         }
         form = BilleteraForm(data = form_data)
-        self.assertFalse(form.is_valid())
-        
-    # borde    
-    def testCrearBilleteraForm_CincoCampos(self):
-        form_data = {
-            'nombre': 'Carlos',
-            'apellido': 'Perez',
-            'cedula': '12345678',
-            'PIN': '1234',
-            'identificador': '1000100010001000'
-        }
-        form = BilleteraForm(data = form_data)
         self.assertTrue(form.is_valid())
     
     # borde    
@@ -173,66 +161,6 @@ class CrearBilleteraFormTestCase(TestCase):
         }
         form = BilleteraForm(data = form_data)
         self.assertTrue(form.is_valid())
-        
-    # borde    
-    def testBilleteraForm_IdentificadorInvalido(self):
-        form_data = {    
-            'nombre': 'Jose',
-            'apellido': 'Perez Martinez',
-            'cedula': '12345678',
-            'PIN': '1234',
-            'identificador': 'I100010001000100'
-        }
-        form = BilleteraForm(data = form_data)
-        self.assertFalse(form.is_valid())
-        
-    # borde    
-    def testBilleteraForm_IdentificadorTamañoInvalido(self):
-        form_data = {    
-            'nombre': 'Jose',
-            'apellido': 'Perez Martinez',
-            'cedula': '12345678',
-            'PIN': '1234',
-            'identificador': '100010001000100'
-        }
-        form = BilleteraForm(data = form_data)
-        self.assertFalse(form.is_valid())
-    
-    # borde    
-    def testBilleteraForm_IdentificadorLimiteInferior(self):
-        form_data = {    
-            'nombre': 'Jose',
-            'apellido': 'Perez Martinez',
-            'cedula': '12345678',
-            'PIN': '1234',
-            'identificador': '0000000000000000'
-        }
-        form = BilleteraForm(data = form_data)
-        self.assertTrue(form.is_valid())
-        
-    # borde    
-    def testBilleteraForm_IdentificadorLimiteSuperior(self):
-        form_data = {    
-            'nombre': 'Jose',
-            'apellido': 'Perez Martinez',
-            'cedula': '12345678',
-            'PIN': '1234',
-            'identificador': '9999999999999999'
-        }
-        form = BilleteraForm(data = form_data)
-        self.assertTrue(form.is_valid())
-        
-    # malicia
-    def testBilleteraForm_IdentificadorEspacio(self):
-        form_data = {    
-            'nombre': 'Jose',
-            'apellido': 'Perez Martinez',
-            'cedula': '12345678',
-            'PIN': '1234',
-            'identificador': '9999 999999999999'
-        }
-        form = BilleteraForm(data = form_data)
-        self.assertFalse(form.is_valid())
         
     # borde
     def testBilleteraForm_PINTamañoInvalido(self):

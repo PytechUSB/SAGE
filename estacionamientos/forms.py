@@ -472,11 +472,6 @@ class BilleteraForm(forms.Form):
         message = 'Su PIN solo puede contener 4 caracteres numéricos.'
     )
     
-    card_id_validator = RegexValidator(
-        regex   = '^[0-9]{16}$',
-        message = 'Introduzca un número de tarjeta válido de 16 dígitos.'
-    )
-    
     nombre = forms.CharField(
         required   = True,
         label      = "Nombre del Tarjetahabiente",

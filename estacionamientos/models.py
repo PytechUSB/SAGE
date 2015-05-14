@@ -37,7 +37,6 @@ class Estacionamiento(models.Model):
 
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
-<<<<<<< HEAD
 
 # clase billetera con los datos necesario para crearla
 # faltan los credito y debitos
@@ -78,10 +77,7 @@ class Recargas(models.Model):
 	def _str_(self):
 		return str(self.billetera)+' '+str(self.fecha)
 
-
-=======
 	
->>>>>>> refs/remotes/origin/ExtraccionPropietario
 class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()
