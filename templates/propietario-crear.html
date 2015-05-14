@@ -40,41 +40,6 @@
         {% endif %}
       </table>
       <hr>
-      <!-- TABLA CON LOS ESTACIONAMIENTOS DE LA BASE DE DATOS -->
-      <h3><i class="fa fa-bus"></i>
-      	Estacionamientos
-      </h3>
-      <hr>
-      <table class="table table-striped">
-        {% if estacionamientos %} 
-        <thead>
-          <tr>
-            <th></th>
-            <th>Nombre</th>
-            <th>RIF</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for obj in estacionamientos %}
-            <tr>
-              <td>{{forloop.counter}}</td>
-              <td>{{obj.nombre}}</td>
-              <td>{{obj.rif}}</td>
-              <td><a href="./{{obj.id}}">
-                  <i class="fa fa-search"></i>
-              </a></td>
-              <td><a href="./{{obj.id}}/tasa">
-                  <i class="fa fa-bar-chart"></i>
-              </a></td>
-            </tr>
-          {% endfor %}
-        </tbody>
-        {% else %}
-          <h3>No hay estacionamientos</h3>
-        {% endif %}
-      </table>
-      <hr>
     </div>
     
     <!-- FORMULARIO PARA AGREGAR PROPIETARIOS -->

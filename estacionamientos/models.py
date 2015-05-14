@@ -25,7 +25,6 @@ class Estacionamiento(models.Model):
 	email2      = models.EmailField(blank = True, null = True)
 	
 	# Campo que referencia al propietario del estacionamiento
-	#propietario = models.ForeignKey(Propietario)
 	propietario = models.ForeignKey(Propietario)
 
 	# Campos para referenciar al esquema de tarifa
