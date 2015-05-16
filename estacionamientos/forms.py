@@ -128,7 +128,7 @@ class EstacionamientoForm(forms.Form):
 class PropietarioForm(forms.Form):
 
     name_validator = RegexValidator(
-        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
+        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]+$',
         message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
     )
     
@@ -331,6 +331,11 @@ class PagoForm(forms.Form):
         message = 'Introduzca un número de tarjeta válido de 16 dígitos.'
     )
     
+    pin_validator = RegexValidator(
+        regex   = '^[0-9]{4}$',
+        message = 'Introduzca un número de pin válido de 4 dígitos.'
+    )
+    
     nombre = forms.CharField(
         required   = True,
         label      = "Nombre del Tarjetahabiente",
@@ -403,6 +408,19 @@ class PagoForm(forms.Form):
             , 'placeholder' : 'Numero de Tarjeta' # ya cambie lo que dice
             , 'pattern'     : card_validator.regex.pattern
             , 'message'     : card_validator.message
+            }
+        )
+    )
+    
+    pin_billetera = forms.CharField(
+        required   = False,
+        label      = "Pin Billetera", 
+        validators = [pin_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Pin de la billetera'
+            , 'pattern'     : pin_validator.regex.pattern
+            , 'message'     : pin_validator.message
             }
         )
     )
