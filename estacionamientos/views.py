@@ -95,7 +95,7 @@ def propietario_all(request):
     return render(
         request,
         'propietario-crear.html',
-        { 'formP': form
+        { 'form': form
         , 'propietarios': propietarios
         , 'estacionamientos': estacionamientos
         }

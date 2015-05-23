@@ -9,10 +9,16 @@ class CustomSplitDateTimeWidget(SplitDateTimeWidget):
     def format_output(self, rendered_widgets):
         return '<p></p>'.join(rendered_widgets)
 
+# Límites para los campos  
+MAXNOMBRE=100
+MAXRIF=11
+MAXCEDULA=10
+MAXTELEFONO=12
+MAXMAIL=30
+
 class EstacionamientoForm(forms.Form):
-    
     name_validator = RegexValidator(
-        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
+        regex   = '^[0-9¡!¿?\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]+$',
         message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
     )
     
@@ -34,6 +40,7 @@ class EstacionamientoForm(forms.Form):
     
     nombre = forms.CharField(
         required = True,
+        max_length=MAXNOMBRE,
         label    = "Nombre del Estacionamiento",
         validators = [name_validator],
         widget   = forms.TextInput(attrs =
@@ -47,6 +54,7 @@ class EstacionamientoForm(forms.Form):
 
     direccion = forms.CharField(
         required = True,
+        max_length=MAXNOMBRE,
         label    = "Direccion",
         widget   = forms.TextInput(attrs =
             { 'class'       : 'form-control'
@@ -59,6 +67,7 @@ class EstacionamientoForm(forms.Form):
     rif = forms.CharField(
         required   = True,
         label      = "RIF",
+        max_length=MAXRIF,
         validators = [rif_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
@@ -71,6 +80,7 @@ class EstacionamientoForm(forms.Form):
     
     telefono_1 = forms.CharField(
         required   = False,
+        max_length=MAXTELEFONO,
         validators = [phone_validator],
         widget     = forms.TextInput(attrs =
             { 'class'       : 'form-control'
@@ -83,6 +93,7 @@ class EstacionamientoForm(forms.Form):
 
     telefono_2 = forms.CharField(
         required   = False,
+        max_length=MAXTELEFONO,
         validators = [phone_validator],
         widget     = forms.TextInput(attrs =
             { 'class'       : 'form-control'
@@ -95,6 +106,7 @@ class EstacionamientoForm(forms.Form):
 
     telefono_3 = forms.CharField(
         required   = False,
+        max_length=MAXTELEFONO,
         validators = [phone_validator],
         widget     = forms.TextInput(attrs =
             { 'class'       : 'form-control'
@@ -107,6 +119,7 @@ class EstacionamientoForm(forms.Form):
 
     email_1 = forms.EmailField(
         required = False,
+        max_length=MAXMAIL,
         widget   = forms.EmailInput(attrs =
             { 'class'       : 'form-control'
             , 'placeholder' : 'E-mail 1'
@@ -117,6 +130,7 @@ class EstacionamientoForm(forms.Form):
 
     email_2 = forms.EmailField(
         required = False,
+        max_length=MAXMAIL,
         widget   = forms.EmailInput(attrs =
             { 'class'       : 'form-control'
             , 'placeholder' : 'E-mail 2'
@@ -128,12 +142,13 @@ class EstacionamientoForm(forms.Form):
 class PropietarioForm(forms.Form):
 
     name_validator = RegexValidator(
-        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]+$',
+        regex   = '^[\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]+$',
         message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
     )
     
     nombres = forms.CharField(
         required = True,
+        max_length=MAXNOMBRE,
         label    = "Nombres del propietario",
         validators = [name_validator],
         widget   = forms.TextInput(attrs =
@@ -147,6 +162,7 @@ class PropietarioForm(forms.Form):
     
     apellidos = forms.CharField(
         required = True,
+        max_length=MAXNOMBRE,
         label    = "Apellidos del propietario",
         validators = [name_validator],
         widget   = forms.TextInput(attrs =
@@ -165,6 +181,7 @@ class PropietarioForm(forms.Form):
     
     cedula = forms.CharField(
         required   = True,
+        max_length=MAXCEDULA,
         label      = "Cédula",
         validators = [id_validator],
         widget = forms.TextInput(attrs =

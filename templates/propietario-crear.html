@@ -56,7 +56,7 @@
         <div class="panel-body">
           <form action="propietario-crear" method="post" class="form form-vertical">
             {% csrf_token %}
-            {% for field in formP %}
+            {% for field in form %}
               <div class="control-group">
                 <div class="controls">
                   {{ field }}
