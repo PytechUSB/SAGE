@@ -441,7 +441,7 @@ class PagoForm(forms.Form):
         max_length = MAXPIN,
         label      = "Pin Billetera", 
         validators = [pin_validator],
-        widget = forms.TextInput(attrs =
+        widget = forms.PasswordInput(attrs =
             { 'class'       : 'form-control'
             , 'placeholder' : 'Pin de la billetera'
             , 'pattern'     : pin_validator.regex.pattern
@@ -564,7 +564,7 @@ class BilleteraForm(forms.Form):
         max_length = MAXPIN,
         label      = "PIN",
         validators = [PIN_validator],
-        widget = forms.TextInput(attrs =
+        widget = forms.PasswordInput(attrs =
             { 'class'       : 'form-control'
             , 'placeholder' : 'PIN'
             , 'pattern'     : PIN_validator.regex.pattern
