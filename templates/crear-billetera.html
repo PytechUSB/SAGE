@@ -16,7 +16,7 @@
         <tbody>
         <form action ='crear_billetera' method="post" class="form form-vertical" >
          {% csrf_token %}
-		 {% for field in formB %}
+		 {% for field in form %}
 		 	{% if field.name != "identificador" %}
               <div class="control-group">
                 <div class="controls">

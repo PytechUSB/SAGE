@@ -646,6 +646,6 @@ def billetera_all(request):
     return render(
         request,
         'crear-billetera.html', 
-        { 'formB': form
+        { 'form': form
         }
     )
