@@ -94,20 +94,27 @@ def calcular_porcentaje_de_tasa(hora_apertura,hora_cierre, capacidad, ocupacion)
 		factor_divisor+=1 # Se le suma un minuto
 	for i in ocupacion.keys():
 		ocupacion[i]=(Decimal(ocupacion[i])*100/(factor_divisor*capacidad)).quantize(Decimal('1.0'))
-
+		
 def consultar_ingresos(rif):
-            listaEstacionamientos = Estacionamiento.objects.filter(rif = rif)
-            ingresoTotal          = 0
-            listaIngresos         = []
+	listaEstacionamientos = Estacionamiento.objects.filter(rif = rif)
+	ingresoTotal = 0
+	listaIngresos = []
+	
+	for estacionamiento in listaEstacionamientos:
+		listaFacturas = Pago.objects.filter(
+			reserva__estacionamiento__nombre = estacionamiento.nombre
+		)
+		ingreso = [estacionamiento.nombre, 0]
+		for factura in listaFacturas:
+			ingreso[1] += factura.monto
+		listaIngresos += [ingreso]
+		ingresoTotal += ingreso[1]
+		
+	return listaIngresos, ingresoTotal
 
-            for estacionamiento in listaEstacionamientos:
-                listaFacturas = Pago.objects.filter(
-                    reserva__estacionamiento__nombre = estacionamiento.nombre
-                )
-                ingreso       = [estacionamiento.nombre, 0]
-                for factura in listaFacturas:
-                    ingreso[1] += factura.monto
-                listaIngresos += [ingreso]
-                ingresoTotal  += ingreso[1]
 
-            return listaIngresos, ingresoTotal
+def consultar_saldo(identificador):
+	billetera = BilleteraElectronica.objects.filter(identificador = identificador)
+	saldo = billetera.saldo
+	return saldo
+
