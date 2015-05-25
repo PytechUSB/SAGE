@@ -641,7 +641,6 @@ def billetera_all(request):
    
 # vista para mostar los datos de la billetera
 def billetera_datos(request):
-    
     if request.method == 'GET':
         form = authBilleteraForm()
     
@@ -653,6 +652,7 @@ def billetera_datos(request):
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
     if form.is_valid():
+        
         try:
             billetera = BilleteraElectronica.objects.get(pk = form.cleaned_data['ID'])
             if (billetera.PIN == form.cleaned_data['PIN']):
