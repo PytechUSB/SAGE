@@ -18,5 +18,7 @@ urlpatterns = patterns('',
     url(r'^sms$', views.receive_sms, name='receive_sms'),
     url(r'^(?P<_id>\d+)/tasa$', views.tasa_de_reservacion, name = 'tasa_de_reservacion'),
     url(r'^grafica/.*$', views.grafica_tasa_de_reservacion, name = 'grafica_tasa_de_reservacion'),
-    url(r'^crear_billetera$', views.billetera_all, name = 'billetera_all')
+    url(r'^crear_billetera$', views.billetera_all, name = 'billetera_all'),
+    url(r'^datos_billetera$', views.billetera_datos, name = 'billetera_datos'),
+    url(r'^recarga_billetera$', views.billetera_recarga, name = 'billetera_recarga')
 )

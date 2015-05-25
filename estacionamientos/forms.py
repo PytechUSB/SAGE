@@ -12,6 +12,7 @@ MAXTELEFONO=11
 MAXMAIL=30
 MAXTARJETA=16
 MAXPIN=4
+MAXID=4
 
 class CustomSplitDateTimeWidget(SplitDateTimeWidget):
 
@@ -555,6 +556,46 @@ class BilleteraForm(forms.Form):
             , 'placeholder' : 'Cédula'
             , 'pattern'     : ci_validator.regex.pattern
             , 'message'     : ci_validator.message
+            }
+        )
+    )
+    
+    PIN = forms.CharField(
+        required   = True,
+        max_length = MAXPIN,
+        label      = "PIN",
+        validators = [PIN_validator],
+        widget = forms.PasswordInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'PIN'
+            , 'pattern'     : PIN_validator.regex.pattern
+            , 'message'     : PIN_validator.message
+            }
+        )
+    )
+    
+
+class authBilleteraForm(forms.Form):
+    PIN_validator = RegexValidator(
+        regex   = '^[0-9]{4}$',
+        message = 'Su PIN solo puede contener 4 caracteres numéricos.'
+    )
+    
+    ID_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'Su ID solo puede contener 4 caracteres numéricos.'
+    )
+    
+    ID = forms.CharField(
+        required   = True,
+        max_length = MAXID,
+        label      = "ID",
+        validators = [ID_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Introduzca el ID'
+            , 'pattern'     : ID_validator.regex.pattern
+            , 'message'     : ID_validator.message
             }
         )
     )

@@ -1,23 +1,70 @@
 {% extends "base.html" %}
 {% load humanize %}
 {% block title %}
-  SAGE - Billetera
+  SAGE - Crear Billetera
 {% endblock %}
 {% block innerContents %}
-  <div class="col-sm-10">
+
+<div class="col-sm-10">
     <h3><i class="fa fa-credit-card"></i>
-      Billetera Electrónica
+        Panel de control de Billetera Electronica
     </h3>
     <hr>
+    <div class="col-md-5">
+     <div class="panel panel-default">
+        <div class="panel-heading"> 
+          <div class="panel-title">
+           <i class="fa fa-search pull-left"></i>
+            <h4>
+              Consultar Billetera Electronica
+            </h4>
+          </div>
+         </div>
+         <div class="control-group">
+          <div class="controls">
+           <p></p>
+      {{ formAuth.ID }}
+         <span class='error' id='{{form.ID.name}}_error' aria-live="polite">
+            {{ form.ID.errors }}
+         </span>
+         <p>
+         </p>
+       {{ formAuth.PIN }}
+          <span class='error' id='{{formAuth.PIN.name}}_error' aria-live="polite">
+            {{ formAuth.PIN.errors }}
+          </span>
+          <p>
+          </p>
+          <div class="control-group" align="center">
+           <a href="datos_billetera" onClick="return popup(this, 'Datos Billetera')">
+              <button class="btn btn-primary">
+                Ingresar
+              </button>
+            </a>
+          </div>    
+         </div>
+         </div>
+         <p></p>
     </div>
+    </div>
+
+
     <div class="col-md-4">
-      <table class="table table-striped">
-        <thead></thead>
-        <tbody>
-        <form action ='crear_billetera' method="post" class="form form-vertical" >
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <i class="fa fa-credit-card pull-left"></i>
+            <h4>
+              Crear Billetera Electronica
+            </h4>
+          </div>
+        </div>
+        <p>
+        </p>
+         <form action ='crear_billetera' method="post" class="form form-vertical" >
          {% csrf_token %}
 		 {% for field in form %}
-		 	{% if field.name != "identificador" %}
+		 	{% if field.name != "ID" %}
               <div class="control-group">
                 <div class="controls">
                   {{ field }}
@@ -31,20 +78,32 @@
             {% endif %}
             {% endfor %}
             <div class="control-group" align="center">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" id="id_submit" class="btn btn-primary">
                     Crear Billetera
                 </button>
-            <input type="button" value="Volver" class="btn btn-primary"
-                onclick = "$(location).attr('href', '..');">
-            </div>
-		</div>
-		</div>
-		</form>
-        </tbody>
-      </table>
-    </div>
-  </div>
+                <p>
+                </p>
+         </div>
+        </form>
+        
+
+
 {%endblock%}
 {% block scripts %}
+
   {% include "validator.js.html" %}
+  
+   <script type="text/javascript">
+    function popup(mylink, windowname) {
+      if (! window.focus)
+        return true;
+      var href;
+      if (typeof(mylink) == 'string')
+        href=mylink;
+      else
+        href=mylink.href;
+      window.open(href, windowname, 'width=500,height=550,scrollbars=no');
+      return false;
+    }
+  </script>
 {% endblock %}

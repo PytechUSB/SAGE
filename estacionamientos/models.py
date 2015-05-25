@@ -46,11 +46,10 @@ class BilleteraElectronica (models.Model):
 	apellido = models.CharField(max_length = 30)
 	saldo = models.DecimalField(max_digits=20, decimal_places=2)
 	cedula = models.CharField(max_length = 12, unique = True)
-	identificador = models.CharField(max_length = 16)
 	PIN = models.CharField(max_length = 8)
 	
 	def __str__(self):
-		return self.nombre+' '+str(self.id)
+		return str(self.id)
 
 # Consumos asociados a la billetera
 class Consumos(models.Model):
@@ -68,6 +67,7 @@ class Consumos(models.Model):
 class Recargas(models.Model):
 	billetera = models.ForeignKey(BilleteraElectronica)
 	monto = models.DecimalField(max_digits=20, decimal_places=2)
+	tarjetaTipo = models.CharField(max_length = 6)
 	fecha = models.DateTimeField()
 	id_punto_recarga = models.IntegerField()
 	
