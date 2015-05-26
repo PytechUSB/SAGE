@@ -9,7 +9,7 @@ from estacionamientos import views
 urlpatterns = patterns('',
     url(r'^$', views.estacionamientos_all, name = 'estacionamientos_all'),
     url(r'^propietario-crear$', views.propietario_all, name = 'propietario_all'),
-    url(r'^propietario/(?P<_id>\d+)/$', views.propietario_detail, name = 'propietario_detail'),
+    url(r'^propietario/(?P<_id>\d+)/$', views.propietario_edit, name = 'propietario_edit'),
     url(r'^(?P<_id>\d+)/$', views.estacionamiento_detail, name = 'estacionamiento_detail'),
     url(r'^(?P<_id>\d+)/reserva$', views.estacionamiento_reserva, name = 'estacionamiento_reserva'),
     url(r'^(?P<_id>\d+)/pago$', views.estacionamiento_pago, name = 'estacionamiento_pago'),
