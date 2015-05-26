@@ -320,7 +320,6 @@ def estacionamiento_edit(request, _id):
                     , 'mensaje' : 'Cédula ya existente'
                     }
                 )
-            estacionamiento.save()
             
     return render(
         request,
