@@ -112,18 +112,12 @@ def consultar_ingresos(rif):
 		
 	return listaIngresos, ingresoTotal
 
-def billetera_autenticar(identificador, PIN):
+def billetera_autenticar(self, identificador, PIN):
 	try:
 		billetera = BilleteraElectronica.objects.get(pk = identificador)
 		if(billetera.PIN == PIN):
 			return billetera 
 		return None
-	
+		
 	except(Exception):
 		return None
-
-
-def recargar_saldo(identificador, monto):
-	billetera = BilleteraElectronica.objects.get(pk = identificador)
-	billetera.saldo += Decimal(monto)
-	billetera.save()

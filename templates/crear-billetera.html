@@ -93,9 +93,9 @@
 {%endblock%}
 {% block scripts %}
 
-  {% include "validator.js.html" %}
+{% include "validator.js.html" %}
   
-   <script type="text/javascript">
+<script type="text/javascript">
    {% for field in formAuth %}
     var error_{{ field.name }} = document.getElementById('{{ field.name }}_error')
     var {{ field.name }} = document.getElementById('id_{{ field.name }}');
@@ -108,9 +108,9 @@
       error_{{ field.name}}.className = "error"; // Reset the visual state of the message
     }, false);
   {% endfor %}  
-   </script>
+</script>
    
-   <script type="text/javascript">
+<script type="text/javascript">
     function popup(mylink, windowname) {
       if (! window.focus)
         return true;
@@ -122,5 +122,5 @@
       window.open(href, windowname, 'width=500,height=550,scrollbars=no');
       return false;
     }
-  </script>
+</script>
 {% endblock %}

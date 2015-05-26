@@ -672,15 +672,16 @@ def billetera_datos(request):
             
     form = authBilleteraForm()
     return render(
-        request,
-        'datos-billetera.html', 
-        { 'form': form
-        }
-    )    
+                request, 'template-mensaje.html',
+                {'color' : 'red'
+                , 'mensaje' : 'Autenticacion Denegada'
+                }
+            )  
     
 # vista para mostar los datos de la billetera
-def billetera_recarga(request):
-    billetera = BilleteraElectronica.objects.all()
+def billetera_recarga(request, _id):
+    _id = int(_id)
+    billetera = BilleteraElectronica.objects.get(pk = _id)
     
     # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
@@ -694,7 +695,27 @@ def billetera_recarga(request):
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
     if form.is_valid():
-        pass
+        if (form.cleaned_data["monto"] <= Decimal(0.00)):
+            return render(
+                request,
+                'template-mensaje.html',
+                {'color' : 'red'
+                , 'mensaje' : 'Monto debe ser mayor que 0.00'
+                }
+            )
+            
+        elif (not billetera.validar_recarga(form.cleaned_data["monto"])):
+            return render(
+                request,
+                'template-mensaje.html',
+                {'color' : 'red'
+                , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
+                }
+            )
+            
+        else:
+            pass
+            
        
     form = BilleteraPagoForm()
     return render(

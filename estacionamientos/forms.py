@@ -3,6 +3,7 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.forms.widgets import SplitDateTimeWidget
 from estacionamientos.models import Propietario
+from decimal import Decimal
 
 # Límites para los campos  
 MAXNOMBRE=100
@@ -13,7 +14,7 @@ MAXMAIL=30
 MAXTARJETA=16
 MAXPIN=4
 MAXID=4
-MAXMONTO=5
+MAXMONTO=7
 
 class CustomSplitDateTimeWidget(SplitDateTimeWidget):
 
@@ -638,6 +639,11 @@ class BilleteraPagoForm(forms.Form):
         message = 'Introduzca un número de tarjeta válido de 16 dígitos.'
     )
     
+    monto_validator = RegexValidator(
+        regex   = '^([0-9]+(\.[0-9]+)?)$',
+        message = 'La entrada debe ser un numero decimal separado por un punto.'
+    )
+    
     nombre = forms.CharField(
         required   = True,
         max_length=MAXNOMBRE,
@@ -692,20 +698,21 @@ class BilleteraPagoForm(forms.Form):
         )
     )
     
-    monto = forms.CharField(
-        required = True,
-        max_length = MAXMONTO,
-        label = "Monto de Recarga",
-        validators = [id_validator],
-        widget = forms.TextInput(attrs =
-            { 'class'        : 'form-control'
-            , 'placeholder'  : 'Monto a Recargar'
-            , 'pattern'      : id_validator.regex.pattern
-            , 'message'      : id_validator.message
+    monto = forms.DecimalField(
+            required   = True,
+            max_digits = MAXMONTO,
+            decimal_places = 2,
+            label = "Monto de Recarga",
+            validators = [monto_validator],
+            widget     = forms.TextInput(attrs = {
+                'class'       : 'form-control',
+                'placeholder' : 'Monto a Recargar',
+                'pattern'     : monto_validator.regex.pattern,
+                'message'     : monto_validator.message
             }
         )
     )
-
+    
     id_punto_recarga = forms.CharField(
         required = False,
         max_length = MAXID,

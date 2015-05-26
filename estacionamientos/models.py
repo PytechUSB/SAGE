@@ -5,6 +5,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from decimal import Decimal
 from datetime import timedelta, datetime
+SMAX = 10000
 
 class Propietario(models.Model):
 	nombres     = models.CharField(max_length = 30)
@@ -44,12 +45,23 @@ class Estacionamiento(models.Model):
 class BilleteraElectronica (models.Model):
 	nombre = models.CharField(max_length = 30, help_text = "Nombre Propio")
 	apellido = models.CharField(max_length = 30)
-	saldo = models.DecimalField(max_digits=20, decimal_places=2)
+	saldo = models.DecimalField(max_digits=10, decimal_places=2)
 	cedula = models.CharField(max_length = 12, unique = True)
 	PIN = models.CharField(max_length = 8)
 	
 	def __str__(self):
 		return str(self.id)
+	
+	def recargar_saldo(self, monto):
+		self.saldo += Decimal(monto)
+		self.save()
+		
+	def validar_recarga(self, monto):
+		if ((self.saldo + monto) <= SMAX):
+			return True
+		
+		return False
+			
 
 # Consumos asociados a la billetera
 class Consumos(models.Model):
