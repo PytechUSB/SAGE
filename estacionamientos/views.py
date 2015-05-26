@@ -77,7 +77,8 @@ def propietario_all(request):
             obj = Propietario(
                 nombres     = form.cleaned_data['nombres'],
                 apellidos   = form.cleaned_data['apellidos'],
-                cedula      = form.cleaned_data['cedula']
+                cedula      = form.cleaned_data['cedula'],
+                telefono1   = form.cleaned_data['telefono_1']
             )     
             try:
                 obj.save()
@@ -101,9 +102,8 @@ def propietario_all(request):
         }
     )
 
-def propietario_detail(request, _id):
-    estacionamientos = Estacionamiento.objects.all()
-    
+###ESTE ES EL VIEW QUE DEBERIA MODIFICAR PERO NO LO HACE
+def propietario_edit(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
     try:
@@ -111,14 +111,38 @@ def propietario_detail(request, _id):
     except ObjectDoesNotExist:
         raise Http404
 
+    if request.method == 'GET':
+        form_data = {
+            'nombres' : propietario.nombres,
+            'apellidos' : propietario.apellidos,
+            'cedula' : propietario.cedula,   
+            'telefono1' : propietario.telefono1 
+        }
+        form = PropietarioForm(data = form_data)
+
+    elif request.method == 'POST':
+        # Leemos el formulario
+        form = PropietarioForm(request.POST)
+        # Si el formulario
+        if form.is_valid():
+            nombres     = form.cleaned_data['nombres'],
+            apellidos   = form.cleaned_data['apellidos'],
+            cedula      = form.cleaned_data['cedula'],
+            telefono1   = form.cleaned_data['telefono_1']
+
+            # debería funcionar con excepciones
+            propietario.nombres   = nombres
+            propietario.apellidos = apellidos
+            propietario.cedula    = cedula   
+            propietario.telefono1 = telefono1
+
     return render(
         request,
         'detalle-propietario.html',
         { 'propietario': propietario,
-          'estacionamientos': estacionamientos
         }
     )
-    
+
 # Usamos esta vista para procesar todos los estacionamientos
 def estacionamientos_all(request):
     estacionamientos = Estacionamiento.objects.all()
