@@ -603,10 +603,10 @@ class authBilleteraForm(forms.Form):
         )
     )
     
-    PIN = forms.CharField(
+    Pin = forms.CharField(
         required   = True,
         max_length = MAXPIN,
-        label      = "PIN",
+        label      = "Pin",
         validators = [PIN_validator],
         widget = forms.PasswordInput(attrs =
             { 'class'       : 'form-control'

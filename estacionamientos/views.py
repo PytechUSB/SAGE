@@ -653,7 +653,7 @@ def billetera_datos(request):
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
     if form.is_valid():
-        billetera_autenticada = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
+        billetera_autenticada = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['Pin'])
         if(billetera_autenticada != None):
             return render(
                         request,
