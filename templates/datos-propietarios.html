@@ -2,27 +2,29 @@
 <table class="table table-striped">
   <thead></thead>
   <tbody>
-    <tr><td colspan="3"><b><i class="fa fa-user"></i>
+    <tr><td colspan="4"><b><i class="fa fa-user"></i>
       Nombre:
     </b></td></tr>
-    <tr><td colspan="3">
+    <tr><td colspan="4">
       {{propietario.nombres}} {{propietario.apellidos}}
     </td></tr>
-    <tr><td colspan="3"><b><i class="fa fa-circle"></i>
+    <tr><td colspan="4"><b><i class="fa fa-circle"></i>
       Cédula:
     </b></td></tr>
-    <tr><td colspan="3">
+    <tr><td colspan="4">
       {{propietario.cedula}}
     </td></tr>
-    <tr><td colspan="3"><b><i class="fa fa-phone"></i>
-      Teléfono:
-    </b></td></tr>
-    <tr><td colspan="3">
-      {{propietario.telefono1}}
-    </td></tr>
-	  <tr><td colspan="3"><b><i class="fa fa-car"></i>
-        Estacionamientos:
-	  </b></td></tr>
+    {% if propietario.telefono1 %}
+	    <tr><td colspan="4"><b><i class="fa fa-phone"></i>
+	      Teléfono:
+	    </b></td></tr>
+	    <tr><td colspan="4">
+	      {{propietario.telefono1}}
+	    </td></tr>
+	{% endif %}
+	<tr><td colspan="4"><b><i class="fa fa-car"></i>
+      Estacionamientos:
+	</b></td></tr>
     {% if estacionamientos %}
       <ul class="nav nav-stacked">
         {% for obj in estacionamientos %}
@@ -33,12 +35,15 @@
               <td><a href="/estacionamientos/{{obj.id}}">
                 <i class="fa fa-search"></i></a>
               </td>
+              <td><a href="/estacionamientos/{{obj.id}}/editar">
+                  <i class="fa fa-pencil-square-o"></i></a>
+              </td>
             </tr>
           {% endif %}
         {% endfor %} 
       </ul>
     {% else %}
-      <tr><td colspan="3" align="center">No hay estacionamientos</td></tr>
+      <tr><td colspan="4" align="center">No hay estacionamientos</td></tr>
     {% endif %}
   </tbody>
 </table>

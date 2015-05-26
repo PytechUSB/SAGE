@@ -102,7 +102,6 @@ def propietario_all(request):
         }
     )
 
-###ESTE ES EL VIEW QUE DEBERIA MODIFICAR PERO NO LO HACE
 def propietario_edit(request, _id):
     estacionamientos = Estacionamiento.objects.all()
     _id = int(_id)
@@ -274,7 +273,62 @@ def estacionamiento_detail(request, _id):
         , 'estacionamiento': estacionamiento
         }
     )
-    
+
+def estacionamiento_edit(request, _id):
+    #estacionamientos = Estacionamiento.objects.all()
+    _id = int(_id)
+    # Verificamos que el objeto exista antes de continuar
+    try:
+        estacionamiento = Estacionamiento.objects.get(id = _id)
+    except ObjectDoesNotExist:
+        raise Http404
+
+    if request.method == 'GET':
+        form_data = {
+            'nombre' : estacionamiento.nombre,
+            'direccion' : estacionamiento.direccion,
+            'rif' : estacionamiento.rif,   
+            'telefono1' : estacionamiento.telefono1,
+            'telefono2' : estacionamiento.telefono2,
+            'telefono3' : estacionamiento.telefono3,
+            'email1': estacionamiento.email1,            
+            'email2': estacionamiento.email2
+        }
+        form = EstacionamientoForm(data = form_data)
+
+    elif request.method == 'POST':
+        # Leemos el formulario
+        form = EstacionamientoForm(request.POST)
+        # Si el formulario
+        if form.is_valid():
+            try:
+                Estacionamiento.objects.filter(id=_id).update(
+                nombre      = form.cleaned_data['nombre'],
+                direccion   = form.cleaned_data['direccion'],
+                rif         = form.cleaned_data['rif'],
+                telefono1   = form.cleaned_data['telefono_1'],
+                telefono2   = form.cleaned_data['telefono_2'],
+                telefono3   = form.cleaned_data['telefono_3'],
+                email1      = form.cleaned_data['email_1'],
+                email2      = form.cleaned_data['email_2'],
+                propietario = form.cleaned_data['propietario']
+            )
+            except:
+                return render(
+                    request, 'template-mensaje.html',
+                    { 'color'   : 'red'
+                    , 'mensaje' : 'Cédula ya existente'
+                    }
+                )
+            estacionamiento.save()
+            
+    return render(
+        request,
+        'editar.html',
+        { 'form': form
+        , 'estacionamiento': estacionamiento
+        }
+    )
 
 def estacionamiento_reserva(request, _id):
     _id = int(_id)
