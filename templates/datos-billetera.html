@@ -54,7 +54,7 @@
                   Saldo:
                 </b></td></tr>
                 <tr><td>
-                  {{billetera.saldo}} 
+                  {{billetera.saldo|floatformat:2|intcomma}} 
                  </td></tr>
 
               </tbody>
@@ -68,14 +68,10 @@
             type="button"
             value="Salir"
             onclick="self.close()"
-            class="btn btn-primary"
-          >
+            class="btn btn-primary" >
           <p></p>
-            </div>
           </div>
         </div>
-    
-    
     </div>
 </div>    
 
