@@ -46,13 +46,13 @@
                     Ingresar
                 </button>
             </a>
-          </div>    
+          </div>   
+         </form> 
          </div>
          </div>
          <p></p>
     </div>
     </div>
- </form>
 
     <div class="col-md-4">
       <div class="panel panel-default">
@@ -68,8 +68,7 @@
         </p>
          <form action ='crear_billetera' method="post" class="form form-vertical" >
          {% csrf_token %}
-		 {% for field in form %}
-		 	{% if field.name != "ID" %}
+            {% for field in form %}
               <div class="control-group">
                 <div class="controls">
                   {{ field }}
@@ -77,10 +76,8 @@
                     {{ field.errors }}
                   </span>
                   <p>
-                  
                 </div>
               </div>
-            {% endif %}
             {% endfor %}
             <div class="control-group" align="center">
                 <button type="submit" id="id_submit" class="btn btn-primary">
@@ -98,6 +95,21 @@
 
   {% include "validator.js.html" %}
   
+   <script type="text/javascript">
+   {% for field in formAuth %}
+    var error_{{ field.name }} = document.getElementById('{{ field.name }}_error')
+    var {{ field.name }} = document.getElementById('id_{{ field.name }}');
+    {{ field.name }}.addEventListener('blur', function (event) {
+      verifyPattern({{ field.name }}, error_{{ field.name }}, {{ field.name }}.getAttribute('message'));
+    }, false);
+    
+    {{ field.name }}.addEventListener('focus', function (event) {
+      error_{{ field.name}}.innerHTML = ""; // Reset the content of the message
+      error_{{ field.name}}.className = "error"; // Reset the visual state of the message
+    }, false);
+  {% endfor %}  
+   </script>
+   
    <script type="text/javascript">
     function popup(mylink, windowname) {
       if (! window.focus)
