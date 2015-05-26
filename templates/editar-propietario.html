@@ -1,3 +1,5 @@
+{% load humanize %}
+
 <div class="panel panel-default">
   <div class="panel-heading">
     <div class="panel-title">
@@ -32,6 +34,7 @@
     </form>
   </div>
 </div>
+{% block scripts %}
 {% include "validator.js.html" %}
 <script type="text/javascript">
   nombres     = document.getElementById('id_nombres');
@@ -39,3 +42,4 @@
   cedula      = document.getElementById('id_cedula');
   telefono1   = document.getElementById('id_telefono1');
 </script>
+{% endblock %}

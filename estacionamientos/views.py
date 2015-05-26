@@ -104,6 +104,7 @@ def propietario_all(request):
 
 ###ESTE ES EL VIEW QUE DEBERIA MODIFICAR PERO NO LO HACE
 def propietario_edit(request, _id):
+    estacionamientos = Estacionamiento.objects.all()
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
     try:
@@ -125,21 +126,27 @@ def propietario_edit(request, _id):
         form = PropietarioForm(request.POST)
         # Si el formulario
         if form.is_valid():
-            nombres     = form.cleaned_data['nombres'],
-            apellidos   = form.cleaned_data['apellidos'],
-            cedula      = form.cleaned_data['cedula'],
-            telefono1   = form.cleaned_data['telefono_1']
-
-            # debería funcionar con excepciones
-            propietario.nombres   = nombres
-            propietario.apellidos = apellidos
-            propietario.cedula    = cedula   
-            propietario.telefono1 = telefono1
-
+            try:
+                Propietario.objects.filter(id=_id).update(
+                nombres     = form.cleaned_data['nombres'],
+                apellidos   = form.cleaned_data['apellidos'],
+                cedula      = form.cleaned_data['cedula'],
+                telefono1   = form.cleaned_data['telefono_1']
+            )
+            except:
+                return render(
+                    request, 'template-mensaje.html',
+                    { 'color'   : 'red'
+                    , 'mensaje' : 'Cédula ya existente'
+                    }
+                )
+            
     return render(
         request,
         'detalle-propietario.html',
-        { 'propietario': propietario,
+        { 'estacionamientos': estacionamientos,
+          'propietario': propietario,
+          'form': form
         }
     )
 
