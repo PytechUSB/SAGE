@@ -720,17 +720,6 @@ class BilleteraPagoForm(forms.Form):
         )
     )
     
-    tarjetaTipo = forms.ChoiceField(
-        required = True,
-        label    = 'tarjetaTipo',
-        choices  = (
-            ('Vista',  ' VISTA '),
-            ('Mister', ' MISTER '),
-            ('Xpress', ' XPRESS ')
-        ),
-        widget   = forms.RadioSelect()
-    )
-
     tarjeta = forms.CharField(
         required = True,
         max_length = MAXTARJETA,
@@ -743,6 +732,17 @@ class BilleteraPagoForm(forms.Form):
             , 'message'     : card_validator.message
             }
         )
+    )
+    
+    tarjetaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'tarjetaTipo',
+        choices  = (
+            ('Vista',  ' VISTA '),
+            ('Mister', ' MISTER '),
+            ('Xpress', ' XPRESS ')
+        ),
+        widget   = forms.RadioSelect()
     )
     
     
