@@ -421,7 +421,9 @@ class PagoForm(forms.Form):
             ('Xpress', ' XPRESS '),
             ('Billetera Electronica', ' E-Wallet ')
         ),
-        widget   = forms.RadioSelect()
+        widget   = forms.RadioSelect(attrs =
+            { 'class' : 'form-control' }
+        )
     )
 
     tarjeta = forms.CharField(
@@ -689,7 +691,35 @@ class BilleteraPagoForm(forms.Form):
             }
         )
     )
+    
+    monto = forms.CharField(
+        required = True,
+        max_length = MAXMONTO,
+        label = "Monto de Recarga",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'        : 'form-control'
+            , 'placeholder'  : 'Monto a Recargar'
+            , 'pattern'      : id_validator.regex.pattern
+            , 'message'      : id_validator.message
+            }
+        )
+    )
 
+    id_punto_recarga = forms.CharField(
+        required = False,
+        max_length = MAXID,
+        label = "ID del Punto de Recarga",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'        : 'form-control'
+            , 'placeholder'  : 'Identificador del Punto de Recarga'
+            , 'pattern'      : id_validator.regex.pattern
+            , 'message'      : id_validator.message
+            }
+        )
+    )
+    
     tarjetaTipo = forms.ChoiceField(
         required = True,
         label    = 'tarjetaTipo',
@@ -715,30 +745,6 @@ class BilleteraPagoForm(forms.Form):
         )
     )
     
-    id_punto_recarga = forms.CharField(
-        required = False,
-        max_length = MAXID,
-        label = "ID del Punto de Recarga",
-        validators = [id_validator],
-        widget = forms.TextInput(attrs =
-            { 'class'        : 'form-control'
-            , 'placeholder'  : 'Identificador del Punto de Recarga'
-            , 'pattern'      : id_validator.regex.pattern
-            , 'message'      : id_validator.message
-            }
-        )
-    )
     
-    monto = forms.CharField(
-        required = True,
-        max_length = MAXMONTO,
-        label = "Monto de Recarga",
-        validators = [id_validator],
-        widget = forms.TextInput(attrs =
-            { 'class'        : 'form-control'
-            , 'placeholder'  : 'Monto a Recargar'
-            , 'pattern'      : id_validator.regex.pattern
-            , 'message'      : id_validator.message
-            }
-        )
-    )
+    
+    
