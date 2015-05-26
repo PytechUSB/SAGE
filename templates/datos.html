@@ -11,7 +11,7 @@
     <tr><td><b><i class="fa fa-user"></i>
       Nombre del propietario:
       </b></td>
-      <td><a href="/estacionamientos/propietario/{{estacionamiento.propietario.id}}">
+      <td><a href="cambiar-dueno" onClick="return popup(this, 'Cambiar Propietario')">
           <i class="fa fa-pencil-square-o"></i></a>
       </td></tr>
     <tr><td colspan="2">
@@ -77,3 +77,18 @@
     </td></tr>
   </tbody>
 </table>
+{% block scripts %}
+<script type="text/javascript">
+    function popup(mylink, windowname) {
+      if (! window.focus)
+        return true;
+      var href;
+      if (typeof(mylink) == 'string')
+        href=mylink;
+      else
+        href=mylink.href;
+      window.open(href, windowname, 'width=400,height=400,scrollbars=yes');
+      return false;
+    }
+  </script>
+{% endblock %}

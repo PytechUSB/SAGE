@@ -138,8 +138,9 @@ def propietario_edit(request, _id):
                     { 'color'   : 'red'
                     , 'mensaje' : 'Cédula ya existente'
                     }
-                )
-            
+                ) 
+    
+    propietario = Propietario.objects.get(id = _id)
     return render(
         request,
         'detalle-propietario.html',
@@ -283,47 +284,37 @@ def estacionamiento_edit(request, _id):
     except ObjectDoesNotExist:
         raise Http404
 
-    if request.method == 'GET':
-        form_data = {
-            'nombre' : estacionamiento.nombre,
-            'direccion' : estacionamiento.direccion,
-            'rif' : estacionamiento.rif,   
-            'telefono1' : estacionamiento.telefono1,
-            'telefono2' : estacionamiento.telefono2,
-            'telefono3' : estacionamiento.telefono3,
-            'email1': estacionamiento.email1,            
-            'email2': estacionamiento.email2
-        }
-        form = EstacionamientoForm(data = form_data)
-
-    elif request.method == 'POST':
-        # Leemos el formulario
-        form = EstacionamientoForm(request.POST)
-        # Si el formulario
+    form = CedulaForm()
+    if request.method == 'POST':
+        form = CedulaForm(request.POST)
         if form.is_valid():
+
+            cedula = form.cleaned_data['cedula']
             try:
-                Estacionamiento.objects.filter(id=_id).update(
-                nombre      = form.cleaned_data['nombre'],
-                direccion   = form.cleaned_data['direccion'],
-                rif         = form.cleaned_data['rif'],
-                telefono1   = form.cleaned_data['telefono_1'],
-                telefono2   = form.cleaned_data['telefono_2'],
-                telefono3   = form.cleaned_data['telefono_3'],
-                email1      = form.cleaned_data['email_1'],
-                email2      = form.cleaned_data['email_2'],
-                propietario = form.cleaned_data['propietario']
-            )
+                propietario=Propietario.objects.get(cedula=cedula)
+                Estacionamiento.objects.filter(id = _id).update(
+                    propietario=propietario
+                    )
             except:
                 return render(
-                    request, 'template-mensaje.html',
+                    request, 'cambiar-dueno.html',
                     { 'color'   : 'red'
-                    , 'mensaje' : 'Cédula ya existente'
+                    , 'estacionamiento': estacionamiento
+                    , 'mensaje' : 'No existe tal propietario'
+                    }
+                )
+            return render(
+                    request, 'cambiar-dueno.html',
+                    { 'color'   : 'green'
+                    , 'estacionamiento': estacionamiento
+                    , 'mensaje' : 'Se ha cambiado exitosamente'
                     }
                 )
             
+            
     return render(
         request,
-        'editar.html',
+        'cambiar-dueno.html',
         { 'form': form
         , 'estacionamiento': estacionamiento
         }

@@ -21,7 +21,7 @@ class CustomSplitDateTimeWidget(SplitDateTimeWidget):
 
 class EstacionamientoForm(forms.Form):
     name_validator = RegexValidator(
-        regex   = '^[0-9¡!¿?\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]+$',
+        regex   = '^[0-9¡!¿?\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ][0-9¡!¿?\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]*$',
         message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
     )
     
@@ -145,7 +145,7 @@ class EstacionamientoForm(forms.Form):
 class PropietarioForm(forms.Form):
 
     name_validator = RegexValidator(
-        regex   = '^[\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]+$',
+        regex   = '^[\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ][\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]*$',
         message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
     )
     
