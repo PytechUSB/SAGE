@@ -8,6 +8,10 @@ from django.db import transaction
 
 from django.db.utils import IntegrityError
 
+from estacionamientos.controller import recargar_saldo
+
+from decimal import Decimal
+
 def crearBilletera(cedul):
     form_data = {
         'nombre': 'Carlos',
@@ -52,4 +56,10 @@ class CrearBilleteraTestCase(TestCase):
         crearBilletera(str(0))
         crearBilletera(str(0))
         self.assertEqual(len(BilleteraElectronica.objects.all()), 1)
+        
+    def testRecargaBilletera(self):
+        crearBilletera(str(1))
+        recargar_saldo(1, "1.09")
+        billetera = BilleteraElectronica.objects.get(pk = 1)
+        self.assertEqual(billetera.saldo, Decimal('1.09'))
         

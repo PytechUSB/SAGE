@@ -22,7 +22,7 @@ from estacionamientos.controller import (
     tasa_reservaciones,
     calcular_porcentaje_de_tasa,
     consultar_ingresos,
-)
+    billetera_autenticar)
 
 from estacionamientos.forms import (
     EstacionamientoExtendedForm,
@@ -32,7 +32,8 @@ from estacionamientos.forms import (
     PagoForm,
     RifForm,
     CedulaForm,
-    BilleteraForm, # aun no creo el form de billetera
+    BilleteraForm,
+    BilleteraPagoForm
 )
 from estacionamientos.models import (
     Propietario,
@@ -652,33 +653,23 @@ def billetera_datos(request):
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
     if form.is_valid():
-        
-        try:
-            billetera = BilleteraElectronica.objects.get(pk = form.cleaned_data['ID'])
-            if (billetera.PIN == form.cleaned_data['PIN']):
-                return render(
-                            request,
-                            'datos-billetera.html', 
-                            { 'billetera': billetera
-                            }
-                        )
+        billetera_autenticada = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
+        if(billetera_autenticada != None):
+            return render(
+                        request,
+                        'datos-billetera.html', 
+                        { 'billetera': billetera_autenticada
+                        }
+                    )
                 
-            else:
-                return render(
-                            request, 'template-mensaje.html',
-                            {'color' : 'red'
-                             , 'mensaje' : 'Autenticacion Denegada'
-                             }
-                        )
-        
-        except(Exception):
+        else:
             return render(
                         request, 'template-mensaje.html',
                         {'color' : 'red'
-                         , 'mensaje' : 'Autenticacion Denegada'
-                         }
+                        , 'mensaje' : 'Autenticacion Denegada'
+                        }
                     )
-    
+            
     form = authBilleteraForm()
     return render(
         request,
@@ -693,66 +684,19 @@ def billetera_recarga(request):
     
     # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
-        form = PagoForm()
+        form = BilleteraPagoForm()
 
     # Si es POST, se verifica la información recibida
     elif request.method == 'POST':
         # Creamos un formulario con los datos que recibimos
-        form =PagoForm(request.POST)
+        form = BilleteraPagoForm(request.POST)
          
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
     if form.is_valid():
-        inicial = 0000
-        
-        if len(billetera) == 0:
-            obj = BilleteraElectronica(
-                nombre = form.cleaned_data['nombre'],
-                apellido = form.cleaned_data['apellido'],
-                PIN = form.cleaned_data['PIN'],
-                cedula = form.cleaned_data['cedula'],
-                identificador = str(inicial),
-                saldo = 0.00
-                )    
-            obj.save()
-            return render(
-                    request, 'template-mensaje.html',
-                    {'color' : 'green'
-                     ,'billetera': obj
-                     , 'mensaje' : 'Billetera Creada Satisfactoriamente'
-                     }
-                )
-                
-        else:    
-            siguiente_numero = inicial + len(billetera)
-            obj = BilleteraElectronica(
-                    nombre = form.cleaned_data['nombre'],
-                    apellido = form.cleaned_data['apellido'],
-                    PIN = form.cleaned_data['PIN'],
-                    cedula = form.cleaned_data['cedula'],
-                    identificador = str(siguiente_numero),
-                    saldo = 0.00
-                )
-            
-            try:
-                with transaction.atomic():    
-                    obj.save()
-                    return render(
-                        request, 'template-mensaje.html',
-                        {'color' : 'green'
-                         ,'billetera': obj
-                         , 'mensaje' : 'Billetera Creada Satisfactoriamente'
-                         }
-                    )
-            except (IntegrityError):
-                return render(
-                    request, 'template-mensaje.html',
-                    {'color' : 'red'
-                     , 'mensaje' : 'Ya posee una billetera asociada'
-                     }
-                )
-                
-    form = PagoForm()
+        pass
+       
+    form = BilleteraPagoForm()
     return render(
         request,
         'recarga-billetera.html', 

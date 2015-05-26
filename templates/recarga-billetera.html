@@ -18,6 +18,18 @@
     </h3>
     </div>
     </div>
+    {%if mensaje%}
+    <hr>
+    <div style="color:{{color}}">
+        {{mensaje}}
+        <hr>
+      </div>
+    {%endif%}
+    <hr>
+    <div style="color:{{color}}">
+        {{mensaje}}
+        <hr>
+      </div>
     <hr>
      <form
           method="post"
@@ -59,6 +71,24 @@
                   aria-live="polite"
                 ></span>
                 {{ form.cedula.errors }}
+              </p>
+              <p>
+                {{ form.monto }}
+                <span
+                  class='error'
+                  id='{{form.monto.name}}_error'
+                  aria-live="polite"
+                ></span>
+                {{ form.monto.errors }}
+              </p>
+              <p>
+                {{ form.id_punto_recarga }}
+                <span
+                  class='error'
+                  id='{{form.id_punto_recarga.name}}_error'
+                  aria-live="polite"
+                ></span>
+                {{ form.id_punto_recarga.errors }}
               </p>
               <table width="400" border="0" cellspacing="0">
                 <tr>
@@ -117,5 +147,5 @@
 		
 </script>
 
-  {% include "validator.js.html" %}
+{% include "validator.js.html" %}
 {% endblock %}
