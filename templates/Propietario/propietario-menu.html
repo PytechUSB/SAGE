@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}
+  SAGE
+{% endblock %}
+{% block innerContents%}
+    <div class="col-sm-10">
+    <h3><i class="fa fa-users"></i>
+        Propietarios
+    </h3>
+    <hr>
+    <!-- TABLA CON LOS PROPIETARIOS ALMACENADOS EN LA BASE DE DATOS -->
+    <div class="col-md-8">
+      <table class="table table-striped">
+      {% if propietarios %} 
+        <thead>
+          <tr>
+            <th></th>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th>Cedula</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in propietarios %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td>{{obj.nombres}}</td>
+              <td>{{obj.apellidos}}</td>
+              <td>{{obj.cedula}}</td>
+              <td><a href="./propietario/{{obj.id}}">
+                  <i class="fa fa-search"></i>
+              </a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        {% else %}
+          <h3>No hay propietarios</h3>
+        {% endif %}
+      </table>
+      <hr>
+    </div>  
+	{% include "Propietario/propietario-crear.html"%}
+	  <!-- OPCION AGREGAR ESTACIONAMIENTOS -->
+	  <div class="panel-body" align="center">
+	    <a href="/estacionamientos/">
+	        Agregar Estacionamiento
+	    </a>
+	  </div>
+{% endblock %}
+{% block scripts %}
+{% include "validator.js.html" %}
+{% endblock %}
