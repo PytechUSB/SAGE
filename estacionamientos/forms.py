@@ -451,6 +451,20 @@ class PagoForm(forms.Form):
             }
         )
     )
+    
+    id_billetera = forms.CharField(
+        required   = False,
+        max_length = MAXID,
+        label      = "ID Billetera", 
+        validators = [id_validator],
+        widget = forms.PasswordInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'ID de la billetera'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
 
 class RifForm(forms.Form):
     

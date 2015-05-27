@@ -10,25 +10,43 @@
 		$('document').ready(function() {
 		
 			$('#id_pin_billetera').css("display", "none");
+			
+			$('#id_id_billetera').css("display", "none");
 				
 			$('input#id_tarjetaTipo_3').click(function() {
 				$('#id_pin_billetera').css("display", "block");
 				$('#id_pin_billetera').prop('required',true);
+				$('#id_id_billetera').css("display", "block");
+				$('#id_id_billetera').prop('required',true);
+				$('#id_tarjeta').css("display", "none");
+				$('#id_tarjeta').prop('required',false);
 			});
 									
 			$('input#id_tarjetaTipo_2').click(function() {
 				$('#id_pin_billetera').css("display", "none");
 				$('#id_pin_billetera').prop('required',false);
+				$('#id_id_billetera').css("display", "none");
+				$('#id_id_billetera').prop('required',false);
+				$('#id_tarjeta').css("display", "block");
+				$('#id_tarjeta').prop('required',true);
 			});
 		
 			$('input#id_tarjetaTipo_1').click(function() {
 				$('#id_pin_billetera').css("display", "none");
 				$('#id_pin_billetera').prop('required',false);
+				$('#id_id_billetera').css("display", "none");
+				$('#id_id_billetera').prop('required',false);
+				$('#id_tarjeta').css("display", "block");
+				$('#id_tarjeta').prop('required',true);
 			});
 			
 			$('input#id_tarjetaTipo_0').click(function() {
 				$('#id_pin_billetera').css("display", "none");
 				$('#id_pin_billetera').prop('required',false);
+				$('#id_id_billetera').css("display", "none");
+				$('#id_id_billetera').prop('required',false);
+				$('#id_tarjeta').css("display", "block");
+				$('#id_tarjeta').prop('required',true);
 			});
 		});
 </script>
@@ -130,6 +148,15 @@
                 ></span>
               </p>
               {{ form.tarjeta.errors }}
+              <p>
+                {{ form.id_billetera }}
+                <span
+                  class='error'
+                  id='{{form.id_billetera.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.id_billetera.errors }}
               <p>
                 {{ form.pin_billetera }}
                 <span
