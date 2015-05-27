@@ -425,7 +425,7 @@ class PagoForm(forms.Form):
     )
 
     tarjeta = forms.CharField(
-        required   = True,
+        required   = False,
         max_length=MAXTARJETA,
         label      = "Tarjeta de Credito", 
         validators = [card_validator],
