@@ -428,7 +428,7 @@ class PagoForm(forms.Form):
     )
 
     tarjeta = forms.CharField(
-        required   = True,
+        required   = False,
         max_length=MAXTARJETA,
         label      = "Tarjeta de Credito", 
         validators = [card_validator],
@@ -451,6 +451,20 @@ class PagoForm(forms.Form):
             , 'placeholder' : 'Pin de la billetera'
             , 'pattern'     : pin_validator.regex.pattern
             , 'message'     : pin_validator.message
+            }
+        )
+    )
+    
+    id_billetera = forms.CharField(
+        required   = False,
+        max_length = MAXID,
+        label      = "ID Billetera", 
+        validators = [id_validator],
+        widget = forms.PasswordInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'ID de la billetera'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
             }
         )
     )
