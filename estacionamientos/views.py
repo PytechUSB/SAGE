@@ -613,6 +613,7 @@ def billetera_all(request):
                   
                         
                 try: 
+                    with transaction.atomic(): 
                         obj.save()
                         return render(
                             request, 'template-mensaje.html',
@@ -621,6 +622,7 @@ def billetera_all(request):
                              , 'mensaje' : 'Billetera Creada Satisfactoriamente'
                              }
                         )
+                        
                 except:
                     return render(
                         request, 'template-mensaje.html',
