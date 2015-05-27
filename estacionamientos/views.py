@@ -619,55 +619,52 @@ def grafica_tasa_de_reservacion(request):
 def billetera_all(request):
     billetera = BilleteraElectronica.objects.all()
     
-    # Si es un GET, mandamos un formulario vacio
-    if request.method == 'GET':
-        form = BilleteraForm()
+    form = BilleteraForm()
+    formAuth = authBilleteraForm()
 
     # Si es POST, se verifica la información recibida
-    elif request.method == 'POST':
+    if request.method == 'POST':
         # Creamos un formulario con los datos que recibimos
         form =BilleteraForm(request.POST)
          
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
-    if form.is_valid():
-        if len(billetera) == 9999:
-            return render(
-                    request, 'template-mensaje.html',
-                    {'color' : 'red'
-                     , 'mensaje' : 'No se pueden crear mas billeteras'
-                     }
-                )
-                
-        else:
-            obj = BilleteraElectronica(
-                    nombre = form.cleaned_data['nombre'],
-                    apellido = form.cleaned_data['apellido'],
-                    PIN = form.cleaned_data['PIN'],
-                    cedula = form.cleaned_data['cedula'],
-                    saldo = 0.00
-                )
-            
-            try:
-                with transaction.atomic():    
-                    obj.save()
-                    return render(
+        if form.is_valid():
+            if len(billetera) == 9999:
+                return render(
                         request, 'template-mensaje.html',
-                        {'color' : 'green'
-                         ,'billetera': obj
-                         , 'mensaje' : 'Billetera Creada Satisfactoriamente'
+                        {'color' : 'red'
+                         , 'mensaje' : 'No se pueden crear mas billeteras'
                          }
                     )
-            except (IntegrityError):
-                return render(
-                    request, 'template-mensaje.html',
-                    {'color' : 'red'
-                     , 'mensaje' : 'Ya posee una billetera asociada'
-                     }
-                )
+                    
+            else:
+                obj = BilleteraElectronica(
+                        nombre = form.cleaned_data['nombre'],
+                        apellido = form.cleaned_data['apellido'],
+                        PIN = form.cleaned_data['PIN'],
+                        cedula = form.cleaned_data['cedula'],
+                        saldo = 0.00
+                    )
                 
-    form = BilleteraForm()
-    formAuth = authBilleteraForm()
+                try:
+                    with transaction.atomic():    
+                        obj.save()
+                        return render(
+                            request, 'template-mensaje.html',
+                            {'color' : 'green'
+                             ,'billetera': obj
+                             , 'mensaje' : 'Billetera Creada Satisfactoriamente'
+                             }
+                        )
+                except (IntegrityError):
+                    return render(
+                        request, 'template-mensaje.html',
+                        {'color' : 'red'
+                         , 'mensaje' : 'Ya posee una billetera asociada'
+                         }
+                    )
+                
     return render(
         request,
         'crear-billetera.html', 
@@ -678,102 +675,99 @@ def billetera_all(request):
    
 # vista para mostar los datos de la billetera
 def billetera_datos(request):
-    if request.method == 'GET':
-        form = authBilleteraForm()
+    form = authBilleteraForm()
+    formAuth = authBilleteraForm()
     
     # Si es POST, se verifica la información recibida
-    elif request.method == 'POST':
+    if request.method == 'POST':
         # Creamos un formulario con los datos que recibimos
         form = authBilleteraForm(request.POST)
          
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
-    if form.is_valid():
-        billetera_autenticada = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['Pin'])
-        if(billetera_autenticada != None):
-            return render(
-                        request,
-                        'datos-billetera.html', 
-                        { 'billetera': billetera_autenticada
-                        }
-                    )
-                
-        else:
-            return render(
-                        request, 'template-mensaje.html',
-                        {'color' : 'red'
-                        , 'mensaje' : 'Autenticacion Denegada'
-                        }
-                    )
+        if form.is_valid():
+            billetera_autenticada = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['Pin'])
+            if(billetera_autenticada != None):
+                return render(
+                            request,
+                            'datos-billetera.html', 
+                            { 'billetera': billetera_autenticada
+                            }
+                )
+                    
+            else:
+                return render(
+                            request, 'template-mensaje.html',
+                            {'color' : 'red'
+                            , 'mensaje' : 'Autenticacion Denegada'
+                            }
+                )
             
-    form = authBilleteraForm()
+            
     return render(
-                request, 'template-mensaje.html',
-                {'color' : 'red'
-                , 'mensaje' : 'Autenticacion Denegada'
-                }
-            )  
+        request,
+        'crear-billetera.html', 
+        { 'form': form
+         ,'formAuth': formAuth
+        }
+    )  
     
 # vista para mostar los datos de la billetera
 def billetera_recarga(request, _id):
     _id = int(_id)
     billeteraE = BilleteraElectronica.objects.get(pk = _id)
+    form = BilleteraPagoForm()
     
-    # Si es un GET, mandamos un formulario vacio
-    if request.method == 'GET':
-        form = BilleteraPagoForm()
-
     # Si es POST, se verifica la información recibida
-    elif request.method == 'POST':
+    if request.method == 'POST':
         # Creamos un formulario con los datos que recibimos
         form = BilleteraPagoForm(request.POST)
-         
+             
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
-    if form.is_valid():
-        if (form.cleaned_data["monto"] <= Decimal(0.00)):
-            return render(
-                request,
-                'template-mensaje.html',
-                {'color' : 'red'
-                , 'mensaje' : 'Monto debe ser mayor que 0.00'
-                }
-            )
-            
-        elif (not billeteraE.validar_recarga(form.cleaned_data["monto"])):
-            return render(
-                request,
-                'template-mensaje.html',
-                {'color' : 'red'
-                , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
-                }
-            )
-            
-        else:
-            pago = Pago(
-                    cedulaTipo = form.cleaned_data['cedulaTipo'],
-                    cedula = form.cleaned_data['cedula'],
-                    tarjetaTipo = form.cleaned_data['tarjetaTipo'],
-                    monto = form.cleaned_data['monto'],
-                    fechaTransaccion = datetime.now(),
-                    id_punto_recarga = form.cleaned_data['id_punto_recarga'],
-                    billetera = billeteraE   
+        if form.is_valid():
+            if (form.cleaned_data["monto"] <= Decimal(0.00)):
+                return render(
+                    request,
+                    'template-mensaje.html',
+                    {'color' : 'red'
+                    , 'mensaje' : 'Monto debe ser mayor que 0.00'
+                    }
                 )
-            
-            pago.save()
-            billeteraE.recargar_saldo(form.cleaned_data['monto'])
-            return render(
-                request, 
-                'pago.html',
-                { "id"      : _id
-                , "pago"    : pago
-                , "color"   : "green"
-                , "mensaje" : "Se realizo la recarga de la billetera satisfactoriamente"
-                }
                 
-            )
-            
-    form = BilleteraPagoForm()
+            elif (not billeteraE.validar_recarga(form.cleaned_data["monto"])):
+                return render(
+                    request,
+                    'template-mensaje.html',
+                    {'color' : 'red'
+                    , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
+                    }
+                )
+                
+            else:
+                pago = Pago(
+                        cedulaTipo = form.cleaned_data['cedulaTipo'],
+                        cedula = form.cleaned_data['cedula'],
+                        tarjetaTipo = form.cleaned_data['tarjetaTipo'],
+                        monto = form.cleaned_data['monto'],
+                        fechaTransaccion = datetime.now(),
+                        id_punto_recarga = form.cleaned_data['id_punto_recarga'],
+                        billetera = billeteraE   
+                    )
+                
+                pago.save()
+                billeteraE.recargar_saldo(form.cleaned_data['monto'])
+                return render(
+                    request, 
+                    'recarga-billetera.html',
+                    { "id"      : _id
+                    , "pago"    : pago
+                    , "color"   : "green"
+                    , "mensaje" : "Se realizo la recarga de la billetera satisfactoriamente"
+                    }
+                    
+                )
+        
     return render(
         request,
         'recarga-billetera.html', 
