@@ -19,7 +19,7 @@
         </div>
        </div> 
     <hr>
-    <div class="col-md-4">
+    <div class="col-md-10">
             <table class="table table-striped">
               <tbody>
                 <tr><td><b><i class="fa fa-circle"></i>
@@ -60,16 +60,15 @@
               </tbody>
             </table>
             <div class="control-group" align="center">
-              <input type="button"
-               id="id_recargar"
-                value="Recargar"
-                class="btn btn-primary"  >
+            <a href="/estacionamientos/{{ billetera.id }}/recarga_billetera" onClick="return popup(this, 'Datos Billetera')">
+              <button class="btn btn-primary">
+                Recargar
+              </button> </a>
                 <input
             type="button"
-            value="Salir"
-            onclick="self.close()"
+            value="Volver" 
+            id="id_volver"
             class="btn btn-primary"
-          >
           <p></p>
             </div>
           </div>
@@ -87,12 +86,26 @@
 
         $('document').ready(function() {
 			
-			$('#id_recargar').click(function() {
-				$(location).attr('href',"/estacionamientos/{{ billetera.id }}/recarga_billetera");
+			$('#id_volver').click(function() {
+				$(location).attr('href',"/estacionamientos/crear_billetera");
 			});
 			
 		});
 		
+</script>
+
+<script type="text/javascript">
+    function popup(mylink, windowname) {
+      if (! window.focus)
+        return true;
+      var href;
+      if (typeof(mylink) == 'string')
+        href=mylink;
+      else
+        href=mylink.href;
+      window.open(href, windowname, 'width=500,height=550,scrollbars=no');
+      return false;
+    }
 </script>
 
 {% include "validator.js.html" %}
