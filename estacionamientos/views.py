@@ -585,7 +585,7 @@ def billetera_all(request):
     
     form = BilleteraForm()
     formAuth = authBilleteraForm()
-    # Si es un GET, mandamos un formulario vacio
+
     # Si es POST, se verifica la información recibida
     if request.method == 'POST':
         # Creamos un formulario con los datos que recibimos
@@ -610,9 +610,9 @@ def billetera_all(request):
                         cedula = form.cleaned_data['cedula'],
                         saldo = 0.00
                     )
-                
-                try:
-                    with transaction.atomic():    
+                  
+                        
+                try: 
                         obj.save()
                         return render(
                             request, 'template-mensaje.html',
@@ -649,8 +649,8 @@ def billetera_datos(request):
          
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
-        if form.is_valid():
-            billetera_autenticada = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['Pin'])
+        if formAuth.is_valid():
+            billetera_autenticada = billetera_autenticar(formAuth.cleaned_data['ID'], formAuth.cleaned_data['Pin'])
             if(billetera_autenticada != None):
                 return render(
                             request,
@@ -660,14 +660,13 @@ def billetera_datos(request):
                              ,'formAuth': formAuth
                             }
                         )
-                    
             else:
                 return render(
-                        request, 'template-mensaje.html',
-                        {'color' : 'red'
-                        , 'mensaje' : 'Autenticacion Denegada'
-                        }
-                    )
+                    request, 'template-mensaje.html',
+                    {'color' : 'red'
+                    , 'mensaje' : 'Autenticacion Denegada'
+                    }
+                )
         
     return render(
                 request,
