@@ -12,7 +12,7 @@
           </div>
         </div>
         <div class="panel-body">
-          <form action="{{estacionamiento.id}}/propietario-crear" method="post" class="form form-vertical">
+          <form action="propietario-crear" method="post" class="form form-vertical">
             {% csrf_token %}
             {% for field in form %}
               <div class="control-group">
