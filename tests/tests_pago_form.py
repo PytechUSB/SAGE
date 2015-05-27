@@ -63,19 +63,6 @@ class PagoTarjetaDeCreditoFormTestCase(TestCase):
             'tarjetaTipo': 'Vista',
         }
         form = PagoForm(data = form_data)
-        self.assertFalse(form.is_valid())
-
-    #borde
-    def test_PagoTarjetaForm_SeisCampos(self):
-        form_data = {
-            'nombre': 'Pedro',
-            'apellido': 'Perez',
-            'cedulaTipo': 'V',
-            'cedula': '24277100',
-            'tarjetaTipo': 'Vista',
-            'tarjeta': '1234567890123456',
-        }
-        form = PagoForm(data = form_data)
         self.assertTrue(form.is_valid())
 
     #borde

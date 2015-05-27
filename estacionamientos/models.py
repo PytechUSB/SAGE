@@ -61,6 +61,16 @@ class BilleteraElectronica (models.Model):
 			return True
 		
 		return False
+	
+	def validar_consumo(self, monto):
+		if (self.saldo >= monto):
+			return True
+		
+		return False
+	
+	def consumir_saldo(self, monto):
+		self.saldo -= Decimal(monto)
+		self.save()
 			
 
 # Consumos asociados a la billetera

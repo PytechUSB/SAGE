@@ -9,42 +9,42 @@
 <script>
 		$('document').ready(function() {
 		
-			$('#id_pin_billetera').css("display", "none");
+			$('#id_PIN').css("display", "none");
 			
-			$('#id_id_billetera').css("display", "none");
+			$('#id_ID').css("display", "none");
 				
 			$('input#id_tarjetaTipo_3').click(function() {
-				$('#id_pin_billetera').css("display", "block");
-				$('#id_pin_billetera').prop('required',true);
-				$('#id_id_billetera').css("display", "block");
-				$('#id_id_billetera').prop('required',true);
+				$('#id_PIN').css("display", "block");
+				$('#id_PIN').prop('required',true);
+				$('#id_ID').css("display", "block");
+				$('#id_ID').prop('required',true);
 				$('#id_tarjeta').css("display", "none");
 				$('#id_tarjeta').prop('required',false);
 			});
 									
 			$('input#id_tarjetaTipo_2').click(function() {
-				$('#id_pin_billetera').css("display", "none");
-				$('#id_pin_billetera').prop('required',false);
-				$('#id_id_billetera').css("display", "none");
-				$('#id_id_billetera').prop('required',false);
+				$('#id_PIN').css("display", "none");
+				$('#id_PIN').prop('required',false);
+				$('#id_ID').css("display", "none");
+				$('#id_ID').prop('required',false);
 				$('#id_tarjeta').css("display", "block");
 				$('#id_tarjeta').prop('required',true);
 			});
 		
 			$('input#id_tarjetaTipo_1').click(function() {
-				$('#id_pin_billetera').css("display", "none");
-				$('#id_pin_billetera').prop('required',false);
-				$('#id_id_billetera').css("display", "none");
-				$('#id_id_billetera').prop('required',false);
+				$('#id_PIN').css("display", "none");
+				$('#id_PIN').prop('required',false);
+				$('#id_ID').css("display", "none");
+				$('#id_ID').prop('required',false);
 				$('#id_tarjeta').css("display", "block");
 				$('#id_tarjeta').prop('required',true);
 			});
 			
 			$('input#id_tarjetaTipo_0').click(function() {
-				$('#id_pin_billetera').css("display", "none");
-				$('#id_pin_billetera').prop('required',false);
-				$('#id_id_billetera').css("display", "none");
-				$('#id_id_billetera').prop('required',false);
+				$('#id_PIN').css("display", "none");
+				$('#id_PIN').prop('required',false);
+				$('#id_ID').css("display", "none");
+				$('#id_ID').prop('required',false);
 				$('#id_tarjeta').css("display", "block");
 				$('#id_tarjeta').prop('required',true);
 			});
@@ -149,23 +149,23 @@
               </p>
               {{ form.tarjeta.errors }}
               <p>
-                {{ form.id_billetera }}
+                {{ form.ID }}
                 <span
                   class='error'
-                  id='{{form.id_billetera.name}}_error'
+                  id='{{form.ID.name}}_error'
                   aria-live="polite"
                 ></span>
               </p>
-              {{ form.id_billetera.errors }}
+              {{ form.ID.errors }}
               <p>
-                {{ form.pin_billetera }}
+                {{ form.PIN }}
                 <span
                   class='error'
-                  id='{{form.pin_billetera.name}}_error'
+                  id='{{form.PIN.name}}_error'
                   aria-live="polite"
                 ></span>
               </p>
-              {{ form.pin_billetera.errors }}
+              {{ form.PIN.errors }}
             </div>
           </div>
           <input

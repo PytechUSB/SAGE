@@ -348,8 +348,43 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-# agregar aqui la billetera electronica
-# se solicita el pin?
+
+def pago_reserva_aux(request, form, monto, estacionamiento):
+    inicioReserva = datetime(
+        year   = request.session['anioinicial'],
+        month  = request.session['mesinicial'],
+        day    = request.session['diainicial'],
+        hour   = request.session['inicioReservaHora'],
+        minute = request.session['inicioReservaMinuto']
+    )
+
+    finalReserva  = datetime(
+        year   = request.session['aniofinal'],
+        month  = request.session['mesfinal'],
+        day    = request.session['diafinal'],
+        hour   = request.session['finalReservaHora'],
+        minute = request.session['finalReservaMinuto']
+    )
+
+    reservaFinal = Reserva(
+        estacionamiento = estacionamiento,
+        inicioReserva   = inicioReserva,
+        finalReserva    = finalReserva,
+    )
+
+    # Se guarda la reserva en la base de datos
+    reservaFinal.save()
+    pago = Pago(
+        fechaTransaccion = datetime.now(),
+        cedula           = form.cleaned_data['cedula'],
+        cedulaTipo       = form.cleaned_data['cedulaTipo'],
+        monto            = monto,
+        tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
+        reserva          = reservaFinal,
+    )
+
+    return pago
+
 
 def estacionamiento_pago(request,_id):
     form = PagoForm()
@@ -365,55 +400,55 @@ def estacionamiento_pago(request,_id):
     if request.method == 'POST':
         form = PagoForm(request.POST)
         if form.is_valid():
-            
-            inicioReserva = datetime(
-                year   = request.session['anioinicial'],
-                month  = request.session['mesinicial'],
-                day    = request.session['diainicial'],
-                hour   = request.session['inicioReservaHora'],
-                minute = request.session['inicioReservaMinuto']
-            )
-
-            finalReserva  = datetime(
-                year   = request.session['aniofinal'],
-                month  = request.session['mesfinal'],
-                day    = request.session['diafinal'],
-                hour   = request.session['finalReservaHora'],
-                minute = request.session['finalReservaMinuto']
-            )
-
-            reservaFinal = Reserva(
-                estacionamiento = estacionamiento,
-                inicioReserva   = inicioReserva,
-                finalReserva    = finalReserva,
-            )
-
-            # Se guarda la reserva en la base de datos
-            reservaFinal.save()
-
             monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
-            pago = Pago(
-                fechaTransaccion = datetime.now(),
-                cedula           = form.cleaned_data['cedula'],
-                cedulaTipo       = form.cleaned_data['cedulaTipo'],
-                monto            = monto,
-                tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
-                reserva          = reservaFinal,
-            )
-
-
-            # Se guarda el recibo de pago en la base de datos
-            pago.save()
-
-            return render(
-                request,
-                'pago.html',
-                { "id"      : _id
-                , "pago"    : pago
-                , "color"   : "green"
-                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
-                }
-            )
+            if (form.cleaned_data['tarjetaTipo'] == 'Billetera Electronica'):
+                billeteraE = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
+                
+                if (billeteraE == None):
+                    return render(
+                        request, 'template-mensaje.html',
+                        {'color' : 'red'
+                        , 'mensaje' : 'Autenticacion Denegada'
+                        }
+                    )
+                    
+                else:
+                    if(not billeteraE.validar_consumo(monto)):
+                        return render(
+                            request, 'template-mensaje.html',
+                            {'color' : 'red'
+                            , 'mensaje' : 'Saldo Insuficiente'
+                            }
+                        ) 
+                        
+                    else:
+                        pago = pago_reserva_aux(request, form, monto, estacionamiento)
+                        pago.save()
+                        billeteraE.consumir_saldo(monto)
+                        return render(
+                            request,
+                            'pago.html',
+                            { "id"      : _id
+                            , "pago"    : pago
+                            , "color"   : "green"
+                            , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                            }
+                        )
+                        
+            
+            
+            else:
+                pago = pago_reserva_aux(request, form, monto, estacionamiento)
+                pago.save()
+                return render(
+                    request,
+                    'pago.html',
+                    { "id"      : _id
+                    , "pago"    : pago
+                    , "color"   : "green"
+                    , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                    }
+                )
 
     return render(
         request,
@@ -723,6 +758,7 @@ def billetera_recarga(request, _id):
                     id_punto_recarga = form.cleaned_data['id_punto_recarga'],
                     billetera = billeteraE   
                 )
+            
             pago.save()
             billeteraE.recargar_saldo(form.cleaned_data['monto'])
             return render(
@@ -736,17 +772,6 @@ def billetera_recarga(request, _id):
                 
             )
             
-            return render(
-                request,
-                'pago.html',
-                { "id"      : _id
-                , "pago"    : pago
-                , "color"   : "green"
-                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
-                }
-            )
-            
-       
     form = BilleteraPagoForm()
     return render(
         request,

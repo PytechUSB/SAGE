@@ -413,20 +413,6 @@ class PagoForm(forms.Form):
         )
     )
 
-    tarjetaTipo = forms.ChoiceField(
-        required = True,
-        label    = 'tarjetaTipo',
-        choices  = (
-            ('Vista',  ' VISTA '),
-            ('Mister', ' MISTER '),
-            ('Xpress', ' XPRESS '),
-            ('Billetera Electronica', ' E-Wallet ')
-        ),
-        widget   = forms.RadioSelect(attrs =
-            { 'class' : 'form-control' }
-        )
-    )
-
     tarjeta = forms.CharField(
         required   = False,
         max_length=MAXTARJETA,
@@ -441,7 +427,7 @@ class PagoForm(forms.Form):
         )
     )
     
-    pin_billetera = forms.CharField(
+    PIN = forms.CharField(
         required   = False,
         max_length = MAXPIN,
         label      = "Pin Billetera", 
@@ -455,7 +441,7 @@ class PagoForm(forms.Form):
         )
     )
     
-    id_billetera = forms.CharField(
+    ID = forms.CharField(
         required   = False,
         max_length = MAXID,
         label      = "ID Billetera", 
@@ -466,6 +452,20 @@ class PagoForm(forms.Form):
             , 'pattern'     : id_validator.regex.pattern
             , 'message'     : id_validator.message
             }
+        )
+    )
+    
+    tarjetaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'tarjetaTipo',
+        choices  = (
+            ('Vista',  ' VISTA '),
+            ('Mister', ' MISTER '),
+            ('Xpress', ' XPRESS '),
+            ('Billetera Electronica', ' E-Wallet ')
+        ),
+        widget   = forms.RadioSelect(attrs =
+            { 'class' : 'form-control' }
         )
     )
 
