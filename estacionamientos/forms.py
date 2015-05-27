@@ -464,9 +464,7 @@ class PagoForm(forms.Form):
             ('Xpress', ' XPRESS '),
             ('Billetera Electronica', ' E-Wallet ')
         ),
-        widget   = forms.RadioSelect(attrs =
-            { 'class' : 'form-control' }
-        )
+        widget   = forms.RadioSelect()
     )
 
 class RifForm(forms.Form):
