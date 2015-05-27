@@ -297,14 +297,14 @@ def estacionamiento_edit(request, _id):
                     )
             except:
                 return render(
-                    request, 'Propietario/cambiar-dueno.html',
+                    request, 'Propietario/cambiar-propietario.html',
                     { 'color'   : 'red'
                     , 'estacionamiento': estacionamiento
                     , 'mensajeR' : 'No existe tal propietario'
                     }
                 )
             return render(
-                    request, 'Propietario/cambiar-dueno.html',
+                    request, 'Propietario/cambiar-propietario.html',
                     { 'color'   : 'green'
                     , 'estacionamiento': estacionamiento
                     , 'mensajeG' : 'Se ha cambiado exitosamente'
@@ -314,7 +314,7 @@ def estacionamiento_edit(request, _id):
             
     return render(
         request,
-        'Propietario/cambiar-dueno.html',
+        'Propietario/cambiar-propietario.html',
         { 'form': form
         , 'estacionamiento': estacionamiento
         }
