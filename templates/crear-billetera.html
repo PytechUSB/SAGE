@@ -25,18 +25,17 @@
            <p></p>
             <form action ='datos_billetera' method="post" class="form form-vertical" >
             {% csrf_token %}
-      {{ formAuth.ID }}
-         <span class='error' id='{{formAuth.ID.name}}_error' aria-live="polite">
-            {{ formAuth.ID.errors }}
-         </span>
-         <p>
-         </p>
-       {{ formAuth.Pin }}
-          <span class='error' id='{{formAuth.Pin.name}}_error' aria-live="polite">
-            {{ formAuth.Pin.errors }}
-          </span>
-          <p>
-          </p>
+     		 {% for field in formAuth %}
+              <div class="control-group">
+                <div class="controls">
+                  {{ field }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% endfor %}
           <div class="control-group" align="center">
                <button type="submit" id="id_submit2" class="btn btn-primary">
                     Ingresar
@@ -91,18 +90,4 @@
 
 {% include "validator.js.html" with form=form %}
 {% include "validator.js.html" with form=formAuth %}
-   
-<script type="text/javascript">
-    function popup(mylink, windowname) {
-      if (! window.focus)
-        return true;
-      var href;
-      if (typeof(mylink) == 'string')
-        href=mylink;
-      else
-        href=mylink.href;
-      window.open(href, windowname, 'width=500,height=550,scrollbars=no');
-      return false;
-    }
-</script>
 {% endblock %}

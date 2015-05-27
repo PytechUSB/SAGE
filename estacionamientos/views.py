@@ -665,6 +665,7 @@ def billetera_all(request):
                          }
                     )
                 
+
     return render(
         request,
         'crear-billetera.html', 
@@ -675,42 +676,43 @@ def billetera_all(request):
    
 # vista para mostar los datos de la billetera
 def billetera_datos(request):
-    form = authBilleteraForm()
+    form = BilleteraForm()
     formAuth = authBilleteraForm()
-    
     # Si es POST, se verifica la información recibida
     if request.method == 'POST':
         # Creamos un formulario con los datos que recibimos
-        form = authBilleteraForm(request.POST)
+        formAuth = authBilleteraForm(request.POST)
          
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
-        if form.is_valid():
-            billetera_autenticada = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['Pin'])
+
+        if formAuth.is_valid():
+            billetera_autenticada = billetera_autenticar(formAuth.cleaned_data['ID'], formAuth.cleaned_data['Pin'])
             if(billetera_autenticada != None):
                 return render(
                             request,
                             'datos-billetera.html', 
                             { 'billetera': billetera_autenticada
+                             ,'form': form
+                             ,'formAuth': formAuth
                             }
-                )
-                    
+                        )
             else:
                 return render(
-                            request, 'template-mensaje.html',
-                            {'color' : 'red'
-                            , 'mensaje' : 'Autenticacion Denegada'
-                            }
+                    request, 'template-mensaje.html',
+                    {'color' : 'red'
+                    , 'mensaje' : 'Autenticacion Denegada'
+                    }
                 )
-            
-            
+        
+
     return render(
-        request,
-        'crear-billetera.html', 
-        { 'form': form
-         ,'formAuth': formAuth
-        }
-    )  
+                request,
+                'crear-billetera.html', 
+                { 'form': form
+                 ,'formAuth': formAuth
+                }
+            )
     
 # vista para mostar los datos de la billetera
 def billetera_recarga(request, _id):
