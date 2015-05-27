@@ -53,6 +53,7 @@
                 </b></td></tr>
                 <tr><td>
                   {{billetera.saldo|floatformat:2|intcomma}} 
+                  <label for="se recomienda recargar" id='id_mensaje'><font color="red">Se recomienda recargar</font></label>
                  </td></tr>
 
               </tbody>
@@ -79,6 +80,12 @@
 <script>
 
         $('document').ready(function() {
+        
+                $('#id_mensaje').css("display", "none");
+        
+           if({{billetera.saldo}} == 0){
+                $('#id_mensaje').css("display", "block");
+            }; 
 			
 			$('#id_volver').click(function() {
 				$(location).attr('href',"/estacionamientos/crear_billetera");
