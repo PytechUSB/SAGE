@@ -681,7 +681,7 @@ def billetera_datos(request):
 # vista para mostar los datos de la billetera
 def billetera_recarga(request, _id):
     _id = int(_id)
-    billetera = BilleteraElectronica.objects.get(pk = _id)
+    billeteraE = BilleteraElectronica.objects.get(pk = _id)
     
     # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
@@ -704,7 +704,7 @@ def billetera_recarga(request, _id):
                 }
             )
             
-        elif (not billetera.validar_recarga(form.cleaned_data["monto"])):
+        elif (not billeteraE.validar_recarga(form.cleaned_data["monto"])):
             return render(
                 request,
                 'template-mensaje.html',
@@ -714,7 +714,37 @@ def billetera_recarga(request, _id):
             )
             
         else:
-            pass
+            pago = Pago(
+                    cedulaTipo = form.cleaned_data['cedulaTipo'],
+                    cedula = form.cleaned_data['cedula'],
+                    tarjetaTipo = form.cleaned_data['tarjetaTipo'],
+                    monto = form.cleaned_data['monto'],
+                    fechaTransaccion = datetime.now(),
+                    id_punto_recarga = form.cleaned_data['id_punto_recarga'],
+                    billetera = billeteraE   
+                )
+            pago.save()
+            billeteraE.recargar_saldo(form.cleaned_data['monto'])
+            return render(
+                request, 
+                'pago.html',
+                { "id"      : _id
+                , "pago"    : pago
+                , "color"   : "green"
+                , "mensaje" : "Se realizo la recarga de la billetera satisfactoriamente"
+                }
+                
+            )
+            
+            return render(
+                request,
+                'pago.html',
+                { "id"      : _id
+                , "pago"    : pago
+                , "color"   : "green"
+                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                }
+            )
             
        
     form = BilleteraPagoForm()

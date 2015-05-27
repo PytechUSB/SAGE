@@ -203,20 +203,31 @@
                 <tr><td>
                   {{pago.fechaTransaccion}}
                 </td></tr>
+				
+				{% if pago.reserva %}
+                  <tr><td><b><i class="fa fa-clock-o"></i>
+                    Horario inicio de reserva:
+                  </b></td></tr>
+                  <tr><td>
+                    {{pago.reserva.inicioReserva}}
+                  </td></tr>
 
-                <tr><td><b><i class="fa fa-clock-o"></i>
-                  Horario inicio de reserva:
-                </b></td></tr>
-                <tr><td>
-                  {{pago.reserva.inicioReserva}}
-                </td></tr>
-
-                <tr><td><b><i class="fa fa-clock-o"></i>
-                  Horario fin de reserva:
-                </b></td></tr>
-                <tr><td>
-                  {{pago.reserva.finalReserva}}
-                </td></tr>
+                  <tr><td><b><i class="fa fa-clock-o"></i>
+                    Horario fin de reserva:
+                  </b></td></tr>
+                  <tr><td>
+                    {{pago.reserva.finalReserva}}
+                  </td></tr>
+                {% endif %}
+                 
+                {% if pago.billetera %}
+                  <tr><td><b><i class="fa fa-clock-o"></i>
+                    ID Billetera:
+                  </b></td></tr>
+                  <tr><td>
+                    {{pago.billetera.id}}
+                  </td></tr>
+                {% endif %}
 
                 <tr><td><b><i class="fa fa-user"></i>
                   Cédula:
