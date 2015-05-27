@@ -645,7 +645,7 @@ def billetera_datos(request):
     # Si es POST, se verifica la información recibida
     if request.method == 'POST':
         # Creamos un formulario con los datos que recibimos
-        form = authBilleteraForm(request.POST)
+        formAuth = authBilleteraForm(request.POST)
          
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
@@ -661,13 +661,14 @@ def billetera_datos(request):
                             }
                         )
                     
-        return render(
-                    request, 'template-mensaje.html',
-                    {'color' : 'red'
-                    , 'mensaje' : 'Autenticacion Denegada'
-                    }
-                )
-            
+            else:
+                return render(
+                        request, 'template-mensaje.html',
+                        {'color' : 'red'
+                        , 'mensaje' : 'Autenticacion Denegada'
+                        }
+                    )
+        
     return render(
                 request,
                 'crear-billetera.html', 
