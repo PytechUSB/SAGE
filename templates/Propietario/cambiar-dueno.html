@@ -38,44 +38,47 @@
     <hr>
     <div class="col-md-4">
       {% if form %}
-        <form
-          method="post"
-          class="form form-vertical"
-        >
+        <form method="post" class="form form-vertical">
           {% csrf_token %}
           {% for field in form %}
-                <div class="control-group">
-                  <div class="controls">
-                    {{ field }}
-                    <span class='error' id='{{field.name}}_error' aria-live="   polite">{{ field.errors }}</span>
-                    <p></p>
-                  </div>
-                </div>
+            <div class="control-group">
+              <div class="controls">
+                {{ field }}
+                <span class='error' id='{{field.name}}_error' aria-live=" polite">{{ field.errors }}</span>
+                <br>
+              </div>
+            </div>
           {% endfor %}
-          <div class="control-group" align="center"><input
-            type="submit"
-            value="Cambiar"
-            class="btn btn-primary"
-          >
+          <div class="control-group" align="center">
+            <input type="submit" value="Cambiar" class="btn btn-primary">
+            <input type="button" value="Volver" onclick="javascript: closepopup();" class="btn btn-primary">
+          </div>
         </form>
       {% endif %}
-      {% if mensaje %}
-		  <div style="color:{{color}}">
-		        {{mensaje}}
-		        <hr>
-		  </div>
-		  {% include "Propietario/propietario-crear.html" %}
+      <!-- Mensaje de error si la cedula no esta en la base de datos -->
+      {% if mensajeR %}
+        <div style="color:{{color}}">
+          {{mensajeR}}<hr>
+        </div>
+        <div class="panel-body" align="center">
+          <input type="button" value="Volver" onclick="javascript: closepopup();" class="btn btn-primary">
+          <br><br>
+          <!-- OPCION AGREGAR PROPIETARIOS -->
+          <a href="propietario-crear" onclick="javascript: closepopup();" >
+              Agregar Propietario 
+              <!--{% include "Propietario/propietario-crear.html" %}-->
+          </a>
+        </div>
       {% endif %}
-      <p>
-      <div class="control-group" align="center"><input
-                type="button"
-                value="Volver"
-                onclick="javascript: closepopup();"
-                class="btn btn-primary"
-          ></div>
-      
+      <!-- Mensaje de cambio satisfactorio -->
+      {% if mensajeG %}
+        <div style="color:{{color}}">
+          {{mensajeG}}<hr>
+        </div>
+        <div class="panel-body" align="center">
+          <input type="button" value="Volver" onclick="javascript: closepopup();" class="btn btn-primary">
+        </div>
+      {% endif %}
     </div>
   </div>
 {% endblock %}
-
-

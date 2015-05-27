@@ -300,14 +300,14 @@ def estacionamiento_edit(request, _id):
                     request, 'Propietario/cambiar-dueno.html',
                     { 'color'   : 'red'
                     , 'estacionamiento': estacionamiento
-                    , 'mensaje' : 'No existe tal propietario'
+                    , 'mensajeR' : 'No existe tal propietario'
                     }
                 )
             return render(
                     request, 'Propietario/cambiar-dueno.html',
                     { 'color'   : 'green'
                     , 'estacionamiento': estacionamiento
-                    , 'mensaje' : 'Se ha cambiado exitosamente'
+                    , 'mensajeG' : 'Se ha cambiado exitosamente'
                     }
                 )
             
