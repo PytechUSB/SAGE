@@ -95,7 +95,7 @@ def propietario_all(request):
 
     return render(
         request,
-        'propietario-crear.html',
+        'Propietario/propietario-menu.html',
         { 'form': form
         , 'propietarios': propietarios
         , 'estacionamientos': estacionamientos
@@ -143,7 +143,7 @@ def propietario_edit(request, _id):
     propietario = Propietario.objects.get(id = _id)
     return render(
         request,
-        'detalle-propietario.html',
+        'Propietario/detalle-propietario.html',
         { 'estacionamientos': estacionamientos,
           'propietario': propietario,
           'form': form
@@ -297,14 +297,14 @@ def estacionamiento_edit(request, _id):
                     )
             except:
                 return render(
-                    request, 'cambiar-dueno.html',
+                    request, 'Propietario/cambiar-dueno.html',
                     { 'color'   : 'red'
                     , 'estacionamiento': estacionamiento
                     , 'mensaje' : 'No existe tal propietario'
                     }
                 )
             return render(
-                    request, 'cambiar-dueno.html',
+                    request, 'Propietario/cambiar-dueno.html',
                     { 'color'   : 'green'
                     , 'estacionamiento': estacionamiento
                     , 'mensaje' : 'Se ha cambiado exitosamente'
@@ -314,7 +314,7 @@ def estacionamiento_edit(request, _id):
             
     return render(
         request,
-        'cambiar-dueno.html',
+        'Propietario/cambiar-dueno.html',
         { 'form': form
         , 'estacionamiento': estacionamiento
         }

@@ -9,7 +9,7 @@
   <script type="text/javascript">
     function popuponclick(){
       my_window = window.open("",
-       "mywindow","status=1,width=350,height=150");
+       "mywindow","status=1,width=500,height=150");
 
       my_window.document.write('<h1>The Popup Window</h1>');
     }
@@ -57,12 +57,6 @@
             value="Cambiar"
             class="btn btn-primary"
           >
-          <input
-            type="button"
-            value="Volver"
-            onclick="self.close()"
-            class="btn btn-primary"
-          ></div>
         </form>
       {% endif %}
       {% if mensaje %}
@@ -70,13 +64,15 @@
 		        {{mensaje}}
 		        <hr>
 		  </div>
-          <div class="control-group" align="center"><input
+		  {% include "Propietario/propietario-crear.html" %}
+      {% endif %}
+      <p>
+      <div class="control-group" align="center"><input
                 type="button"
                 value="Volver"
                 onclick="javascript: closepopup();"
                 class="btn btn-primary"
           ></div>
-      {% endif %}
       
     </div>
   </div>
