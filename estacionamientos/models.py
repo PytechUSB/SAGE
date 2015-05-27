@@ -71,31 +71,6 @@ class BilleteraElectronica (models.Model):
 	def consumir_saldo(self, monto):
 		self.saldo -= Decimal(monto)
 		self.save()
-			
-
-# Consumos asociados a la billetera
-class Consumos(models.Model):
-	billetera = models.ForeignKey(BilleteraElectronica)
-	monto = models.DecimalField(max_digits=20, decimal_places=2)
-	fecha = models.DateTimeField()
-	id_estacionamiento = models.ForeignKey(Estacionamiento)
-	
-	class Meta:
-		unique_together = (("billetera", "fecha"),)
-		
-	def _str_(self):
-		return str(self.billetera)+' '+str(self.fecha)
-	
-class Recargas(models.Model):
-	billetera = models.ForeignKey(BilleteraElectronica)
-	monto = models.DecimalField(max_digits=20, decimal_places=2)
-	tarjetaTipo = models.CharField(max_length = 6)
-	fecha = models.DateTimeField()
-	id_punto_recarga = models.IntegerField()
-	
-	def _str_(self):
-		return str(self.billetera)+' '+str(self.fecha)
-
 	
 class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)

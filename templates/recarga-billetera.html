@@ -5,6 +5,9 @@
   SAGE - Recarga de Billetera
 {% endblock %}
 
+{% block body%}
+  <body {% if mensaje %} onunload="openlink()" {% endif %}>
+{% endblock %}
 {% block menu %}{% endblock %}
 
 {% block innerContents %}
@@ -169,7 +172,7 @@
               <input
                 type="button"
                 value="Volver"
-                onclick= 'self.close()'
+                onclick= "javascript: closepopup();"
                 class="btn btn-primary"
               >
             </div>
@@ -183,4 +186,20 @@
  {% block scripts %}
 
 {% include "validator.js.html" %}
+ <script type="text/javascript">
+    function popuponclick(){
+      my_window = window.open("",
+       "mywindow","status=1,width=350,height=150");
+
+      my_window.document.write('<h1>The Popup Window</h1>');
+    }
+
+    function closepopup(){
+      window.close();
+    }
+
+    function openlink(){
+      opener.location='/estacionamientos/datos_billetera';
+    }
+  </script> 
 {% endblock %}

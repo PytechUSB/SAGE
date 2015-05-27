@@ -689,14 +689,26 @@ def billetera_datos(request):
         if formAuth.is_valid():
             billetera_autenticada = billetera_autenticar(formAuth.cleaned_data['ID'], formAuth.cleaned_data['Pin'])
             if(billetera_autenticada != None):
-                return render(
+                if(billetera_autenticada.saldo == 0):
+                    return render(
                             request,
                             'datos-billetera.html', 
                             { 'billetera': billetera_autenticada
-                             ,'form': form
-                             ,'formAuth': formAuth
+                            ,'form': form
+                            ,'formAuth': formAuth
+                            , 'mensaje' : 'Se recomienda recargar'
+                            , 'color': 'red' 
                             }
                         )
+                else:
+                    return render(
+                                request,
+                                'datos-billetera.html', 
+                                { 'billetera': billetera_autenticada
+                                 ,'form': form
+                                 ,'formAuth': formAuth
+                                }
+                            )
             else:
                 return render(
                     request, 'template-mensaje.html',
