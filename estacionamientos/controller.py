@@ -112,7 +112,7 @@ def consultar_ingresos(rif):
 		
 	return listaIngresos, ingresoTotal
 
-def billetera_autenticar(self, identificador, PIN):
+def billetera_autenticar(identificador, PIN):
 	try:
 		billetera = BilleteraElectronica.objects.get(pk = identificador)
 		if(billetera.PIN == PIN):

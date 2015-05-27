@@ -88,7 +88,7 @@
         $('document').ready(function() {
 			
 			$('#id_recargar').click(function() {
-				$(location).attr('href',"/estacionamientos/recarga_billetera");
+				$(location).attr('href',"/estacionamientos/{{ billetera.id }}/recarga_billetera");
 			});
 			
 		});

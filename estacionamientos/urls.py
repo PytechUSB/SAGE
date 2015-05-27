@@ -20,5 +20,5 @@ urlpatterns = patterns('',
     url(r'^grafica/.*$', views.grafica_tasa_de_reservacion, name = 'grafica_tasa_de_reservacion'),
     url(r'^crear_billetera$', views.billetera_all, name = 'billetera_all'),
     url(r'^datos_billetera$', views.billetera_datos, name = 'billetera_datos'),
-    url(r'^recarga_billetera$', views.billetera_recarga, name = 'billetera_recarga')
+    url(r'^(?P<_id>\d+)/recarga_billetera$', views.billetera_recarga, name = 'billetera_recarga')
 )
