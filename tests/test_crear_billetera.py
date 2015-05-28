@@ -10,6 +10,8 @@ from django.db.utils import IntegrityError
 
 from decimal import Decimal
 
+from estacionamientos.controller import billetera_autenticar
+
 def crearBilletera(cedul, cedulaTipo):
     form_data = {
         'nombre': 'Carlos',
@@ -56,4 +58,232 @@ class CrearBilleteraTestCase(TestCase):
         crearBilletera(str(0), 'V')
         crearBilletera(str(0), 'V')
         self.assertEqual(len(BilleteraElectronica.objects.all()), 1)
+    
+    # interior
+    def testConsultaSaldo(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        saldo = 5,
+                        PIN = "1234"
+        )
+        billetera.save()
+        billeteraE = BilleteraElectronica.objects.get(pk = 1)
+        self.assertEqual(billeteraE.saldo, 5)
+    
+    # malicia    
+    def testConsultaSaldoNulo(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.save()
+        billeteraE = BilleteraElectronica.objects.get(pk = 1)
+        self.assertEqual(billeteraE.saldo, 0)
+    
+    # interior    
+    def testCrearBilletera_AutenticarBilletera(self):
+        billetera1 = BilleteraElectronica(cedula = '10', 
+                                          cedulaTipo = 'V', 
+                                          nombre = 'Maria', 
+                                          apellido = 'Perez', 
+                                          saldo = 0.00, 
+                                          PIN = '1234')
+        billetera1.save()
+        billetera = billetera_autenticar(1, "1234")
+        self.assertEqual(billetera1, billetera)
         
+    # malicia
+    def testCrearBilletera_AutenticarPINinvalido(self):
+        billetera = BilleteraElectronica(cedula = '11', 
+                                         cedulaTipo = 'V', 
+                                         nombre = 'Mario', 
+                                         apellido = 'Jimenez', 
+                                         saldo = 0.00, 
+                                         PIN = '1234')
+        billetera.save()
+        billetera1 = billetera_autenticar(1, '1235')
+        self.assertNotEqual(billetera, billetera1)
+       
+    # borde    
+    def testCrearBilletera_AutenticarIDinvalido(self):
+        billetera = BilleteraElectronica(cedula = '10', 
+                                         cedulaTipo = 'V', 
+                                         nombre = 'Maria', 
+                                         apellido = 'Perez', 
+                                         saldo = 0.00, 
+                                         PIN = '1234')
+        billetera.save()
+        billetera1 = billetera_autenticar(2, '1234')
+        self.assertNotEqual(billetera, billetera1)
+        
+    # borde    
+    def testCrearBilletera_AutenticarInvalido(self):
+        billetera = BilleteraElectronica(cedula = '10', 
+                                         cedulaTipo = 'V', 
+                                         nombre = 'Maria', 
+                                         apellido = 'Perez', 
+                                         saldo = 0.00, 
+                                         PIN = '1234')
+        billetera.save()
+        billetera1 = billetera_autenticar(2, '1235')
+        self.assertNotEqual(billetera, billetera1)
+        
+    # malicia
+    def testCrearBilletera_AutenticarNull(self):
+        billetera = billetera_autenticar(10, '1234')
+        self.assertEqual(billetera, None)
+    
+    # borde    
+    def testValidarRecargaCero(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        self.assertFalse(billetera.validar_recarga(0))
+        
+    # borde    
+    def testValidarRecargaLimiteInferior(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        self.assertTrue(billetera.validar_recarga(Decimal(0.01)))
+    
+    # borde    
+    def testValidarRecargaLimiteSuperior(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        self.assertTrue(billetera.validar_recarga(Decimal(10000.00)))
+    
+    # borde    
+    def testValidarRecargaInvalida(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        self.assertFalse(billetera.validar_recarga(Decimal(10000.001)))
+        
+    # malicia
+    def testValidarRecargaNegativa(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        self.assertFalse(billetera.validar_recarga(Decimal(-0.01)))
+        
+    # malicia
+    def testValidarRecargaCaracterEspecial(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        self.assertFalse(billetera.validar_recarga("@"))
+        
+    # malicia
+    def testValidarRecargaNumeroString(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        self.assertFalse(billetera.validar_recarga("1"))
+    
+    # borde    
+    def testValidarConsumoNegativo(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        self.assertFalse(billetera.validar_consumo(-0.01))
+        
+    # borde    
+    def testValidarConsumoLimiteInferior(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        self.assertTrue(billetera.validar_consumo(0))
+    
+    # borde    
+    def testValidarConsumoLimiteSuperior(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        saldo = Decimal(10000.00),
+                        PIN = "1234"
+        )
+        self.assertTrue(billetera.validar_consumo(10000.00))
+    
+    # borde    
+    def testValidarConsumoInvalido(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        saldo = Decimal(10000.00),
+                        PIN = "1234"
+        )
+        self.assertFalse(billetera.validar_consumo(Decimal(10000.001)))
+    
+    # malicia    
+    def testValidarConsumoMontoString(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        saldo = Decimal(10000.00),
+                        PIN = "1234"
+        )
+        self.assertFalse(billetera.validar_consumo("1"))
+        
+    # malicia
+    def testValidarConsumoMontoCaracterEspecial(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        saldo = Decimal(10000.00),
+                        PIN = "1234"
+        )
+        self.assertFalse(billetera.validar_consumo("%"))
+    
+    

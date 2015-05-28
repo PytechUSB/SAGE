@@ -8,6 +8,21 @@ from estacionamientos.forms import PagoForm
 # Pago Tarjeta de Credito Form
 ###################################################################
 class PagoTarjetaDeCreditoFormTestCase(TestCase):
+    
+        
+    # interno
+    def test_PagoTarjetaForm_Billetera(self):
+        form_data = {
+            'nombre': 'Pedro',
+            'apellido': 'Perez',
+            'cedulaTipo': 'V',
+            'cedula': '123456789',
+            'tarjetaTipo': 'Billetera Electronica',
+            'ID': '1',
+            'PIN': '1234',
+        }
+        form = PagoForm(data = form_data)
+        self.assertTrue(form.is_valid())
 
     # borde
     def test_PagoTarjetaForm_Vacio(self):
@@ -221,7 +236,53 @@ class PagoTarjetaDeCreditoFormTestCase(TestCase):
         }
         form = PagoForm(data = form_data)
         self.assertFalse(form.is_valid())
+        
+        
+    #borde
+    def test_PagoTarjetaForm_BilleteraIDinvalido(self):
+        form_data = {
+            'nombre': 'Pedro',
+            'apellido': 'Perez',
+            'cedulaTipo': 'V',
+            'cedula': '123456789',
+            'tarjetaTipo': 'Billetera Electronica',
+            'ID': '12345',
+            'PIN': '1234',
+        }
+        form = PagoForm(data = form_data)
+        self.assertFalse(form.is_valid())
 
+        
+    #borde
+    def test_PagoTarjetaForm_BilleteraPINinvalido(self):
+        form_data = {
+            'nombre': 'Pedro',
+            'apellido': 'Perez',
+            'cedulaTipo': 'V',
+            'cedula': '123456789',
+            'tarjetaTipo': 'Billetera Electronica',
+            'ID': '1',
+            'PIN': '12345',
+        }
+        form = PagoForm(data = form_data)
+        self.assertFalse(form.is_valid())
+
+        
+    #malicia
+    def test_PagoTarjetaForm_BilleteraPinIdInvalidos(self):
+        form_data = {
+            'nombre': 'Pedro',
+            'apellido': 'Perez',
+            'cedulaTipo': 'V',
+            'cedula': '123456789',
+            'tarjetaTipo': 'Billetera Electronica',
+            'ID': '12345',
+            'PIN': '12345',
+        }
+        form = PagoForm(data = form_data)
+        self.assertFalse(form.is_valid())
+
+    
     #malicia
     def test_PagoTarjetaForm_DosCamposErroneos(self):
         form_data = {

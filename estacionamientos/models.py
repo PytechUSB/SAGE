@@ -45,7 +45,7 @@ class Estacionamiento(models.Model):
 class BilleteraElectronica (models.Model):
 	nombre = models.CharField(max_length = 30, help_text = "Nombre Propio")
 	apellido = models.CharField(max_length = 30)
-	saldo = models.DecimalField(max_digits=10, decimal_places=2)
+	saldo = models.DecimalField(max_digits=10, decimal_places=2, default = Decimal(0))
 	cedula = models.CharField(max_length = 12)
 	cedulaTipo = models.CharField(max_length = 1)
 	PIN = models.CharField(max_length = 8)
@@ -61,14 +61,22 @@ class BilleteraElectronica (models.Model):
 		self.save()
 		
 	def validar_recarga(self, monto):
-		if ((self.saldo + monto) <= SMAX):
-			return True
+		try:
+			if (((self.saldo + Decimal(monto)) <= SMAX) and (monto > 0)):
+				return True
+			
+		except:
+			return False
 		
 		return False
 	
 	def validar_consumo(self, monto):
-		if (self.saldo >= monto):
-			return True
+		try:
+			if ((self.saldo >= Decimal(monto)) and (monto >= 0)):
+				return True
+		
+		except:
+			return False
 		
 		return False
 	
