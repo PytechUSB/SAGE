@@ -594,6 +594,18 @@ class BilleteraForm(forms.Form):
         )
     )
     
+    cedulaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'cedulaTipo',
+        choices  = (
+            ('V', 'V'),
+            ('E', 'E')
+        ),
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
+        )
+    )
+    
 
 class authBilleteraForm(forms.Form):
     PIN_validator = RegexValidator(

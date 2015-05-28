@@ -63,17 +63,51 @@
         </p>
          <form action ='crear_billetera' method="post" class="form form-vertical" >
          {% csrf_token %}
-            {% for field in form %}
-              <div class="control-group">
-                <div class="controls">
-                  {{ field }}
-                  <span class='error' id='{{field.name}}_error' aria-live="polite">
-                    {{ field.errors }}
-                  </span>
-                  <p>
-                </div>
-              </div>
-            {% endfor %}
+         <div class="control-group">
+            <div class="controls">
+              <p>
+                {{ form.nombre }}
+                <span
+                  class='error'
+                  id='{{form.nombre.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.nombre.errors }}
+              <p>
+                {{ form.apellido }}
+                <span
+                  class='error'
+                  id='{{form.apellido.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.apellido.errors }}
+              <p>
+                <table><tbody><tr>
+                  <td>
+                    {{ form.cedulaTipo }}
+                  </td>
+                  <td>
+                    {{ form.cedula }}
+                  </td>
+                </tr></tbody></table>
+                <span
+                  class='error'
+                  id='{{form.cedula.name}}_error'
+                  aria-live="polite"
+                ></span>
+                {{ form.cedula.errors }}
+              </p>
+               <p>
+                {{ form.PIN }}
+                <span
+                  class='error'
+                  id='{{form.PIN.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.PIN.errors }}
             <div class="control-group" align="center">
                 <button type="submit" id="id_submit" class="btn btn-primary">
                     Crear Billetera

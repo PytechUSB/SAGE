@@ -644,7 +644,8 @@ def billetera_all(request):
                         apellido = form.cleaned_data['apellido'],
                         PIN = form.cleaned_data['PIN'],
                         cedula = form.cleaned_data['cedula'],
-                        saldo = 0.00
+                        saldo = 0.00,
+                        cedulaTipo = form.cleaned_data['cedulaTipo']
                     )
                 
                 try:

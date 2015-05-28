@@ -46,8 +46,12 @@ class BilleteraElectronica (models.Model):
 	nombre = models.CharField(max_length = 30, help_text = "Nombre Propio")
 	apellido = models.CharField(max_length = 30)
 	saldo = models.DecimalField(max_digits=10, decimal_places=2)
-	cedula = models.CharField(max_length = 12, unique = True)
+	cedula = models.CharField(max_length = 12)
+	cedulaTipo = models.CharField(max_length = 1)
 	PIN = models.CharField(max_length = 8)
+	
+	class Meta:
+		unique_together = (("cedulaTipo", "cedula"),)
 	
 	def __str__(self):
 		return str(self.id)
