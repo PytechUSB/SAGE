@@ -14,7 +14,7 @@ class AuthBilleteraFormTestCase(TestCase):
         form = authBilleteraForm(data = form_data)
         self.assertTrue(form.is_valid())
     
-    # borde
+    # malicia
     def testAuthBilletera_FormVacio(self):
         form_data = {}
         form = authBilleteraForm(data = form_data)
@@ -29,7 +29,7 @@ class AuthBilleteraFormTestCase(TestCase):
         self.assertFalse(form.is_valid())
 
     #borde
-    def testAuthBilletera_PinIvalido(self):
+    def testAuthBilletera_PinInvalido(self):
         form_data = {
             'Pin': '12345',
             'ID': '1'
@@ -38,7 +38,7 @@ class AuthBilleteraFormTestCase(TestCase):
         self.assertFalse(form.is_valid())
         
     #borde
-    def testAuthBilletera_IDIvalido(self):
+    def testAuthBilletera_IDInvalido(self):
         form_data = {
             'Pin': '1234',
             'ID': '12345'
@@ -55,6 +55,15 @@ class AuthBilleteraFormTestCase(TestCase):
         form = authBilleteraForm(data = form_data)
         self.assertFalse(form.is_valid())
         
+    
+    # malicia
+    def testAuthBilletera_CamposNulos(self):
+        form_data = {
+            'Pin': '',
+            'ID': ''
+        }
+        form = authBilleteraForm(data = form_data)
+        self.assertFalse(form.is_valid())
         
     # malicia
     def testAuthBilletera_EspacioBlanco(self):

@@ -87,7 +87,7 @@ class CrearBilleteraTestCase(TestCase):
         self.assertEqual(billeteraE.saldo, 0)
     
     # interior    
-    def testCrearBilletera_AutenticarBilletera(self):
+    def test_AutenticarBilletera(self):
         billetera1 = BilleteraElectronica(cedula = '10', 
                                           cedulaTipo = 'V', 
                                           nombre = 'Maria', 
@@ -99,7 +99,7 @@ class CrearBilleteraTestCase(TestCase):
         self.assertEqual(billetera1, billetera)
         
     # malicia
-    def testCrearBilletera_AutenticarPINinvalido(self):
+    def test_AutenticarPINinvalido(self):
         billetera = BilleteraElectronica(cedula = '11', 
                                          cedulaTipo = 'V', 
                                          nombre = 'Mario', 
@@ -108,10 +108,10 @@ class CrearBilleteraTestCase(TestCase):
                                          PIN = '1234')
         billetera.save()
         billetera1 = billetera_autenticar(1, '1235')
-        self.assertNotEqual(billetera, billetera1)
+        self.assertEqual(billetera1, None)
        
-    # borde    
-    def testCrearBilletera_AutenticarIDinvalido(self):
+    # malicia    
+    def test_AutenticarIDinvalido(self):
         billetera = BilleteraElectronica(cedula = '10', 
                                          cedulaTipo = 'V', 
                                          nombre = 'Maria', 
@@ -123,7 +123,7 @@ class CrearBilleteraTestCase(TestCase):
         self.assertNotEqual(billetera, billetera1)
         
     # borde    
-    def testCrearBilletera_AutenticarInvalido(self):
+    def test_AutenticarInvalido(self):
         billetera = BilleteraElectronica(cedula = '10', 
                                          cedulaTipo = 'V', 
                                          nombre = 'Maria', 
@@ -131,13 +131,15 @@ class CrearBilleteraTestCase(TestCase):
                                          saldo = 0.00, 
                                          PIN = '1234')
         billetera.save()
-        billetera1 = billetera_autenticar(2, '1235')
+        billetera = BilleteraElectronica(cedula = '11', 
+                                         cedulaTipo = 'V', 
+                                         nombre = 'Maria', 
+                                         apellido = 'Perez', 
+                                         saldo = 0.00, 
+                                         PIN = '1235')
+        billetera.save()
+        billetera1 = billetera_autenticar(2, '1234')
         self.assertNotEqual(billetera, billetera1)
-        
-    # malicia
-    def testCrearBilletera_AutenticarNull(self):
-        billetera = billetera_autenticar(10, '1234')
-        self.assertEqual(billetera, None)
     
     # borde    
     def testValidarRecargaCero(self):
@@ -293,10 +295,11 @@ class CrearBilleteraTestCase(TestCase):
                         apellido = 'Banega',
                         cedula = "12345678",
                         cedulaTipo = 'V',
+                        saldo = 10,
                         PIN = "1234"
         )
         billetera.recargar_saldo(0)
-        self.assertEqual(billetera.saldo, 0)
+        self.assertEqual(billetera.saldo, 10)
         
     # borde    
     def testRecargarSaldoNegativo(self):
@@ -405,9 +408,9 @@ class CrearBilleteraTestCase(TestCase):
                         cedulaTipo = 'V',
                         PIN = "1234"
         )
-        billetera.recargar_saldo(10)
+        billetera.recargar_saldo(Decimal('0.01'))
         billetera.consumir_saldo(Decimal('0.01'))
-        self.assertEqual(billetera.saldo, Decimal('9.99'))
+        self.assertEqual(billetera.saldo, 0)
         
     # borde
     def testConsumirSaldoLimiteSuperior(self):

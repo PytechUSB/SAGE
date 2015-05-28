@@ -14,18 +14,19 @@ class BilleteraBilleteraPagoFormTestCase(TestCase):
             'cedula': '12345678',
             'monto': '20',
             'tarjeta': '1234567890123456',
-            'tarjetaTipo':'Vista'
+            'tarjetaTipo':'Vista',
+            'id_punto_recarga': '1'
         } 
         form = BilleteraPagoForm(data = form_data)
         self.assertTrue(form.is_valid())
     
-    # borde
+    # malicia
     def testBilleteraPago_CamposVacios(self):
         form_data = {}
         form = BilleteraPagoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
-    # borde
+    # malicia
     def testBilleteraPago_UnCampo(self):
         form_data = {
             'nombre': 'Maria',
@@ -33,7 +34,7 @@ class BilleteraBilleteraPagoFormTestCase(TestCase):
         form = BilleteraPagoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
-    #borde
+    # malicia
     def testBilleteraPago_DosCampos(self):
         form_data = {
             'nombre': 'Maria',
@@ -42,7 +43,7 @@ class BilleteraBilleteraPagoFormTestCase(TestCase):
         form = BilleteraPagoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
-    #borde
+    # malicia
     def testBilleteraPago_TresCampos(self):
         form_data = {
             'nombre': 'Maria',
@@ -52,7 +53,7 @@ class BilleteraBilleteraPagoFormTestCase(TestCase):
         form = BilleteraPagoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
-    #borde
+    # malicia
     def testBilleteraPago_CuatroCampos(self):
         form_data = {
             'nombre': 'Maria',
@@ -63,7 +64,7 @@ class BilleteraBilleteraPagoFormTestCase(TestCase):
         form = BilleteraPagoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
-    #borde
+    # borde
     def testBilleteraPago_CincoCampos(self):
         form_data = {
             'nombre': 'Maria',
@@ -75,7 +76,7 @@ class BilleteraBilleteraPagoFormTestCase(TestCase):
         form = BilleteraPagoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
-    #borde
+    # malicia
     def testBilleteraPago_NombreInvalido(self):
         form_data = {
             'nombre': 'Maria1',
@@ -88,7 +89,7 @@ class BilleteraBilleteraPagoFormTestCase(TestCase):
         form = BilleteraPagoForm(data = form_data)
         self.assertFalse(form.is_valid())
         
-    #borde
+    # malicia
     def testBilleteraPago_NombreEspacio(self):
         form_data = {
             'nombre': ' Maria',
@@ -128,7 +129,7 @@ class BilleteraBilleteraPagoFormTestCase(TestCase):
         form = BilleteraPagoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
-    #borde
+    # malicia
     def testBilleteraPago_CedulaTipoInvalido(self):
         form_data = {
             'nombre': 'Maria',
@@ -141,7 +142,7 @@ class BilleteraBilleteraPagoFormTestCase(TestCase):
         form = BilleteraPagoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
-    #borde
+    # malicia
     def testBilleteraPago_CedulaInvalida(self):
         form_data = {
             'nombre': 'Maria',
@@ -155,7 +156,7 @@ class BilleteraBilleteraPagoFormTestCase(TestCase):
         self.assertFalse(form.is_valid())
         
 
-    #borde
+    # malicia
     def testBilleteraPago_TipoTarjetaInvalido(self):
         form_data = {
             'nombre': 'Maria',
@@ -168,8 +169,8 @@ class BilleteraBilleteraPagoFormTestCase(TestCase):
         form = BilleteraPagoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
-    #borde
-    def testBilleteraPago_TarjetaInvalido(self):
+    # malicia
+    def testBilleteraPago_TarjetaInvalida(self):
         form_data = {
             'nombre': 'Maria',
             'apellido': 'Perez',
@@ -181,41 +182,4 @@ class BilleteraBilleteraPagoFormTestCase(TestCase):
         form = BilleteraPagoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
-    #malicia
-    def testBilleteraPago_DosCamposInvalidos(self):
-        form_data = {
-            'nombre': 'Maria',
-            'apellido': 'Perez',
-            'cedulaTipo': 'T',
-            'cedula': '12345678',
-            'tarjetaTipo': 'Vista',
-            'tarjeta': 'a1234',
-        }
-        form = BilleteraPagoForm(data = form_data)
-        self.assertFalse(form.is_valid())
-
-    #malicia
-    def testBilleteraPago_CuatroCamposInvalidos(self):
-        form_data = {
-            'nombre': ' Maria',
-            'apellido': 'Perez',
-            'cedulaTipo': 'V',
-            'cedula': 'a1234567',
-            'tarjetaTipo': 'Vista',
-            'tarjeta': '0123456789012345',
-        }
-        form = BilleteraPagoForm(data = form_data)
-        self.assertFalse(form.is_valid())
-
-    #malicia
-    def testBilleteraPago_CamposInvalidos(self):
-        form_data = {
-            'nombre': ' Maria',
-            'apellido': '1Perez',
-            'cedulaTipo': 'T',
-            'cedula': 'a1234567',
-            'tarjetaTipo': 'VISA',
-            'tarjeta': 'a1234',
-        }
-        form = BilleteraPagoForm(data = form_data)
-        self.assertFalse(form.is_valid())
+    

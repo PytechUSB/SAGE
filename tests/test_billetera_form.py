@@ -54,7 +54,7 @@ class CrearBilleteraFormTestCase(TestCase):
         form = BilleteraForm(data = form_data)
         self.assertFalse(form.is_valid())
         
-    # borde    
+    # interior    
     def testCrearBilleteraForm_CincoCampos(self):
         form_data = {
             'nombre': 'Carlos',
@@ -66,7 +66,7 @@ class CrearBilleteraFormTestCase(TestCase):
         form = BilleteraForm(data = form_data)
         self.assertTrue(form.is_valid())
     
-    # borde    
+    # malicia    
     def testBilleteraForm_NombreInvalidoDigitos(self):
         form_data = {    
             'nombre': 'Jose1',
@@ -79,7 +79,7 @@ class CrearBilleteraFormTestCase(TestCase):
         form = BilleteraForm(data = form_data)
         self.assertFalse(form.is_valid())
         
-    # borde
+    # malicia
     def testBilleteraForm_NombreInvalidoEspacio(self):
         form_data = {    
             'nombre': ' Jose',
@@ -92,7 +92,7 @@ class CrearBilleteraFormTestCase(TestCase):
         form = BilleteraForm(data = form_data)
         self.assertFalse(form.is_valid())
         
-    # borde
+    # malicia
     def testBilleteraForm_NombreInvalidoSimbolos(self):
         form_data = {    
             'nombre': 'Jose .',
@@ -105,7 +105,7 @@ class CrearBilleteraFormTestCase(TestCase):
         form = BilleteraForm(data = form_data)
         self.assertFalse(form.is_valid())
     
-    # borde    
+    # malicia    
     def testBilleteraForm_ApellidoInvalidoDigitos(self):
         form_data = {    
             'nombre': 'Jose',
@@ -118,7 +118,7 @@ class CrearBilleteraFormTestCase(TestCase):
         form = BilleteraForm(data = form_data)
         self.assertFalse(form.is_valid())
         
-    # borde    
+    # malicia    
     def testBilleteraForm_ApellidoInvalidoEspacio(self):
         form_data = {    
             'nombre': 'Jose',
@@ -131,7 +131,7 @@ class CrearBilleteraFormTestCase(TestCase):
         form = BilleteraForm(data = form_data)
         self.assertFalse(form.is_valid())
         
-    # borde    
+    # malicia    
     def testBilleteraForm_ApellidoInvalidoSimbolos(self):
         form_data = {    
             'nombre': 'Jose',
@@ -144,7 +144,7 @@ class CrearBilleteraFormTestCase(TestCase):
         form = BilleteraForm(data = form_data)
         self.assertFalse(form.is_valid())
         
-    # borde    
+    # malicia    
     def testBilleteraForm_CedulaInvalida(self):
         form_data = {    
             'nombre': 'Jose',
