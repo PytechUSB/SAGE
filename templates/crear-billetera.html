@@ -1,23 +1,31 @@
 {% extends "base.html" %}
 {% load humanize %}
 {% block title %}
-  SAGE - Billetera
+  SAGE - Crear Billetera
 {% endblock %}
 {% block innerContents %}
-  <div class="col-sm-10">
+
+<div class="col-sm-10">
     <h3><i class="fa fa-credit-card"></i>
-      Billetera Electrónica
+        Panel de control de Billetera Electronica
     </h3>
     <hr>
-    </div>
-    <div class="col-md-4">
-      <table class="table table-striped">
-        <thead></thead>
-        <tbody>
-        <form action ='crear_billetera' method="post" class="form form-vertical" >
-         {% csrf_token %}
-		 {% for field in form %}
-		 	{% if field.name != "identificador" %}
+    <div class="col-md-5">
+     <div class="panel panel-default">
+        <div class="panel-heading"> 
+          <div class="panel-title">
+           <i class="fa fa-search pull-left"></i>
+            <h4>
+              Consultar Billetera Electronica
+            </h4>
+          </div>
+         </div>
+         <div class="control-group">
+          <div class="controls">
+           <p></p>
+            <form action ='datos_billetera' method="post" class="form form-vertical" >
+            {% csrf_token %}
+     		 {% for field in formAuth %}
               <div class="control-group">
                 <div class="controls">
                   {{ field }}
@@ -25,26 +33,95 @@
                     {{ field.errors }}
                   </span>
                   <p>
-                  
                 </div>
               </div>
-            {% endif %}
             {% endfor %}
+          <div class="control-group" align="center">
+               <button type="submit" id="id_submit2" class="btn btn-primary">
+                    Ingresar
+                </button>
+            </a>
+          </div>   
+         </form> 
+         </div>
+         </div>
+         <p></p>
+    </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <i class="fa fa-credit-card pull-left"></i>
+            <h4>
+              Crear Billetera Electronica
+            </h4>
+          </div>
+        </div>
+        <p>
+        </p>
+         <form action ='crear_billetera' method="post" class="form form-vertical" >
+         {% csrf_token %}
+         <div class="control-group">
+            <div class="controls">
+              <p>
+                {{ form.nombre }}
+                <span
+                  class='error'
+                  id='{{form.nombre.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.nombre.errors }}
+              <p>
+                {{ form.apellido }}
+                <span
+                  class='error'
+                  id='{{form.apellido.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.apellido.errors }}
+              <p>
+                <table><tbody><tr>
+                  <td>
+                    {{ form.cedulaTipo }}
+                  </td>
+                  <td>
+                    {{ form.cedula }}
+                  </td>
+                </tr></tbody></table>
+                <span
+                  class='error'
+                  id='{{form.cedula.name}}_error'
+                  aria-live="polite"
+                ></span>
+                {{ form.cedula.errors }}
+              </p>
+               <p>
+                {{ form.PIN }}
+                <span
+                  class='error'
+                  id='{{form.PIN.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.PIN.errors }}
             <div class="control-group" align="center">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" id="id_submit" class="btn btn-primary">
                     Crear Billetera
                 </button>
-            <input type="button" value="Volver" class="btn btn-primary"
-                onclick = "$(location).attr('href', '..');">
-            </div>
-		</div>
-		</div>
-		</form>
-        </tbody>
-      </table>
-    </div>
-  </div>
+                <p>
+                </p>
+         </div>
+        </form>
+        
+
+
 {%endblock%}
 {% block scripts %}
-  {% include "validator.js.html" %}
+
+{% include "validator.js.html" with form=form %}
+{% include "validator.js.html" with form=formAuth %}
 {% endblock %}

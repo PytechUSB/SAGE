@@ -2,86 +2,19 @@
 {% load humanize %}
 
 {% block title %}
-  SAGE - Pago
-{% endblock %}
-   
-{% block scripts %}
-<script>
-		$('document').ready(function() {
-		
-			$('#id_PIN').css("display", "none");
-			
-			$('#id_ID').css("display", "none");
-			
-			$('#id_tarjeta').css("display", "none");
-				
-			$('input#id_tarjetaTipo_3').click(function() {
-				$('#id_PIN').css("display", "block");
-				$('#id_PIN').prop('required',true);
-				$('#id_ID').css("display", "block");
-				$('#id_ID').prop('required',true);
-				$('#id_tarjeta').css("display", "none");
-				$('#id_tarjeta').prop('required',false);
-			});
-									
-			$('input#id_tarjetaTipo_2').click(function() {
-				$('#id_PIN').css("display", "none");
-				$('#id_PIN').prop('required',false);
-				$('#id_ID').css("display", "none");
-				$('#id_ID').prop('required',false);
-				$('#id_tarjeta').css("display", "block");
-				$('#id_tarjeta').prop('required',true);
-			});
-		
-			$('input#id_tarjetaTipo_1').click(function() {
-				$('#id_PIN').css("display", "none");
-				$('#id_PIN').prop('required',false);
-				$('#id_ID').css("display", "none");
-				$('#id_ID').prop('required',false);
-				$('#id_tarjeta').css("display", "block");
-				$('#id_tarjeta').prop('required',true);
-			});
-			
-			$('input#id_tarjetaTipo_0').click(function() {
-				$('#id_PIN').css("display", "none");
-				$('#id_PIN').prop('required',false);
-				$('#id_ID').css("display", "none");
-				$('#id_ID').prop('required',false);
-				$('#id_tarjeta').css("display", "block");
-				$('#id_tarjeta').prop('required',true);
-			});
-		});
-</script>
-
-{% include "validator.js.html" %}
-  <script type="text/javascript">
-    function popuponclick(){
-      my_window = window.open("",
-       "mywindow","status=1,width=350,height=150");
-
-      my_window.document.write('<h1>The Popup Window</h1>');
-    }
-
-    function closepopup(){
-      window.close();
-    }
-
-    function openlink(){
-      opener.location='/estacionamientos/{{ id }}/reserva';
-    }
-  </script> 
- 
+  SAGE - Recarga de Billetera
 {% endblock %}
 
 {% block body%}
   <body {% if mensaje %} onunload="openlink()" {% endif %}>
 {% endblock %}
-
 {% block menu %}{% endblock %}
-{% block innerContents%}
-  <div class="col-sm-10">
+
+{% block innerContents %}
+
+<div class="col-sm-10">
     <h3><i class="fa fa-money"></i>
-      Pago de Reserva
+       Recarga de la Billetera Electronica
     </h3>
     <hr>
     <div class="col-md-4">
@@ -127,16 +60,35 @@
                 ></span>
                 {{ form.cedula.errors }}
               </p>
-                <table width="400" border="0" cellspacing="0">
-                <tr> 
+              <p>
+                {{ form.monto }}
+                <span
+                  class='error'
+                  id='{{form.monto.name}}_error'
+                  aria-live="polite"
+                ></span>
+                {{ form.monto.errors }}
+              </p>
+              <p>
+                {{ form.id_punto_recarga }}
+                <span
+                  class='error'
+                  id='{{form.id_punto_recarga.name}}_error'
+                  aria-live="polite"
+                ></span>
+                {{ form.id_punto_recarga.errors }}
+              </p>
+              <table width="400" border="0" cellspacing="0">
+                <tr>
                   <td><font size="32" color="blue"><i class="fa fa-cc-visa"> </i></font></td>
                   <td><font size="32" color="red"><i class="fa fa-cc-mastercard"> </i></font></td>
                   <td><font size="32" color="gray"><i class="fa fa-cc-amex"> </i></font></td>
-                  <td><font size="32" color="black"><i class="fa fa-credit-card"> </i></font></td>
                 </tr>
                 <tr>
                   {% for choice in form.tarjetaTipo %}
-                    <td> {{ choice }} </td>
+                    {% if choice != form.tarjetaTipo.3 %}
+                      <td> {{ choice }} </td>
+                    {% endif %}
                   {% endfor %}
                 </tr>
               </table>
@@ -150,24 +102,6 @@
                 ></span>
               </p>
               {{ form.tarjeta.errors }}
-              <p>
-                {{ form.ID }}
-                <span
-                  class='error'
-                  id='{{form.ID.name}}_error'
-                  aria-live="polite"
-                ></span>
-              </p>
-              {{ form.ID.errors }}
-              <p>
-                {{ form.PIN }}
-                <span
-                  class='error'
-                  id='{{form.PIN.name}}_error'
-                  aria-live="polite"
-                ></span>
-              </p>
-              {{ form.PIN.errors }}
             </div>
           </div>
           <input
@@ -177,7 +111,7 @@
           >
           <input
             type="button"
-            value="Volver"
+            value="Cancelar"
             onclick="self.close()"
             class="btn btn-primary"
           >
@@ -206,30 +140,12 @@
                   {{pago.fechaTransaccion}}
                 </td></tr>
 				
-				{% if pago.reserva %}
-                  <tr><td><b><i class="fa fa-clock-o"></i>
-                    Horario inicio de reserva:
-                  </b></td></tr>
-                  <tr><td>
-                    {{pago.reserva.inicioReserva}}
-                  </td></tr>
-
-                  <tr><td><b><i class="fa fa-clock-o"></i>
-                    Horario fin de reserva:
-                  </b></td></tr>
-                  <tr><td>
-                    {{pago.reserva.finalReserva}}
-                  </td></tr>
-                {% endif %}
-                 
-                {% if pago.billetera %}
-                  <tr><td><b><i class="fa fa-clock-o"></i>
-                    ID Billetera:
-                  </b></td></tr>
-                  <tr><td>
-                    {{pago.billetera.id}}
-                  </td></tr>
-                {% endif %}
+				<tr><td><b><i class="fa fa-clock-o"></i>
+                  ID Billetera:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.billetera.id}}
+                </td></tr>
 
                 <tr><td><b><i class="fa fa-user"></i>
                   Cédula:
@@ -256,7 +172,7 @@
               <input
                 type="button"
                 value="Volver"
-                onclick="javascript: closepopup();"
+                onclick= "javascript: closepopup();"
                 class="btn btn-primary"
               >
             </div>
@@ -265,6 +181,25 @@
       {% endif %}
     </div>
   </div>
+{% endblock %}       
+ 
+ {% block scripts %}
+
+{% include "validator.js.html" %}
+ <script type="text/javascript">
+    function popuponclick(){
+      my_window = window.open("",
+       "mywindow","status=1,width=350,height=150");
+
+      my_window.document.write('<h1>The Popup Window</h1>');
+    }
+
+    function closepopup(){
+      window.close();
+    }
+
+    function openlink(){
+      opener.location='/estacionamientos/datos_billetera';
+    }
+  </script> 
 {% endblock %}
-
-

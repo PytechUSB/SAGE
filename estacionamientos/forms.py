@@ -3,6 +3,7 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.forms.widgets import SplitDateTimeWidget
 from estacionamientos.models import Propietario
+from decimal import Decimal
 
 # Límites para los campos  
 MAXNOMBRE=100
@@ -12,6 +13,10 @@ MAXTELEFONO=11
 MAXMAIL=30
 MAXTARJETA=16
 MAXPIN=4
+MAXID=4
+MAXMONTO=7
+MAXDECIMALS = 2
+SMAX = 10000
 
 class CustomSplitDateTimeWidget(SplitDateTimeWidget):
 
@@ -361,7 +366,7 @@ class PagoForm(forms.Form):
     
     id_validator = RegexValidator(
         regex   = '^[0-9]+$',
-        message = 'La cédula solo puede contener caracteres numéricos.'
+        message = 'Solo puede contener caracteres numéricos.'
     )
     
     card_validator = RegexValidator(
@@ -428,33 +433,21 @@ class PagoForm(forms.Form):
         )
     )
 
-    tarjetaTipo = forms.ChoiceField(
-        required = True,
-        label    = 'tarjetaTipo',
-        choices  = (
-            ('Vista',  ' VISTA '),
-            ('Mister', ' MISTER '),
-            ('Xpress', ' XPRESS '),
-            ('Billetera Electronica', ' E-Wallet ')
-        ),
-        widget   = forms.RadioSelect()
-    )
-
     tarjeta = forms.CharField(
-        required   = True,
+        required   = False,
         max_length=MAXTARJETA,
         label      = "Tarjeta de Credito", 
         validators = [card_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Numero de Tarjeta' # ya cambie lo que dice
+            , 'placeholder' : 'Numero de Tarjeta'
             , 'pattern'     : card_validator.regex.pattern
             , 'message'     : card_validator.message
             }
         )
     )
     
-    pin_billetera = forms.CharField(
+    PIN = forms.CharField(
         required   = False,
         max_length = MAXPIN,
         label      = "Pin Billetera", 
@@ -466,6 +459,32 @@ class PagoForm(forms.Form):
             , 'message'     : pin_validator.message
             }
         )
+    )
+    
+    ID = forms.CharField(
+        required   = False,
+        max_length = MAXID,
+        label      = "ID Billetera", 
+        validators = [id_validator],
+        widget = forms.PasswordInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'ID de la billetera'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+    
+    tarjetaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'tarjetaTipo',
+        choices  = (
+            ('Vista',  ' VISTA '),
+            ('Mister', ' MISTER '),
+            ('Xpress', ' XPRESS '),
+            ('Billetera Electronica', ' E-Wallet ')
+        ),
+        widget   = forms.RadioSelect()
     )
 
 class RifForm(forms.Form):
@@ -590,3 +609,194 @@ class BilleteraForm(forms.Form):
             }
         )
     )
+    
+    cedulaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'cedulaTipo',
+        choices  = (
+            ('V', 'V'),
+            ('E', 'E')
+        ),
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
+        )
+    )
+    
+
+class authBilleteraForm(forms.Form):
+    PIN_validator = RegexValidator(
+        regex   = '^[0-9]{4}$',
+        message = 'Su PIN solo puede contener 4 caracteres numéricos.'
+    )
+    
+    ID_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'Su ID solo puede contener 4 caracteres numéricos.'
+    )
+    
+    ID = forms.CharField(
+        required   = True,
+        max_length = MAXID,
+        label      = "ID",
+        validators = [ID_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Introduzca el ID'
+            , 'pattern'     : ID_validator.regex.pattern
+            , 'message'     : ID_validator.message
+            }
+        )
+    )
+    
+    Pin = forms.CharField(
+        required   = True,
+        max_length = MAXPIN,
+        label      = "Pin",
+        validators = [PIN_validator],
+        widget = forms.PasswordInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'PIN'
+            , 'pattern'     : PIN_validator.regex.pattern
+            , 'message'     : PIN_validator.message
+            }
+        )
+    )
+    
+class BilleteraPagoForm(forms.Form):
+    card_name_validator = RegexValidator(
+        regex   = '^[\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ][\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]*$',
+        message = 'El nombre no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
+    )
+    
+    card_surname_validator = RegexValidator(
+        regex   = '^[\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ][\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]*$',
+        message = 'El apellido no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
+    )
+    
+    id_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'Solo puede contener caracteres numéricos.'
+    )
+    
+    card_validator = RegexValidator(
+        regex   = '^[0-9]{16}$',
+        message = 'Introduzca un número de tarjeta válido de 16 dígitos.'
+    )
+    
+    monto_validator = RegexValidator(
+        regex   = '^([0-9]+(\.[0-9]+)?)$',
+        message = 'La entrada debe ser un numero decimal separado por un punto.'
+    )
+    
+    nombre = forms.CharField(
+        required   = True,
+        max_length=MAXNOMBRE,
+        label      = "Nombre del Tarjetahabiente",
+        validators = [card_name_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Nombre del Tarjetahabiente'
+            , 'pattern'     : card_name_validator.regex.pattern
+            , 'message'     : card_name_validator.message
+            }
+        )
+    )
+
+    apellido = forms.CharField(
+        required   = True,
+        max_length=MAXNOMBRE,
+        label      = "Apellido del Tarjetahabiente",
+        validators = [card_surname_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'      : 'form-control'
+            , 'placeholder' : 'Apellido del Tarjetahabiente'
+            , 'pattern'     : card_surname_validator.regex.pattern
+            , 'message'     : card_surname_validator.message
+            }
+        )
+    )
+
+    cedulaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'cedulaTipo',
+        choices  = (
+            ('V', 'V'),
+            ('E', 'E')
+        ),
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
+        )
+    )
+
+    cedula = forms.CharField(
+        required   = True,
+        max_length=MAXCEDULA,
+        label      = "Cédula",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+    
+    monto = forms.DecimalField(
+            required   = True,
+            max_digits = MAXMONTO,
+            decimal_places = MAXDECIMALS,
+            max_value = SMAX,
+            label = "Monto de Recarga",
+            validators = [monto_validator],
+            widget     = forms.TextInput(attrs = {
+                'class'       : 'form-control',
+                'placeholder' : 'Monto a Recargar',
+                'pattern'     : monto_validator.regex.pattern,
+                'message'     : monto_validator.message
+            }
+        )
+    )
+    
+    id_punto_recarga = forms.CharField(
+        required = False,
+        max_length = MAXID,
+        label = "ID del Punto de Recarga",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'        : 'form-control'
+            , 'placeholder'  : 'Identificador del Punto de Recarga'
+            , 'pattern'      : id_validator.regex.pattern
+            , 'message'      : id_validator.message
+            }
+        )
+    )
+    
+    tarjeta = forms.CharField(
+        required = True,
+        max_length = MAXTARJETA,
+        label      = "Tarjeta de Credito", 
+        validators = [card_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Numero de Tarjeta'
+            , 'pattern'     : card_validator.regex.pattern
+            , 'message'     : card_validator.message
+            }
+        )
+    )
+    
+    tarjetaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'tarjetaTipo',
+        choices  = (
+            ('Vista',  ' VISTA '),
+            ('Mister', ' MISTER '),
+            ('Xpress', ' XPRESS ')
+        ),
+        widget   = forms.RadioSelect()
+    )
+    
+    
+    
+    

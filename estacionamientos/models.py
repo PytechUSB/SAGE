@@ -3,8 +3,9 @@ from django.db import models
 from math import ceil, floor
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from decimal import Decimal
+from decimal import Decimal, ROUND_DOWN
 from datetime import timedelta, datetime
+SMAX = 10000
 
 class Propietario(models.Model):
 	nombres     = models.CharField(max_length = 30)
@@ -45,39 +46,48 @@ class Estacionamiento(models.Model):
 class BilleteraElectronica (models.Model):
 	nombre = models.CharField(max_length = 30, help_text = "Nombre Propio")
 	apellido = models.CharField(max_length = 30)
-	saldo = models.DecimalField(max_digits=20, decimal_places=2)
-	cedula = models.CharField(max_length = 12, unique = True)
-	identificador = models.CharField(max_length = 16)
+	saldo = models.DecimalField(max_digits=10, decimal_places=2, default = Decimal(0))
+	cedula = models.CharField(max_length = 12)
+	cedulaTipo = models.CharField(max_length = 1)
 	PIN = models.CharField(max_length = 8)
 	
+	class Meta:
+		unique_together = (("cedulaTipo", "cedula"),)
+	
 	def __str__(self):
-		return self.nombre+' '+str(self.id)
-
-# Consumos asociados a la billetera
-class Consumos(models.Model):
-	billetera = models.ForeignKey(BilleteraElectronica)
-	monto = models.DecimalField(max_digits=20, decimal_places=2)
-	fecha = models.DateTimeField()
-	id_estacionamiento = models.ForeignKey(Estacionamiento)
+		return str(self.id)
 	
-	class Meta:
-		unique_together = (("billetera", "fecha"),)
+	def recargar_saldo(self, monto):
+		if self.validar_recarga(monto):
+			self.saldo += Decimal(monto)
+			self.saldo = Decimal(self.saldo).quantize(Decimal('.01'), rounding = ROUND_DOWN)
+			self.save()
 		
-	def _str_(self):
-		return str(self.billetera)+' '+str(self.fecha)
-	
-class Recargas(models.Model):
-	billetera = models.ForeignKey(BilleteraElectronica)
-	monto = models.DecimalField(max_digits=20, decimal_places=2)
-	fecha = models.DateTimeField()
-	id_punto_recarga = models.IntegerField()
-	
-	class Meta:
-		unique_together = (("billetera", "fecha"),)
+	def validar_recarga(self, monto):
+		try:
+			if (((self.saldo + Decimal(monto)) <= SMAX) and (monto > 0)):
+				return True
+			
+		except:
+			return False
 		
-	def _str_(self):
-		return str(self.billetera)+' '+str(self.fecha)
-
+		return False
+	
+	def validar_consumo(self, monto):
+		try:
+			if ((self.saldo >= Decimal(monto)) and (monto >= 0)):
+				return True
+		
+		except:
+			return False
+		
+		return False
+	
+	def consumir_saldo(self, monto):
+		if self.validar_consumo(monto):
+			self.saldo -= Decimal(monto)
+			self.saldo = Decimal(self.saldo).quantize(Decimal('.01'), rounding = ROUND_DOWN)
+			self.save()
 	
 class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
@@ -100,8 +110,11 @@ class Pago(models.Model):
 	cedulaTipo       = models.CharField(max_length = 1)
 	cedula           = models.CharField(max_length = 10)
 	tarjetaTipo      = models.CharField(max_length = 6)
-	reserva          = models.ForeignKey(Reserva)
 	monto            = models.DecimalField(decimal_places = 2, max_digits = 256)
+	reserva          = models.ForeignKey(Reserva, blank = True, null = True)
+	id_punto_recarga = models.IntegerField(blank = True, null = True)
+	billetera 		 = models.ForeignKey(BilleteraElectronica, blank = True, null = True)
+	
 
 	def __str__(self):
 		return str(self.id)+" "+str(self.reserva.estacionamiento.nombre)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
