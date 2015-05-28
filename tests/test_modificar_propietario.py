@@ -75,14 +75,17 @@ def modificarPropietario(cedsearch, nomb, apell, cedul, tlf1):
         x = False
         for obj in props:        
             if obj.cedula==cedsearch:
-                try:        
-                    Propietario.objects.filter(cedula= cedsearch).update(
-                        nombres     = form2.cleaned_data['nombres'],
-                        apellidos   = form2.cleaned_data['apellidos'],
-                        cedula      = form2.cleaned_data['cedula'],
-                        telefono_1   = form2.cleaned_data['telefono_1']
-                    )
-                    x = True
+                try:
+                    with transaction.atomic():        
+                        Propietario.objects.filter(cedula= cedsearch).update(
+                            nombres     = form2.cleaned_data['nombres'],
+                            apellidos   = form2.cleaned_data['apellidos'],
+                            cedula      = form2.cleaned_data['cedula'],
+                            telefono_1   = form2.cleaned_data['telefono_1']
+                        )
+                        x = True
+                except (IntegrityError):
+                    pass 
                 finally:
                     break
         return x
@@ -96,14 +99,19 @@ class PropietarioModTestCase(TestCase):
         crearPropietario('Larry Jhosue', 'Perez Gonzalez', '24042840','04120000000')
         tst = modificarPropietario('24042840', 'Larry Capinga', 'Perez Perez', '24042841','04120000000')
         self.assertTrue(tst)
+        self.assertEqual(len(Propietario.objects.all()), 1)
     
     def testModificarPropietario_NotFound(self):
         crearPropietario('Larry Jose', 'Perez Gonzales', '24042840','04128989898')
         tst = modificarPropietario('99987639', 'Larry Capinga', 'Perez Perez', '24042841','04120000000')
         self.assertFalse(tst)
+        self.assertEqual(len(Propietario.objects.all()), 1)
         
     def testModificarPropietario_CedulaExistente(self):
         crearPropietario('Guigue', 'Perez', '4444', '04128987654')
         crearPropietario('Ana', 'Bell', '5689', '04263579468')
-        tst = modificarPropietario('5689', 'Larry', 'Perez', '4444' ,'04260987654')
+        self.assertEqual(len(Propietario.objects.all()), 2)
+        tst = modificarPropietario('5689', 'Larry', 'Perez', '4444' ,'04240987654')
         self.assertFalse(tst)
+        self.assertEqual(len(Propietario.objects.all()), 2)
+        
