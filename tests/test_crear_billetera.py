@@ -286,4 +286,183 @@ class CrearBilleteraTestCase(TestCase):
         )
         self.assertFalse(billetera.validar_consumo("%"))
     
+    # borde    
+    def testRecargarSaldoCero(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo(0)
+        self.assertEqual(billetera.saldo, 0)
+        
+    # borde    
+    def testRecargarSaldoNegativo(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo(Decimal(-0.01))
+        self.assertEqual(billetera.saldo, 0)
+        
+    # borde    
+    def testRecargarSaldoLimiteInferior(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo(Decimal(0.01))
+        self.assertEqual(billetera.saldo, Decimal('0.01'))
+        
+    # borde    
+    def testRecargarSaldoLimiteSuperior(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo(10000)
+        self.assertEqual(billetera.saldo, 10000)
+        
+    # borde    
+    def testRecargarSaldoInvalido(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo(Decimal(10000.01))
+        self.assertEqual(billetera.saldo, 0)
+        
+    # malicia    
+    def testRecargarSaldoMontoString(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo("1")
+        self.assertEqual(billetera.saldo, 0)
+        
+    # malicia    
+    def testRecargarSaldoCaracterEspecial(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo("&")
+        self.assertEqual(billetera.saldo, 0)
+        
+    # borde
+    def testConsumirSaldoCero(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo(10)
+        billetera.consumir_saldo(0)
+        self.assertEqual(billetera.saldo, 10)
+        
+    # borde
+    def testConsumirSaldoNegativo(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo(10)
+        billetera.consumir_saldo(Decimal('-0.01'))
+        self.assertEqual(billetera.saldo, 10)
+        
+    # borde
+    def testConsumirSaldoLimiteInferior(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo(10)
+        billetera.consumir_saldo(Decimal('0.01'))
+        self.assertEqual(billetera.saldo, Decimal('9.99'))
+        
+    # borde
+    def testConsumirSaldoLimiteSuperior(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo(10000)
+        billetera.consumir_saldo(10000)
+        self.assertEqual(billetera.saldo, 0)
+        
+    # borde
+    def testConsumirSaldoInvalido(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo(10000)
+        billetera.consumir_saldo(10000.01)
+        self.assertEqual(billetera.saldo, 10000)
+        
+    # malicia
+    def testConsumirSaldoMontoString(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        billetera.recargar_saldo(10)
+        billetera.consumir_saldo("1")
+        self.assertEqual(billetera.saldo, 10)
+        
+    # malicia
+    def testConsumirSaldoCaracterEspecial(self):
+        billetera = BilleteraElectronica(
+                        nombre = 'Alejandro',
+                        apellido = 'Banega',
+                        cedula = "12345678",
+                        cedulaTipo = 'V',
+                        PIN = "1234"
+        )
+        
+        billetera.recargar_saldo(10)
+        billetera.consumir_saldo("$")
+        self.assertEqual(billetera.saldo, 10)
+        
+        
+    
+    
     

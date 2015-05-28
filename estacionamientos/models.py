@@ -3,7 +3,7 @@ from django.db import models
 from math import ceil, floor
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from decimal import Decimal
+from decimal import Decimal, ROUND_DOWN
 from datetime import timedelta, datetime
 SMAX = 10000
 
@@ -57,8 +57,10 @@ class BilleteraElectronica (models.Model):
 		return str(self.id)
 	
 	def recargar_saldo(self, monto):
-		self.saldo += Decimal(monto)
-		self.save()
+		if self.validar_recarga(monto):
+			self.saldo += Decimal(monto)
+			self.saldo = Decimal(self.saldo).quantize(Decimal('.01'), rounding = ROUND_DOWN)
+			self.save()
 		
 	def validar_recarga(self, monto):
 		try:
@@ -81,8 +83,10 @@ class BilleteraElectronica (models.Model):
 		return False
 	
 	def consumir_saldo(self, monto):
-		self.saldo -= Decimal(monto)
-		self.save()
+		if self.validar_consumo(monto):
+			self.saldo -= Decimal(monto)
+			self.saldo = Decimal(self.saldo).quantize(Decimal('.01'), rounding = ROUND_DOWN)
+			self.save()
 	
 class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
