@@ -31,7 +31,7 @@ def crearPropietario(nomb, apell , cedul , tlf1):
                 nombres = form.cleaned_data['nombres'],
                 apellidos = form.cleaned_data['apellidos'],
                 cedula = form.cleaned_data['cedula'],
-                telefono_1   = form.cleaned_data['telefono_1']
+                telefono1   = form.cleaned_data['telefono_1']
 
                 )    
             obj.save()
@@ -42,7 +42,7 @@ def crearPropietario(nomb, apell , cedul , tlf1):
                 nombres = form.cleaned_data['nombres'],
                 apellidos = form.cleaned_data['apellidos'],
                 cedula = form.cleaned_data['cedula'],
-                telefono_1   = form.cleaned_data['telefono_1']
+                telefono1   = form.cleaned_data['telefono_1']
 
                 ) 
             try:
@@ -81,7 +81,7 @@ def modificarPropietario(cedsearch, nomb, apell, cedul, tlf1):
                             nombres     = form2.cleaned_data['nombres'],
                             apellidos   = form2.cleaned_data['apellidos'],
                             cedula      = form2.cleaned_data['cedula'],
-                            telefono_1   = form2.cleaned_data['telefono_1']
+                            telefono1   = form2.cleaned_data['telefono_1']
                         )
                         x = True
                 except (IntegrityError):
