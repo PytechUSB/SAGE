@@ -53,7 +53,7 @@
 	             Cédula:
 	           </b></td></tr>
 	           <tr><td>
-	             {{billetera.cedula}}
+	             {{billetera.cedulaTipo}}-{{billetera.cedula}}
 	           </td></tr>
 	
 	           <tr><td><b><i class="fa fa-money"></i>
@@ -61,6 +61,7 @@
 	           </b></td></tr>
 	           <tr><td>
 	             {{billetera.saldo|floatformat:2|intcomma}} 
+	             <label for="se recomienda recargar" id='id_mensaje'><font color="red">Se recomienda recargar</font></label>
 	           </td></tr>
 	
 	        </tbody>
@@ -79,4 +80,23 @@
         </div>
     </form>
   </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+        $('document').ready(function() {
+        
+        
+                $('#id_mensaje').css("display", "none");
+        
+           if({{billetera.saldo}} == 0){
+                $('#id_mensaje').css("display", "block");
+            }; 
+			
+			
+		});
+		
+</script>
+
 {% endblock %}

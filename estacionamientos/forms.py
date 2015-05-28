@@ -15,6 +15,8 @@ MAXTARJETA=16
 MAXPIN=4
 MAXID=4
 MAXMONTO=7
+MAXDECIMALS = 2
+SMAX = 10000
 
 class CustomSplitDateTimeWidget(SplitDateTimeWidget):
 
@@ -590,6 +592,18 @@ class BilleteraForm(forms.Form):
         )
     )
     
+    cedulaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'cedulaTipo',
+        choices  = (
+            ('V', 'V'),
+            ('E', 'E')
+        ),
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
+        )
+    )
+    
 
 class authBilleteraForm(forms.Form):
     PIN_validator = RegexValidator(
@@ -713,7 +727,8 @@ class BilleteraPagoForm(forms.Form):
     monto = forms.DecimalField(
             required   = True,
             max_digits = MAXMONTO,
-            decimal_places = 2,
+            decimal_places = MAXDECIMALS,
+            max_value = SMAX,
             label = "Monto de Recarga",
             validators = [monto_validator],
             widget     = forms.TextInput(attrs = {

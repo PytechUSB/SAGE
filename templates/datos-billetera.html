@@ -45,7 +45,7 @@
                   Cédula:
                 </b></td></tr>
                 <tr><td>
-                  {{billetera.cedula}}
+                  {{billetera.cedulaTipo}}-{{billetera.cedula}}
                 </td></tr>
 
                 <tr><td><b><i class="fa fa-money"></i>
@@ -108,6 +108,7 @@
       window.open(href, windowname, 'width=500,height=550,scrollbars=no');
       return false;
     }
+    
 </script>
 
 {% include "validator.js.html" %}

@@ -46,8 +46,12 @@ class BilleteraElectronica (models.Model):
 	nombre = models.CharField(max_length = 30, help_text = "Nombre Propio")
 	apellido = models.CharField(max_length = 30)
 	saldo = models.DecimalField(max_digits=10, decimal_places=2)
-	cedula = models.CharField(max_length = 12, unique = True)
+	cedula = models.CharField(max_length = 12)
+	cedulaTipo = models.CharField(max_length = 1)
 	PIN = models.CharField(max_length = 8)
+	
+	class Meta:
+		unique_together = (("cedulaTipo", "cedula"),)
 	
 	def __str__(self):
 		return str(self.id)
@@ -71,31 +75,6 @@ class BilleteraElectronica (models.Model):
 	def consumir_saldo(self, monto):
 		self.saldo -= Decimal(monto)
 		self.save()
-			
-
-# Consumos asociados a la billetera
-class Consumos(models.Model):
-	billetera = models.ForeignKey(BilleteraElectronica)
-	monto = models.DecimalField(max_digits=20, decimal_places=2)
-	fecha = models.DateTimeField()
-	id_estacionamiento = models.ForeignKey(Estacionamiento)
-	
-	class Meta:
-		unique_together = (("billetera", "fecha"),)
-		
-	def _str_(self):
-		return str(self.billetera)+' '+str(self.fecha)
-	
-class Recargas(models.Model):
-	billetera = models.ForeignKey(BilleteraElectronica)
-	monto = models.DecimalField(max_digits=20, decimal_places=2)
-	tarjetaTipo = models.CharField(max_length = 6)
-	fecha = models.DateTimeField()
-	id_punto_recarga = models.IntegerField()
-	
-	def _str_(self):
-		return str(self.billetera)+' '+str(self.fecha)
-
 	
 class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)

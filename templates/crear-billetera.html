@@ -25,18 +25,17 @@
            <p></p>
             <form action ='datos_billetera' method="post" class="form form-vertical" >
             {% csrf_token %}
-      {{ formAuth.ID }}
-         <span class='error' id='{{formAuth.ID.name}}_error' aria-live="polite">
-            {{ formAuth.ID.errors }}
-         </span>
-         <p>
-         </p>
-       {{ formAuth.Pin }}
-          <span class='error' id='{{formAuth.Pin.name}}_error' aria-live="polite">
-            {{ formAuth.Pin.errors }}
-          </span>
-          <p>
-          </p>
+     		 {% for field in formAuth %}
+              <div class="control-group">
+                <div class="controls">
+                  {{ field }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% endfor %}
           <div class="control-group" align="center">
                <button type="submit" id="id_submit2" class="btn btn-primary">
                     Ingresar
@@ -64,17 +63,51 @@
         </p>
          <form action ='crear_billetera' method="post" class="form form-vertical" >
          {% csrf_token %}
-            {% for field in form %}
-              <div class="control-group">
-                <div class="controls">
-                  {{ field }}
-                  <span class='error' id='{{field.name}}_error' aria-live="polite">
-                    {{ field.errors }}
-                  </span>
-                  <p>
-                </div>
-              </div>
-            {% endfor %}
+         <div class="control-group">
+            <div class="controls">
+              <p>
+                {{ form.nombre }}
+                <span
+                  class='error'
+                  id='{{form.nombre.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.nombre.errors }}
+              <p>
+                {{ form.apellido }}
+                <span
+                  class='error'
+                  id='{{form.apellido.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.apellido.errors }}
+              <p>
+                <table><tbody><tr>
+                  <td>
+                    {{ form.cedulaTipo }}
+                  </td>
+                  <td>
+                    {{ form.cedula }}
+                  </td>
+                </tr></tbody></table>
+                <span
+                  class='error'
+                  id='{{form.cedula.name}}_error'
+                  aria-live="polite"
+                ></span>
+                {{ form.cedula.errors }}
+              </p>
+               <p>
+                {{ form.PIN }}
+                <span
+                  class='error'
+                  id='{{form.PIN.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.PIN.errors }}
             <div class="control-group" align="center">
                 <button type="submit" id="id_submit" class="btn btn-primary">
                     Crear Billetera
@@ -89,34 +122,6 @@
 {%endblock%}
 {% block scripts %}
 
-{% include "validator.js.html" %}
-  
-<script type="text/javascript">
-   {% for field in formAuth %}
-    var error_{{ field.name }} = document.getElementById('{{ field.name }}_error')
-    var {{ field.name }} = document.getElementById('id_{{ field.name }}');
-    {{ field.name }}.addEventListener('blur', function (event) {
-      verifyPattern({{ field.name }}, error_{{ field.name }}, {{ field.name }}.getAttribute('message'));
-    }, false);
-    
-    {{ field.name }}.addEventListener('focus', function (event) {
-      error_{{ field.name}}.innerHTML = ""; // Reset the content of the message
-      error_{{ field.name}}.className = "error"; // Reset the visual state of the message
-    }, false);
-  {% endfor %}  
-</script>
-   
-<script type="text/javascript">
-    function popup(mylink, windowname) {
-      if (! window.focus)
-        return true;
-      var href;
-      if (typeof(mylink) == 'string')
-        href=mylink;
-      else
-        href=mylink.href;
-      window.open(href, windowname, 'width=500,height=550,scrollbars=no');
-      return false;
-    }
-</script>
+{% include "validator.js.html" with form=form %}
+{% include "validator.js.html" with form=formAuth %}
 {% endblock %}

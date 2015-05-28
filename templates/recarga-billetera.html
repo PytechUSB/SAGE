@@ -5,33 +5,21 @@
   SAGE - Recarga de Billetera
 {% endblock %}
 
+{% block body%}
+  <body {% if mensaje %} onunload="openlink()" {% endif %}>
+{% endblock %}
 {% block menu %}{% endblock %}
 
 {% block innerContents %}
 
-<div class="col-sm-5">
-   <div class="panel panel-default">
-     <div class="panel-heading">
-        <div class="panel-title">
+<div class="col-sm-10">
     <h3><i class="fa fa-money"></i>
-        Recarga de la Billetera Electronica   
+       Recarga de la Billetera Electronica
     </h3>
-    </div>
-    </div>
-    {%if mensaje%}
     <hr>
-    <div style="color:{{color}}">
-        {{mensaje}}
-        <hr>
-      </div>
-    {%endif%}
-    <hr>
-    <div style="color:{{color}}">
-        {{mensaje}}
-        <hr>
-      </div>
-    <hr>
-     <form
+    <div class="col-md-4">
+      {% if form %}
+        <form
           method="post"
           class="form form-vertical"
         >
@@ -97,11 +85,14 @@
                   <td><font size="32" color="gray"><i class="fa fa-cc-amex"> </i></font></td>
                 </tr>
                 <tr>
-                        <td> {{ form.tarjetaTipo.0}} </td>
-                        <td> {{ form.tarjetaTipo.1}} </td>
-                        <td> {{ form.tarjetaTipo.2}} </td>
+                  {% for choice in form.tarjetaTipo %}
+                    {% if choice != form.tarjetaTipo.3 %}
+                      <td> {{ choice }} </td>
+                    {% endif %}
+                  {% endfor %}
                 </tr>
               </table>
+              {{ form.tarjetaTipo.errors }}
               <p>
                 {{ form.tarjeta }}
                 <span
@@ -113,7 +104,6 @@
               {{ form.tarjeta.errors }}
             </div>
           </div>
-           <div class="control-group" align="center">
           <input
             type="submit"
             value="Realizar Pago"
@@ -125,26 +115,91 @@
             onclick="self.close()"
             class="btn btn-primary"
           >
-          </div>
-          <p>
-          </p>
         </form>
+      {% endif %}
+      {% if pago %}
+        <div class="row">
+          <div class="col-md-7" style="color:{{color}}">
+            {{mensaje}}
+            <hr>
+          </div>
+          <div class="col-md-4">
+            <table class="table table-striped">
+              <tbody>
+                <tr><td><b><i class="fa fa-circle"></i>
+                  Número de Transacción:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.id}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
+                  Fecha de Transacción:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.fechaTransaccion}}
+                </td></tr>
+				
+				<tr><td><b><i class="fa fa-clock-o"></i>
+                  ID Billetera:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.billetera.id}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-user"></i>
+                  Cédula:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.cedulaTipo}}-{{pago.cedula}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-money"></i>
+                  Tipo de Tarjeta:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.tarjetaTipo}} </td></tr>
+
+                <tr><td><b><i class="fa fa-money"></i>
+                  Monto:
+                </b></td></tr>
+                <tr><td>
+                  BsF. {{pago.monto|floatformat:2|intcomma }}
+                </td></tr>
+              </tbody>
+            </table>
+            <div>
+              <input
+                type="button"
+                value="Volver"
+                onclick= "javascript: closepopup();"
+                class="btn btn-primary"
+              >
+            </div>
+          </div>
         </div>
- {% endblock %}       
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}       
  
  {% block scripts %}
 
-<script>
-
-        $('document').ready(function() {
-			
-			$('#id_cancelar').click(function() {
-				$(location).attr('href',"/estacionamientos/datos_billetera");
-			});
-			
-		});
-		
-</script>
-
 {% include "validator.js.html" %}
+ <script type="text/javascript">
+    function popuponclick(){
+      my_window = window.open("",
+       "mywindow","status=1,width=350,height=150");
+
+      my_window.document.write('<h1>The Popup Window</h1>');
+    }
+
+    function closepopup(){
+      window.close();
+    }
+
+    function openlink(){
+      opener.location='/estacionamientos/datos_billetera';
+    }
+  </script> 
 {% endblock %}
