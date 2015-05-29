@@ -834,7 +834,6 @@ def billetera_recarga(request, _id):
                         tarjetaTipo = form.cleaned_data['tarjetaTipo'],
                         monto = form.cleaned_data['monto'],
                         fechaTransaccion = datetime.now(),
-                        id_punto_recarga = form.cleaned_data['id_punto_recarga'],
                         billetera = billeteraE   
                     )
                 
