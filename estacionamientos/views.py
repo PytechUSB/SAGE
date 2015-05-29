@@ -22,7 +22,7 @@ from estacionamientos.controller import (
     tasa_reservaciones,
     calcular_porcentaje_de_tasa,
     consultar_ingresos,
-)
+    billetera_autenticar)
 
 from estacionamientos.forms import (
     EstacionamientoExtendedForm,
@@ -32,7 +32,8 @@ from estacionamientos.forms import (
     PagoForm,
     RifForm,
     CedulaForm,
-    BilleteraForm, # aun no creo el form de billetera
+    BilleteraForm,
+    BilleteraPagoForm
 )
 from estacionamientos.models import (
     Propietario,
@@ -46,6 +47,7 @@ from estacionamientos.models import (
     TarifaFinDeSemana,
     TarifaHoraPico
 )
+from estacionamientos.forms import authBilleteraForm
 
 # Vista para procesar los propietarios
 def propietario_all(request):
@@ -77,7 +79,8 @@ def propietario_all(request):
             obj = Propietario(
                 nombres     = form.cleaned_data['nombres'],
                 apellidos   = form.cleaned_data['apellidos'],
-                cedula      = form.cleaned_data['cedula']
+                cedula      = form.cleaned_data['cedula'],
+                telefono1   = form.cleaned_data['telefono_1']
             )     
             try:
                 obj.save()
@@ -94,16 +97,15 @@ def propietario_all(request):
 
     return render(
         request,
-        'propietario-crear.html',
-        { 'formP': form
+        'Propietario/propietario-menu.html',
+        { 'form': form
         , 'propietarios': propietarios
         , 'estacionamientos': estacionamientos
         }
     )
 
-def propietario_detail(request, _id):
+def propietario_edit(request, _id):
     estacionamientos = Estacionamiento.objects.all()
-    
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
     try:
@@ -111,14 +113,45 @@ def propietario_detail(request, _id):
     except ObjectDoesNotExist:
         raise Http404
 
+    if request.method == 'GET':
+        form_data = {
+            'nombres' : propietario.nombres,
+            'apellidos' : propietario.apellidos,
+            'cedula' : propietario.cedula,   
+            'telefono1' : propietario.telefono1 
+        }
+        form = PropietarioForm(data = form_data)
+
+    elif request.method == 'POST':
+        # Leemos el formulario
+        form = PropietarioForm(request.POST)
+        # Si el formulario
+        if form.is_valid():
+            try:
+                Propietario.objects.filter(id=_id).update(
+                nombres     = form.cleaned_data['nombres'],
+                apellidos   = form.cleaned_data['apellidos'],
+                cedula      = form.cleaned_data['cedula'],
+                telefono1   = form.cleaned_data['telefono_1']
+            )
+            except:
+                return render(
+                    request, 'template-mensaje.html',
+                    { 'color'   : 'red'
+                    , 'mensaje' : 'Cédula ya existente'
+                    }
+                ) 
+    
+    propietario = Propietario.objects.get(id = _id)
     return render(
         request,
-        'detalle-propietario.html',
-        { 'propietario': propietario,
-          'estacionamientos': estacionamientos
+        'Propietario/detalle-propietario.html',
+        { 'estacionamientos': estacionamientos,
+          'propietario': propietario,
+          'form': form
         }
     )
-    
+
 # Usamos esta vista para procesar todos los estacionamientos
 def estacionamientos_all(request):
     estacionamientos = Estacionamiento.objects.all()
@@ -243,7 +276,51 @@ def estacionamiento_detail(request, _id):
         , 'estacionamiento': estacionamiento
         }
     )
-    
+
+def estacionamiento_edit(request, _id):
+    #estacionamientos = Estacionamiento.objects.all()
+    _id = int(_id)
+    # Verificamos que el objeto exista antes de continuar
+    try:
+        estacionamiento = Estacionamiento.objects.get(id = _id)
+    except ObjectDoesNotExist:
+        raise Http404
+
+    form = CedulaForm()
+    if request.method == 'POST':
+        form = CedulaForm(request.POST)
+        if form.is_valid():
+
+            cedula = form.cleaned_data['cedula']
+            try:
+                propietario=Propietario.objects.get(cedula=cedula)
+                Estacionamiento.objects.filter(id = _id).update(
+                    propietario=propietario
+                    )
+            except:
+                return render(
+                    request, 'Propietario/cambiar-propietario.html',
+                    { 'color'   : 'red'
+                    , 'estacionamiento': estacionamiento
+                    , 'mensajeR' : 'No existe tal propietario'
+                    }
+                )
+            return render(
+                    request, 'Propietario/cambiar-propietario.html',
+                    { 'color'   : 'green'
+                    , 'estacionamiento': estacionamiento
+                    , 'mensajeG' : 'Se ha cambiado exitosamente'
+                    }
+                )
+            
+            
+    return render(
+        request,
+        'Propietario/cambiar-propietario.html',
+        { 'form': form
+        , 'estacionamiento': estacionamiento
+        }
+    )
 
 def estacionamiento_reserva(request, _id):
     _id = int(_id)
@@ -346,8 +423,43 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-# agregar aqui la billetera electronica
-# se solicita el pin?
+
+def pago_reserva_aux(request, form, monto, estacionamiento):
+    inicioReserva = datetime(
+        year   = request.session['anioinicial'],
+        month  = request.session['mesinicial'],
+        day    = request.session['diainicial'],
+        hour   = request.session['inicioReservaHora'],
+        minute = request.session['inicioReservaMinuto']
+    )
+
+    finalReserva  = datetime(
+        year   = request.session['aniofinal'],
+        month  = request.session['mesfinal'],
+        day    = request.session['diafinal'],
+        hour   = request.session['finalReservaHora'],
+        minute = request.session['finalReservaMinuto']
+    )
+
+    reservaFinal = Reserva(
+        estacionamiento = estacionamiento,
+        inicioReserva   = inicioReserva,
+        finalReserva    = finalReserva,
+    )
+
+    # Se guarda la reserva en la base de datos
+    reservaFinal.save()
+    pago = Pago(
+        fechaTransaccion = datetime.now(),
+        cedula           = form.cleaned_data['cedula'],
+        cedulaTipo       = form.cleaned_data['cedulaTipo'],
+        monto            = monto,
+        tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
+        reserva          = reservaFinal,
+    )
+
+    return pago
+
 
 def estacionamiento_pago(request,_id):
     form = PagoForm()
@@ -363,55 +475,55 @@ def estacionamiento_pago(request,_id):
     if request.method == 'POST':
         form = PagoForm(request.POST)
         if form.is_valid():
-            
-            inicioReserva = datetime(
-                year   = request.session['anioinicial'],
-                month  = request.session['mesinicial'],
-                day    = request.session['diainicial'],
-                hour   = request.session['inicioReservaHora'],
-                minute = request.session['inicioReservaMinuto']
-            )
-
-            finalReserva  = datetime(
-                year   = request.session['aniofinal'],
-                month  = request.session['mesfinal'],
-                day    = request.session['diafinal'],
-                hour   = request.session['finalReservaHora'],
-                minute = request.session['finalReservaMinuto']
-            )
-
-            reservaFinal = Reserva(
-                estacionamiento = estacionamiento,
-                inicioReserva   = inicioReserva,
-                finalReserva    = finalReserva,
-            )
-
-            # Se guarda la reserva en la base de datos
-            reservaFinal.save()
-
             monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
-            pago = Pago(
-                fechaTransaccion = datetime.now(),
-                cedula           = form.cleaned_data['cedula'],
-                cedulaTipo       = form.cleaned_data['cedulaTipo'],
-                monto            = monto,
-                tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
-                reserva          = reservaFinal,
-            )
-
-
-            # Se guarda el recibo de pago en la base de datos
-            pago.save()
-
-            return render(
-                request,
-                'pago.html',
-                { "id"      : _id
-                , "pago"    : pago
-                , "color"   : "green"
-                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
-                }
-            )
+            if (form.cleaned_data['tarjetaTipo'] == 'Billetera Electronica'):
+                billeteraE = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
+                
+                if (billeteraE == None):
+                    return render(
+                        request, 'template-mensaje.html',
+                        {'color' : 'red'
+                        , 'mensaje' : 'Autenticacion Denegada'
+                        }
+                    )
+                    
+                else:
+                    if(not billeteraE.validar_consumo(monto)):
+                        return render(
+                            request, 'template-mensaje.html',
+                            {'color' : 'red'
+                            , 'mensaje' : 'Saldo Insuficiente'
+                            }
+                        ) 
+                        
+                    else:
+                        pago = pago_reserva_aux(request, form, monto, estacionamiento)
+                        pago.save()
+                        billeteraE.consumir_saldo(monto)
+                        return render(
+                            request,
+                            'pago.html',
+                            { "id"      : _id
+                            , "pago"    : pago
+                            , "color"   : "green"
+                            , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                            }
+                        )
+                        
+            
+            
+            else:
+                pago = pago_reserva_aux(request, form, monto, estacionamiento)
+                pago.save()
+                return render(
+                    request,
+                    'pago.html',
+                    { "id"      : _id
+                    , "pago"    : pago
+                    , "color"   : "green"
+                    , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                    }
+                )
 
     return render(
         request,
@@ -451,6 +563,7 @@ def estacionamiento_consulta_reserva(request):
 
             cedula        = form.cleaned_data['cedula']
             facturas      = Pago.objects.filter(cedula = cedula)
+            facturas      = facturas.exclude(reserva = None)
             listaFacturas = []
 
             listaFacturas = sorted(
@@ -581,71 +694,166 @@ def grafica_tasa_de_reservacion(request):
 def billetera_all(request):
     billetera = BilleteraElectronica.objects.all()
     
-    # Si es un GET, mandamos un formulario vacio
-    if request.method == 'GET':
-        form = BilleteraForm()
+    form = BilleteraForm()
+    formAuth = authBilleteraForm()
 
     # Si es POST, se verifica la información recibida
-    elif request.method == 'POST':
+    if request.method == 'POST':
         # Creamos un formulario con los datos que recibimos
         form =BilleteraForm(request.POST)
          
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
-    if form.is_valid():
-        inicial = 1000100010001000
-        
-        if len(billetera) == 0:
-            obj = BilleteraElectronica(
-                nombre = form.cleaned_data['nombre'],
-                apellido = form.cleaned_data['apellido'],
-                PIN = form.cleaned_data['PIN'],
-                cedula = form.cleaned_data['cedula'],
-                identificador = str(inicial),
-                saldo = 0.00
-                )    
-            obj.save()
-            return render(
-                    request, 'template-mensaje.html',
-                    {'color' : 'green'
-                     ,'billetera': obj
-                     , 'mensaje' : 'Billetera Creada Satisfactoriamente'
-                     }
-                )
-                
-        else:    
-            siguiente_numero = inicial + len(billetera)
-            obj = BilleteraElectronica(
-                    nombre = form.cleaned_data['nombre'],
-                    apellido = form.cleaned_data['apellido'],
-                    PIN = form.cleaned_data['PIN'],
-                    cedula = form.cleaned_data['cedula'],
-                    identificador = str(siguiente_numero),
-                    saldo = 0.00
-                )
-            
-            try:
-                with transaction.atomic():    
-                    obj.save()
-                    return render(
+        if form.is_valid():
+            if len(billetera) == 9999:
+                return render(
                         request, 'template-mensaje.html',
-                        {'color' : 'green'
-                         ,'billetera': obj
-                         , 'mensaje' : 'Billetera Creada Satisfactoriamente'
+                        {'color' : 'red'
+                         , 'mensaje' : 'No se pueden crear mas billeteras'
                          }
                     )
-            except (IntegrityError):
-                return render(
-                    request, 'template-mensaje.html',
-                    {'color' : 'red'
-                     , 'mensaje' : 'Ya posee una billetera asociada'
-                     }
-                )
+                    
+            else:
+                obj = BilleteraElectronica(
+                        nombre = form.cleaned_data['nombre'],
+                        apellido = form.cleaned_data['apellido'],
+                        PIN = form.cleaned_data['PIN'],
+                        cedula = form.cleaned_data['cedula'],
+                        saldo = 0.00,
+                        cedulaTipo = form.cleaned_data['cedulaTipo']
+                    )
                 
-    form = BilleteraForm()
+                try:
+                    with transaction.atomic():    
+                        obj.save()
+                        return render(
+                            request, 'template-mensaje.html',
+                            {'color' : 'green'
+                             ,'billetera': obj
+                             , 'mensaje' : 'Billetera Creada Satisfactoriamente'
+                             }
+                        )
+                except (IntegrityError):
+                    return render(
+                        request, 'template-mensaje.html',
+                        {'color' : 'red'
+                         , 'mensaje' : 'Ya posee una billetera asociada'
+                         }
+                    )
+                
+
     return render(
         request,
         'crear-billetera.html', 
-        { 'formB': form
+        { 'form': form
+         ,'formAuth': formAuth
+        }
+    )
+   
+# vista para mostar los datos de la billetera
+def billetera_datos(request):
+    form = BilleteraForm()
+    formAuth = authBilleteraForm()
+    # Si es POST, se verifica la información recibida
+    if request.method == 'POST':
+        # Creamos un formulario con los datos que recibimos
+        formAuth = authBilleteraForm(request.POST)
+         
+        # Si el formulario es valido, entonces creamos un objeto con
+        # el constructor del modelo
+
+        if formAuth.is_valid():
+            billetera_autenticada = billetera_autenticar(formAuth.cleaned_data['ID'], formAuth.cleaned_data['Pin'])
+            if(billetera_autenticada != None):
+                return render(
+                    request,
+                    'datos-billetera.html', 
+                    { 'billetera': billetera_autenticada
+                    , 'form': form
+                    , 'formAuth': formAuth
+                    }
+                )
+                
+            else:
+                return render(
+                    request, 'template-mensaje.html',
+                    {'color' : 'red'
+                    , 'mensaje' : 'Autenticacion Denegada'
+                    }
+                )
+        
+
+    return render(
+                request,
+                'crear-billetera.html', 
+                { 'form': form
+                 ,'formAuth': formAuth
+                }
+            )
+    
+# vista para mostar los datos de la billetera
+def billetera_recarga(request, _id):
+    _id = int(_id)
+    try:
+        billeteraE = BilleteraElectronica.objects.get(pk = _id)
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    form = BilleteraPagoForm()
+    
+    # Si es POST, se verifica la información recibida
+    if request.method == 'POST':
+        # Creamos un formulario con los datos que recibimos
+        form = BilleteraPagoForm(request.POST)
+             
+        # Si el formulario es valido, entonces creamos un objeto con
+        # el constructor del modelo
+        if form.is_valid():
+            if (form.cleaned_data["monto"] <= Decimal(0.00)):
+                return render(
+                    request,
+                    'template-mensaje.html',
+                    {'color' : 'red'
+                    , 'mensaje' : 'Monto debe ser mayor que 0.00'
+                    }
+                )
+                
+            elif (not billeteraE.validar_recarga(form.cleaned_data["monto"])):
+                return render(
+                    request,
+                    'template-mensaje.html',
+                    {'color' : 'red'
+                    , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
+                    }
+                )
+                
+            else:
+                pago = Pago(
+                        cedulaTipo = form.cleaned_data['cedulaTipo'],
+                        cedula = form.cleaned_data['cedula'],
+                        tarjetaTipo = form.cleaned_data['tarjetaTipo'],
+                        monto = form.cleaned_data['monto'],
+                        fechaTransaccion = datetime.now(),
+                        id_punto_recarga = form.cleaned_data['id_punto_recarga'],
+                        billetera = billeteraE   
+                    )
+                
+                pago.save()
+                billeteraE.recargar_saldo(form.cleaned_data['monto'])
+                return render(
+                    request, 
+                    'recarga-billetera.html',
+                    { "id"      : _id
+                    , "pago"    : pago
+                    , "color"   : "green"
+                    , "mensaje" : "Se realizo la recarga de la billetera satisfactoriamente"
+                    }
+                    
+                )
+        
+    return render(
+        request,
+        'recarga-billetera.html', 
+        { 'form': form
         }
     )

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}
+  SAGE - Propietario {{propietario.nombres}} {{propietario.apellidos}}
+{% endblock %}
+{% block body%}
+  <body {% if mensaje %} onunload="openlink()" {% endif %}>
+{% endblock %}
+
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-user"></i>
+      Cambiar propietario de {{ estacionamiento.nombre }}
+    </h3>
+    <hr>
+    <div class="col-md-4">
+      {% if form %}
+        <form method="post" class="form form-vertical">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="control-group">
+              <div class="controls">
+                {{ field }}
+                <span class='error' id='{{field.name}}_error' aria-live=" polite">{{ field.errors }}</span>
+                <br>
+              </div>
+            </div>
+          {% endfor %}
+          <div class="control-group" align="center">
+            <input type="submit" value="Cambiar" class="btn btn-primary">
+            <button type="button" value="Previous Page" onClick="javascript:history.go(-1);" class="btn btn-primary">
+              Volver
+          </button>
+          </div>
+        </form>
+      {% endif %}
+      <!-- Mensaje de error si la cedula no esta en la base de datos -->
+      {% if mensajeR %}
+        <div style="color:{{color}}">
+          {{mensajeR}}<hr>
+        </div>
+        <div class="panel-body" align="center">
+          <!-- AGREGAR PROPIETARIO -->
+          <a href="/estacionamientos/propietario-crear">
+            Agregar Propietario
+          </a><br><br>
+          <a href="/estacionamientos/{{estacionamiento.id}}">
+            <input type="button" value="Volver" class="btn btn-primary">
+          </a>
+        </div>
+      <!-- Mensaje de cambio satisfactorio -->
+      {% elif mensajeG %}
+        <div style="color:{{color}}">
+          {{mensajeG}}<hr>
+        </div>
+        <div class="panel-body" align="center">
+          <a href="/estacionamientos/{{estacionamiento.id}}">
+            <input type="button" value="Volver" class="btn btn-primary">
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+{% include "validator.js.html" %}
+{% endblock %}

@@ -3,16 +3,30 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.forms.widgets import SplitDateTimeWidget
 from estacionamientos.models import Propietario
+from decimal import Decimal
+
+# Límites para los campos  
+MAXNOMBRE=100
+MAXRIF=11
+MAXCEDULA=10
+MAXTELEFONO=11
+MAXMAIL=30
+MAXTARJETA=16
+MAXPIN=4
+MAXID=4
+MAXMONTO=7
+MAXDECIMALS = 2
+SMAX = 10000
 
 class CustomSplitDateTimeWidget(SplitDateTimeWidget):
 
     def format_output(self, rendered_widgets):
         return '<p></p>'.join(rendered_widgets)
 
+
 class EstacionamientoForm(forms.Form):
-    
     name_validator = RegexValidator(
-        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
+        regex   = '^[0-9¡!¿?\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ][0-9¡!¿?\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]*$',
         message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
     )
     
@@ -34,6 +48,7 @@ class EstacionamientoForm(forms.Form):
     
     nombre = forms.CharField(
         required = True,
+        max_length=MAXNOMBRE,
         label    = "Nombre del Estacionamiento",
         validators = [name_validator],
         widget   = forms.TextInput(attrs =
@@ -47,6 +62,7 @@ class EstacionamientoForm(forms.Form):
 
     direccion = forms.CharField(
         required = True,
+        max_length=MAXNOMBRE,
         label    = "Direccion",
         widget   = forms.TextInput(attrs =
             { 'class'       : 'form-control'
@@ -59,6 +75,7 @@ class EstacionamientoForm(forms.Form):
     rif = forms.CharField(
         required   = True,
         label      = "RIF",
+        max_length=MAXRIF,
         validators = [rif_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
@@ -71,6 +88,7 @@ class EstacionamientoForm(forms.Form):
     
     telefono_1 = forms.CharField(
         required   = False,
+        max_length=MAXTELEFONO,
         validators = [phone_validator],
         widget     = forms.TextInput(attrs =
             { 'class'       : 'form-control'
@@ -83,6 +101,7 @@ class EstacionamientoForm(forms.Form):
 
     telefono_2 = forms.CharField(
         required   = False,
+        max_length=MAXTELEFONO,
         validators = [phone_validator],
         widget     = forms.TextInput(attrs =
             { 'class'       : 'form-control'
@@ -95,6 +114,7 @@ class EstacionamientoForm(forms.Form):
 
     telefono_3 = forms.CharField(
         required   = False,
+        max_length=MAXTELEFONO,
         validators = [phone_validator],
         widget     = forms.TextInput(attrs =
             { 'class'       : 'form-control'
@@ -107,6 +127,7 @@ class EstacionamientoForm(forms.Form):
 
     email_1 = forms.EmailField(
         required = False,
+        max_length=MAXMAIL,
         widget   = forms.EmailInput(attrs =
             { 'class'       : 'form-control'
             , 'placeholder' : 'E-mail 1'
@@ -117,6 +138,7 @@ class EstacionamientoForm(forms.Form):
 
     email_2 = forms.EmailField(
         required = False,
+        max_length=MAXMAIL,
         widget   = forms.EmailInput(attrs =
             { 'class'       : 'form-control'
             , 'placeholder' : 'E-mail 2'
@@ -128,12 +150,13 @@ class EstacionamientoForm(forms.Form):
 class PropietarioForm(forms.Form):
 
     name_validator = RegexValidator(
-        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]+$',
+        regex   = '^[\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ][\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]*$',
         message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
     )
     
     nombres = forms.CharField(
         required = True,
+        max_length=MAXNOMBRE,
         label    = "Nombres del propietario",
         validators = [name_validator],
         widget   = forms.TextInput(attrs =
@@ -147,6 +170,7 @@ class PropietarioForm(forms.Form):
     
     apellidos = forms.CharField(
         required = True,
+        max_length=MAXNOMBRE,
         label    = "Apellidos del propietario",
         validators = [name_validator],
         widget   = forms.TextInput(attrs =
@@ -165,6 +189,7 @@ class PropietarioForm(forms.Form):
     
     cedula = forms.CharField(
         required   = True,
+        max_length=MAXCEDULA,
         label      = "Cédula",
         validators = [id_validator],
         widget = forms.TextInput(attrs =
@@ -172,6 +197,24 @@ class PropietarioForm(forms.Form):
             , 'placeholder' : 'Cédula'
             , 'pattern'     : id_validator.regex.pattern
             , 'message'     : id_validator.message
+            }
+        )
+    )
+    
+    phone_validator = RegexValidator(
+        regex   = '^((0212)|(0412)|(0416)|(0414)|(0424)|(0426))-?\d{7}',
+        message = 'Debe introducir un formato válido de teléfono.'
+    )
+        
+    telefono_1 = forms.CharField(
+        required   = False,
+        max_length=MAXTELEFONO,
+        validators = [phone_validator],
+        widget     = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Teléfono 1'
+            , 'pattern'     : phone_validator.regex.pattern
+            , 'message'     : phone_validator.message
             }
         )
     )
@@ -312,18 +355,18 @@ class ReservaForm(forms.Form):
 class PagoForm(forms.Form):
     
     card_name_validator = RegexValidator(
-        regex   = '^[a-zA-ZáéíóúñÑÁÉÍÓÚ][a-zA-ZáéíóúñÑÁÉÍÓÚ ]*$',
+        regex   = '^[\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ][\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]*$',
         message = 'El nombre no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
     )
     
     card_surname_validator = RegexValidator(
-        regex   = '^[a-zA-ZáéíóúñÑÁÉÍÓÚ][a-zA-ZáéíóúñÑÁÉÍÓÚ ]*$',
+        regex   = '^[\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ][\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]*$',
         message = 'El apellido no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
     )
     
     id_validator = RegexValidator(
         regex   = '^[0-9]+$',
-        message = 'La cédula solo puede contener caracteres numéricos.'
+        message = 'Solo puede contener caracteres numéricos.'
     )
     
     card_validator = RegexValidator(
@@ -338,6 +381,7 @@ class PagoForm(forms.Form):
     
     nombre = forms.CharField(
         required   = True,
+        max_length=MAXNOMBRE,
         label      = "Nombre del Tarjetahabiente",
         validators = [card_name_validator],
         widget = forms.TextInput(attrs =
@@ -351,6 +395,7 @@ class PagoForm(forms.Form):
 
     apellido = forms.CharField(
         required   = True,
+        max_length=MAXNOMBRE,
         label      = "Apellido del Tarjetahabiente",
         validators = [card_surname_validator],
         widget = forms.TextInput(attrs =
@@ -376,6 +421,7 @@ class PagoForm(forms.Form):
 
     cedula = forms.CharField(
         required   = True,
+        max_length=MAXCEDULA,
         label      = "Cédula",
         validators = [id_validator],
         widget = forms.TextInput(attrs =
@@ -387,6 +433,48 @@ class PagoForm(forms.Form):
         )
     )
 
+    tarjeta = forms.CharField(
+        required   = False,
+        max_length=MAXTARJETA,
+        label      = "Tarjeta de Credito", 
+        validators = [card_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Numero de Tarjeta'
+            , 'pattern'     : card_validator.regex.pattern
+            , 'message'     : card_validator.message
+            }
+        )
+    )
+    
+    PIN = forms.CharField(
+        required   = False,
+        max_length = MAXPIN,
+        label      = "Pin Billetera", 
+        validators = [pin_validator],
+        widget = forms.PasswordInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Pin de la billetera'
+            , 'pattern'     : pin_validator.regex.pattern
+            , 'message'     : pin_validator.message
+            }
+        )
+    )
+    
+    ID = forms.CharField(
+        required   = False,
+        max_length = MAXID,
+        label      = "ID Billetera", 
+        validators = [id_validator],
+        widget = forms.PasswordInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'ID de la billetera'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+    
     tarjetaTipo = forms.ChoiceField(
         required = True,
         label    = 'tarjetaTipo',
@@ -399,32 +487,6 @@ class PagoForm(forms.Form):
         widget   = forms.RadioSelect()
     )
 
-    tarjeta = forms.CharField(
-        required   = True,
-        label      = "Tarjeta de Credito", 
-        validators = [card_validator],
-        widget = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Numero de Tarjeta' # ya cambie lo que dice
-            , 'pattern'     : card_validator.regex.pattern
-            , 'message'     : card_validator.message
-            }
-        )
-    )
-    
-    pin_billetera = forms.CharField(
-        required   = False,
-        label      = "Pin Billetera", 
-        validators = [pin_validator],
-        widget = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Pin de la billetera'
-            , 'pattern'     : pin_validator.regex.pattern
-            , 'message'     : pin_validator.message
-            }
-        )
-    )
-
 class RifForm(forms.Form):
     
     rif_validator = RegexValidator(
@@ -434,6 +496,7 @@ class RifForm(forms.Form):
     
     rif = forms.CharField(
         required   = True,
+        max_length=MAXRIF,
         label      = "RIF",
         validators = [rif_validator],
         widget = forms.TextInput(attrs =
@@ -454,6 +517,7 @@ class CedulaForm(forms.Form):
     
     cedula = forms.CharField(
         required   = True,
+        max_length=MAXCEDULA,
         label      = "Cédula",
         validators = [id_validator],
         widget = forms.TextInput(attrs =
@@ -471,12 +535,12 @@ class CedulaForm(forms.Form):
 class BilleteraForm(forms.Form):
     
     name_validator = RegexValidator(
-        regex   = '^[a-zA-ZáéíóúñÑÁÉÍÓÚ][a-zA-ZáéíóúñÑÁÉÍÓÚ ]*$',
+        regex   = '^[\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ][\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]*$',
         message = 'El nombre no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
     )
     
     surname_validator = RegexValidator(
-        regex   = '^[a-zA-ZáéíóúñÑÁÉÍÓÚ][a-zA-ZáéíóúñÑÁÉÍÓÚ ]*$',
+        regex   = '^[\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ][\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]*$',
         message = 'El apellido no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
     )
     
@@ -492,6 +556,7 @@ class BilleteraForm(forms.Form):
     
     nombre = forms.CharField(
         required   = True,
+        max_length=MAXNOMBRE,
         label      = "Nombre del Tarjetahabiente",
         validators = [name_validator],
         widget = forms.TextInput(attrs =
@@ -505,6 +570,7 @@ class BilleteraForm(forms.Form):
 
     apellido = forms.CharField(
         required   = True,
+        max_length=MAXNOMBRE,
         label      = "Apellido del Tarjetahabiente",
         validators = [surname_validator],
         widget = forms.TextInput(attrs =
@@ -518,6 +584,7 @@ class BilleteraForm(forms.Form):
     
     cedula = forms.CharField(
         required   = True,
+        max_length=MAXCEDULA,
         label      = "Cédula",
         validators = [ci_validator],
         widget = forms.TextInput(attrs =
@@ -531,9 +598,10 @@ class BilleteraForm(forms.Form):
     
     PIN = forms.CharField(
         required   = True,
+        max_length = MAXPIN,
         label      = "PIN",
         validators = [PIN_validator],
-        widget = forms.TextInput(attrs =
+        widget = forms.PasswordInput(attrs =
             { 'class'       : 'form-control'
             , 'placeholder' : 'PIN'
             , 'pattern'     : PIN_validator.regex.pattern
@@ -541,3 +609,194 @@ class BilleteraForm(forms.Form):
             }
         )
     )
+    
+    cedulaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'cedulaTipo',
+        choices  = (
+            ('V', 'V'),
+            ('E', 'E')
+        ),
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
+        )
+    )
+    
+
+class authBilleteraForm(forms.Form):
+    PIN_validator = RegexValidator(
+        regex   = '^[0-9]{4}$',
+        message = 'Su PIN solo puede contener 4 caracteres numéricos.'
+    )
+    
+    ID_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'Su ID solo puede contener 4 caracteres numéricos.'
+    )
+    
+    ID = forms.CharField(
+        required   = True,
+        max_length = MAXID,
+        label      = "ID",
+        validators = [ID_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Introduzca el ID'
+            , 'pattern'     : ID_validator.regex.pattern
+            , 'message'     : ID_validator.message
+            }
+        )
+    )
+    
+    Pin = forms.CharField(
+        required   = True,
+        max_length = MAXPIN,
+        label      = "Pin",
+        validators = [PIN_validator],
+        widget = forms.PasswordInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'PIN'
+            , 'pattern'     : PIN_validator.regex.pattern
+            , 'message'     : PIN_validator.message
+            }
+        )
+    )
+    
+class BilleteraPagoForm(forms.Form):
+    card_name_validator = RegexValidator(
+        regex   = '^[\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ][\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]*$',
+        message = 'El nombre no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
+    )
+    
+    card_surname_validator = RegexValidator(
+        regex   = '^[\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ][\'\-A-Za-záéíóúñÑÁÉÍÓÚäëïöüÄËÏÖÜ ]*$',
+        message = 'El apellido no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
+    )
+    
+    id_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'Solo puede contener caracteres numéricos.'
+    )
+    
+    card_validator = RegexValidator(
+        regex   = '^[0-9]{16}$',
+        message = 'Introduzca un número de tarjeta válido de 16 dígitos.'
+    )
+    
+    monto_validator = RegexValidator(
+        regex   = '^([0-9]+(\.[0-9]+)?)$',
+        message = 'La entrada debe ser un numero decimal separado por un punto.'
+    )
+    
+    nombre = forms.CharField(
+        required   = True,
+        max_length=MAXNOMBRE,
+        label      = "Nombre del Tarjetahabiente",
+        validators = [card_name_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Nombre del Tarjetahabiente'
+            , 'pattern'     : card_name_validator.regex.pattern
+            , 'message'     : card_name_validator.message
+            }
+        )
+    )
+
+    apellido = forms.CharField(
+        required   = True,
+        max_length=MAXNOMBRE,
+        label      = "Apellido del Tarjetahabiente",
+        validators = [card_surname_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'      : 'form-control'
+            , 'placeholder' : 'Apellido del Tarjetahabiente'
+            , 'pattern'     : card_surname_validator.regex.pattern
+            , 'message'     : card_surname_validator.message
+            }
+        )
+    )
+
+    cedulaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'cedulaTipo',
+        choices  = (
+            ('V', 'V'),
+            ('E', 'E')
+        ),
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
+        )
+    )
+
+    cedula = forms.CharField(
+        required   = True,
+        max_length=MAXCEDULA,
+        label      = "Cédula",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+    
+    monto = forms.DecimalField(
+            required   = True,
+            max_digits = MAXMONTO,
+            decimal_places = MAXDECIMALS,
+            max_value = SMAX,
+            label = "Monto de Recarga",
+            validators = [monto_validator],
+            widget     = forms.TextInput(attrs = {
+                'class'       : 'form-control',
+                'placeholder' : 'Monto a Recargar',
+                'pattern'     : monto_validator.regex.pattern,
+                'message'     : monto_validator.message
+            }
+        )
+    )
+    
+    id_punto_recarga = forms.CharField(
+        required = False,
+        max_length = MAXID,
+        label = "ID del Punto de Recarga",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'        : 'form-control'
+            , 'placeholder'  : 'Identificador del Punto de Recarga'
+            , 'pattern'      : id_validator.regex.pattern
+            , 'message'      : id_validator.message
+            }
+        )
+    )
+    
+    tarjeta = forms.CharField(
+        required = True,
+        max_length = MAXTARJETA,
+        label      = "Tarjeta de Credito", 
+        validators = [card_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Numero de Tarjeta'
+            , 'pattern'     : card_validator.regex.pattern
+            , 'message'     : card_validator.message
+            }
+        )
+    )
+    
+    tarjetaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'tarjetaTipo',
+        choices  = (
+            ('Vista',  ' VISTA '),
+            ('Mister', ' MISTER '),
+            ('Xpress', ' XPRESS ')
+        ),
+        widget   = forms.RadioSelect()
+    )
+    
+    
+    
+    

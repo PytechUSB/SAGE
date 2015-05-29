@@ -9,6 +9,7 @@ encoding//estacionamientos/models.py=utf-8
 encoding//estacionamientos/urls.py=utf-8
 encoding//estacionamientos/views.py=utf-8
 encoding//tests/test_billetera_form.py=utf-8
+encoding//tests/test_modificar_propietario.py=utf-8
 encoding//tests/tests_consulta_reserva.py=utf-8
 encoding//tests/tests_decimal.py=utf-8
 encoding//tests/tests_estacionamiento_form.py=utf-8

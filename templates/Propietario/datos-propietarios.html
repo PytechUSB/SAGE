@@ -1,3 +1,4 @@
+{% load humanize %}
 <table class="table table-striped">
   <thead></thead>
   <tbody>
@@ -13,8 +14,16 @@
     <tr><td colspan="3">
       {{propietario.cedula}}
     </td></tr>
+    {% if propietario.telefono1 %}
+	    <tr><td colspan="3"><b><i class="fa fa-phone"></i>
+	      Teléfono:
+	    </b></td></tr>
+	    <tr><td colspan="3">
+	      {{propietario.telefono1}}
+	    </td></tr>
+	{% endif %}
 	<tr><td colspan="3"><b><i class="fa fa-car"></i>
-        Estacionamientos:
+      Estacionamientos:
 	</b></td></tr>
     {% if estacionamientos %}
       <ul class="nav nav-stacked">
@@ -30,8 +39,8 @@
           {% endif %}
         {% endfor %} 
       </ul>
-      {% else %}
-        <h3>No hay estacionamientos</h3>
-      {% endif %}
+    {% else %}
+      <tr><td colspan="3" align="center">No hay estacionamientos</td></tr>
+    {% endif %}
   </tbody>
 </table>

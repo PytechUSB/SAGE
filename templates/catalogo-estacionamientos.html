@@ -18,7 +18,7 @@
             <th></th>
             <th>Nombre</th>
             <th>RIF</th>
-            <th></th>
+            <th></th><th></th>
           </tr>
         </thead>
         <tbody>
@@ -28,11 +28,11 @@
               <td>{{obj.nombre}}</td>
               <td>{{obj.rif}}</td>
               <td><a href="./{{obj.id}}">
-                  <i class="fa fa-search"></i>
-              </a></td>
+                  <i class="fa fa-search"></i></a>
+              </td>
               <td><a href="./{{obj.id}}/tasa">
-                  <i class="fa fa-bar-chart"></i>
-              </a></td>
+                  <i class="fa fa-bar-chart"></i></a>
+              </td>
             </tr>
           {% endfor %}
         </tbody>
@@ -43,23 +43,7 @@
       <hr>
     </div>
     
-    <!-- OPCION AGREGAR PROPIETARIOS -->
     <div class="col-md-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="panel-title">
-            <i class="glyphicon glyphicon-wrench pull-right"></i>
-            <h4>
-              Propietario
-            </h4>
-          </div>
-        </div>
-        <div class="panel-body" align="center">
-            <a href="propietario-crear">
-                <button type="button" class="btn btn-primary">Agregar</button> 
-            </a>
-        </div>
-      </div>
       <!-- FORMULARIO PARA AGREGAR ESTACIONAMIENTOS -->
       <div class="panel panel-default">
         <div class="panel-heading">
@@ -90,6 +74,12 @@
                 </button>
             </div>
           </form>
+          <!-- OPCION AGREGAR PROPIETARIOS -->
+          <div class="panel-body" align="center">
+            <a href="propietario-crear">
+                Agregar Propietario 
+            </a>
+          </div>
         </div>
       </div>
     </div>

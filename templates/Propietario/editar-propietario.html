@@ -1,0 +1,43 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <div class="panel-title">
+      <i class="glyphicon glyphicon-wrench pull-right"></i>
+      <h4>
+        Editar Propietario
+      </h4>
+    </div>
+  </div>
+  <div class="panel-body">
+    <form action="." method="post" class="form form-vertical">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="control-group">
+          <div class="controls">
+            {{ field }}
+            <span class='error' id='{{field.name}}_error' aria-live="polite">
+              {{ field.errors }}
+            </span>
+            <p>
+          </div>
+        </div>
+      {% endfor %}
+      <div class="control-group">
+        <label></label>
+        <div class="controls" align="center">
+          <button type="submit" class="btn btn-primary">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% block scripts %}
+{% include "validator.js.html" %}
+<script type="text/javascript">
+  nombres     = document.getElementById('id_nombres');
+  apellidos   = document.getElementById('id_apellidos');
+  cedula      = document.getElementById('id_cedula');
+  telefono1   = document.getElementById('id_telefono1');
+</script>
+{% endblock %}

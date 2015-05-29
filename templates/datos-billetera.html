@@ -1,29 +1,116 @@
-<table class="table table-striped">
-  <thead></thead>
-  <tbody>
-    <tr><td><b><i class="fa fa-user"></i>
-      Nombre y Apellido:
-    </b></td></tr>
-    <tr><td>
-      {{billetera.nombre}} {{billetera.apellido}}
-    </td></tr>
-    <tr><td><b><i class="fa fa-circle"></i>
-      Cédula de Indentidad:
-    </b></td></tr>
-    <tr><td>
-      {{billetera.cedula}}
-    </td></tr>
-    <tr><td><b><i class="fa fa-credit-card"></i>
-      Número de Billetera Electónica:
-    </b></td></tr>
-    <tr><td>
-      {{billetera.identificador}}
-    </td></tr>
-    <tr><td><b><i class="fa fa-key"></i>
-      PIN:
-    </b></td></tr>
-    <tr><td>
-      {{billetera.PIN}}
-    </td></tr>
-  </tbody>
-</table>
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}
+  SAGE - Datos de Billetera
+{% endblock %}
+
+{% block menu %}{% endblock %}
+
+{% block innerContents %}
+
+<div class="col-sm-10">
+   <div class="panel panel-default">
+     <div class="panel-heading">
+        <div class="panel-title">
+    <h3><i class="fa fa-credit-card"></i>
+        Datos de la Billetera Electronica   
+    </h3>
+        </div>
+     </div> 
+            <table class="table table-striped">
+              <tbody>
+                <tr><td><b><i class="fa fa-circle"></i>
+                  Número de Billetera (ID):
+                </b></td></tr>
+                <tr><td>
+                  {{billetera.id}}
+                </td></tr>
+ 
+                <tr><td><b><i class="fa fa-user"></i>
+                  Nombre del tarjetahabiente:
+                </b></td></tr>
+                <tr><td>
+                  {{billetera.nombre}}
+                </td></tr>
+                
+                 <tr><td><b><i class="fa fa-user"></i>
+                  Apellido del tarjetahabiente:
+                </b></td></tr>
+                <tr><td>
+                  {{billetera.apellido}}
+                </td></tr>
+
+               <tr><td><b><i class="fa fa-user"></i>
+	             Cédula:
+	           </b></td></tr>
+	           <tr><td>
+	             {{ billetera.cedulaTipo }}-{{ billetera.cedula }}
+	           </td></tr>
+
+                <tr><td><b><i class="fa fa-money"></i>
+                  Saldo:
+                </b></td></tr>
+                <tr><td>
+                  {{billetera.saldo|floatformat:2|intcomma}} 
+                  <label for="se recomienda recargar" id='id_mensaje'><font color="red">Se recomienda recargar</font></label>
+                 </td></tr>
+
+              </tbody>
+            </table>
+            <div class="control-group" align="center">
+            <a href="/estacionamientos/{{ billetera.id }}/recarga_billetera" onClick="return popup(this, 'Datos Billetera')">
+              <button class="btn btn-primary">
+                Recargar
+              </button> </a>
+                <input
+            type="button"
+            value="Volver" 
+            id="id_volver"
+            class="btn btn-primary"
+          <p></p>
+            </div>
+     </div>
+  
+
+
+{%endblock%}
+{% block scripts %}
+
+<script>
+
+        $('document').ready(function() {
+        
+        
+                $('#id_mensaje').css("display", "none");
+        
+           if({{billetera.saldo}} == 0){
+                $('#id_mensaje').css("display", "block");
+            }; 
+			
+			$('#id_volver').click(function() {
+				$(location).attr('href',"/estacionamientos/crear_billetera");
+			});
+			
+		});
+		
+</script>
+
+<script type="text/javascript">
+    function popup(mylink, windowname) {
+      if (! window.focus)
+        return true;
+      var href;
+      if (typeof(mylink) == 'string')
+        href=mylink;
+      else
+        href=mylink.href;
+      window.open(href, windowname, 'width=500,height=550,scrollbars=no');
+      return false;
+    }
+    
+</script>
+
+{% include "validator.js.html" %}
+ 
+{% endblock %}
