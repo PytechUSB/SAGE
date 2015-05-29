@@ -794,7 +794,11 @@ def billetera_datos(request):
 # vista para mostar los datos de la billetera
 def billetera_recarga(request, _id):
     _id = int(_id)
-    billeteraE = BilleteraElectronica.objects.get(pk = _id)
+    try:
+        billeteraE = BilleteraElectronica.objects.get(pk = _id)
+    except ObjectDoesNotExist:
+        raise Http404
+    
     form = BilleteraPagoForm()
     
     # Si es POST, se verifica la información recibida
