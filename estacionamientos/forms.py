@@ -758,20 +758,6 @@ class BilleteraPagoForm(forms.Form):
         )
     )
     
-    id_punto_recarga = forms.CharField(
-        required = False,
-        max_length = MAXID,
-        label = "ID del Punto de Recarga",
-        validators = [id_validator],
-        widget = forms.TextInput(attrs =
-            { 'class'        : 'form-control'
-            , 'placeholder'  : 'Identificador del Punto de Recarga'
-            , 'pattern'      : id_validator.regex.pattern
-            , 'message'      : id_validator.message
-            }
-        )
-    )
-    
     tarjeta = forms.CharField(
         required = True,
         max_length = MAXTARJETA,

@@ -112,7 +112,6 @@ class Pago(models.Model):
 	tarjetaTipo      = models.CharField(max_length = 6)
 	monto            = models.DecimalField(decimal_places = 2, max_digits = 256)
 	reserva          = models.ForeignKey(Reserva, blank = True, null = True)
-	id_punto_recarga = models.IntegerField(blank = True, null = True)
 	billetera 		 = models.ForeignKey(BilleteraElectronica, blank = True, null = True)
 	
 

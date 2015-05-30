@@ -500,15 +500,29 @@ def estacionamiento_pago(request,_id):
                         pago = pago_reserva_aux(request, form, monto, estacionamiento)
                         pago.save()
                         billeteraE.consumir_saldo(monto)
-                        return render(
-                            request,
-                            'pago.html',
-                            { "id"      : _id
-                            , "pago"    : pago
-                            , "color"   : "green"
-                            , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
-                            }
-                        )
+                        if (billeteraE.saldo == 0):
+                            return render(
+                                request,
+                                'pago.html',
+                                { "id"      : _id
+                                , "pago"    : pago
+                                , "color"   : "green"
+                                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                                , 'color2'  : 'red'
+                                , 'mensaje2': 'Se recomienda recargar la billetera.' 
+                                }
+                            )
+                            
+                        else:
+                            return render(
+                                request,
+                                'pago.html',
+                                { "id"      : _id
+                                , "pago"    : pago
+                                , "color"   : "green"
+                                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                                }
+                            )
                         
             
             
@@ -834,7 +848,6 @@ def billetera_recarga(request, _id):
                         tarjetaTipo = form.cleaned_data['tarjetaTipo'],
                         monto = form.cleaned_data['monto'],
                         fechaTransaccion = datetime.now(),
-                        id_punto_recarga = form.cleaned_data['id_punto_recarga'],
                         billetera = billeteraE   
                     )
                 
