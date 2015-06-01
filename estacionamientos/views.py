@@ -22,7 +22,8 @@ from estacionamientos.controller import (
     tasa_reservaciones,
     calcular_porcentaje_de_tasa,
     consultar_ingresos,
-    billetera_autenticar)
+    billetera_autenticar,
+    asigna_id_unico)
 
 from estacionamientos.forms import (
     EstacionamientoExtendedForm,
@@ -39,6 +40,7 @@ from estacionamientos.models import (
     Propietario,
     Estacionamiento,
     BilleteraElectronica,
+    Recargas,
     Reserva,
     Pago,
     TarifaHora,
@@ -450,6 +452,7 @@ def pago_reserva_aux(request, form, monto, estacionamiento):
     # Se guarda la reserva en la base de datos
     reservaFinal.save()
     pago = Pago(
+        id = asigna_id_unico(),
         fechaTransaccion = datetime.now(),
         cedula           = form.cleaned_data['cedula'],
         cedulaTipo       = form.cleaned_data['cedulaTipo'],
@@ -842,7 +845,8 @@ def billetera_recarga(request, _id):
                 )
                 
             else:
-                pago = Pago(
+                recarga = Recargas(
+                        id = asigna_id_unico(),
                         cedulaTipo = form.cleaned_data['cedulaTipo'],
                         cedula = form.cleaned_data['cedula'],
                         tarjetaTipo = form.cleaned_data['tarjetaTipo'],
@@ -851,13 +855,13 @@ def billetera_recarga(request, _id):
                         billetera = billeteraE   
                     )
                 
-                pago.save()
+                recarga.save()
                 billeteraE.recargar_saldo(form.cleaned_data['monto'])
                 return render(
                     request, 
                     'recarga-billetera.html',
                     { "id"      : _id
-                    , "pago"    : pago
+                    , "recarga"    : recarga
                     , "color"   : "green"
                     , "mensaje" : "Se realizo la recarga de la billetera satisfactoriamente"
                     }

@@ -1,8 +1,15 @@
 # Archivo con funciones de control para SAGE
-from estacionamientos.models import Estacionamiento, Propietario, Reserva, Pago, BilleteraElectronica
 from datetime import datetime, timedelta, time
 from decimal import Decimal
 from collections import OrderedDict
+from estacionamientos.models import (
+	Estacionamiento, 
+	Propietario, 
+	Reserva, 
+	Pago, 
+	BilleteraElectronica, 
+	Recargas,
+	Cancelaciones)
 
 # chequeo de horarios de extended
 def HorarioEstacionamiento(HoraInicio, HoraFin):
@@ -122,3 +129,9 @@ def billetera_autenticar(identificador, PIN):
 		
 	except(Exception):
 		return None
+	
+def asigna_id_unico():
+	num_pagos_reservas = len(Pago.objects.all())
+	num_recargas = len(Recargas.objects.all())
+	num_cancelaciones = len(Cancelaciones.objects.all())
+	return (1 + num_pagos_reservas + num_recargas + num_cancelaciones)
