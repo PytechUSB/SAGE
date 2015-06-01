@@ -878,25 +878,80 @@ def billetera_recarga(request, _id):
         }
     )
     
-def ingresar_reserva(request):
+def validar_reserva(request):
     form = CancelaReservaForm()
     
     if request.method == 'POST':
         form = CancelaReservaForm(request.POST)
         
         if form.is_valid():
-            if (pago_autenticar(int(form.cleaned_data['ID']), form.cleaned_data['cedulaTipo'], form.cleaned_data['cedula'])):
+            if (pago_autenticar(int(form.cleaned_data['ID']), 
+                    form.cleaned_data['cedulaTipo'], 
+                    form.cleaned_data['cedula'])):
+                direccion = "/estacionamientos/" + str(form.cleaned_data['ID']) + "/validar_billetera"
+                return HttpResponseRedirect(direccion)
+            
+            else:
                 return render(
                     request,
-                    'templateporasignar.html',
-                    { 'id' : int(form.cleaned_data['ID'])}
+                    'mensaje.html',
+                    { 'color': 'red'
+                    , 'mensaje' : 'ID no existe o CI no corresponde al registrado en el recibo de pago'
+                    }
                 )
                 
-def validar_reserva(request):
-    form = CancelaReservaForm()
-    
     return render(
         request,
-           'validar_reserva.html',
-         { "form" : form })
+        'validar_reserva.html',
+         { "form" : form 
+          }
+    )
+    
+def validar_billetera(request, id_pago):
+    id_pago = int(id_pago)
+    
+    try:
+        pago = Pago.objects.get(pk = id_pago)
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    form = authBilleteraForm()
+    
+    if request.method == 'POST':
+        form = authBilleteraForm(request.POST)
+        if form.is_valid():
+            billetera = billetera_autenticar(int(form.cleaned_data['ID']), form.cleaned_data['Pin'])
+            if (billetera != None):
+                if(billetera.validar_recarga(pago.monto)):
+                    return render(
+                        request, 
+                        'validar_billetera.html',
+                        { 'pago' : pago
+                        , 'billetera' : billetera
+                        }
+                    )
+                    
+                else:
+                    return render(
+                        request,
+                        'template-mensaje',
+                        { 'color' : 'red'
+                        , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
+                        }
+                    )
+                    
+            else:
+                return render(
+                        request,
+                        'template-mensaje',
+                        { 'color' : 'red'
+                        , 'mensaje' : 'Autenticacion Denegada'
+                        }
+                    )
                 
+    return render(
+        request,
+        'validar_billetera.html',
+        {'form' : form
+        }
+    )                
