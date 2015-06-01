@@ -1,47 +1,23 @@
 {% load staticfiles %}
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <title>{% block title %}SAGE{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1">
-    <link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
-    <link href="{% static 'css/font-awesome.min.css'%}" rel="stylesheet">
-    <link href="{% static 'css/base.css'%}" rel="stylesheet">
-  </head>
-  {% block body %}<body>{% endblock %}
-    {% block header %}
-      <div id="top-nav" class="navbar navbar-inverse navbar-static-top">
-        <div class="container">
-          <div class="navbar-header">
-            <div class="navbar-brand" href="#">
-              SAGE
-            </div>
-          </div>
-        </div>
-      </div>
-    {% endblock %}
-
-    {% block outerContents %}
-    <div class="container">
-      <div class="row">
-        {% block menu %}
-        {% include "menu.html" %}
-        {% endblock %}
-        {% block innerContents %}
-        {% endblock %}
-      </div>
-    </div>
-    {% endblock %}
-    <script
-      type="text/javascript"
-      src="{% static 'js/jquery-2.1.1.min.js'%}"
-    ></script>
-    <script
-      type="text/javascript"
-      src="{% static 'js/bootstrap.min.js'%}"
-    ></script>
-    {% block scripts %}{% endblock %}
-  </body>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>jQuery UI Datepicker - Default functionality</title>
+  <script src="{% static 'js/jquery-2.1.1.min.js'%}"></script>
+  <script src="{% static 'jqueryui/jquery-ui.js'%}"></script>
+  <script src="{% static 'multidatepicker/jquery-ui.multidatespicker.js'%}"></script>
+  <link rel="stylesheet" href="multidatepicker/css/prettify.css">
+  <script>
+  $(function() {
+    $('#simpliest-usage').multiDatesPicker();
+  });
+  </script>
+</head>
+<body>
+ 
+<p>Date: <input type="text" id="simpliest-usage"></p>
+ 
+ 
+</body>
 </html>
