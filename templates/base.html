@@ -4,10 +4,11 @@
 <head>
   <meta charset="utf-8">
   <title>jQuery UI Datepicker - Default functionality</title>
+  <link rel="stylesheet" href="{% static 'multidatepicker/css/jquery-ui.theme.css'%}">
+  <link rel="stylesheet" href="{% static 'multidatepicker/css/jquery-ui.structure.css'%}">
   <script src="{% static 'js/jquery-2.1.1.min.js'%}"></script>
   <script src="{% static 'jqueryui/jquery-ui.js'%}"></script>
   <script src="{% static 'multidatepicker/jquery-ui.multidatespicker.js'%}"></script>
-  <link rel="stylesheet" href="multidatepicker/css/prettify.css">
   <script>
   $(function() {
     $('#simpliest-usage').multiDatesPicker();
