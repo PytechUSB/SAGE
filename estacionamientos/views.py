@@ -891,3 +891,12 @@ def ingresar_reserva(request):
                     'templateporasignar.html',
                     { 'id' : int(form.cleaned_data['ID'])}
                 )
+                
+def validar_reserva(request):
+    form = CancelaReservaForm()
+    
+    return render(
+        request,
+           'validar_reserva.html',
+         { "form" : form })
+                

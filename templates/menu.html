@@ -19,6 +19,9 @@
     <li><a href="/estacionamientos/crear_billetera"><i class="fa fa-credit-card"></i>
       Billetera Electrónica
     </a></li>
+    <li><a href="/estacionamientos/validar_reserva" onClick="return popup(this, 'Validar Reservacion')"><i class="fa fa-trash-o"></i>
+      Cancelar Reservación
+    </a></li>
     {% if estacionamiento.capacidad %}
       <li><a href="./"><i class="fa fa-wrench"></i>
         Parametrizar
@@ -30,3 +33,25 @@
   </ul>
   <hr>
 </div>
+
+{% block scripts %}
+
+<script type="text/javascript">
+    function popup(mylink, windowname) {
+      if (! window.focus)
+        return true;
+      var href;
+      if (typeof(mylink) == 'string')
+        href=mylink;
+      else
+        href=mylink.href;
+      window.open(href, windowname, 'width=400,height=270,scrollbars=no,position=center');
+      return false;
+    }
+    
+</script>
+
+{% include "validator.js.html" %}
+ 
+{% endblock %}
+
