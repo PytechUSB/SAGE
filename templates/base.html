@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <title>jQuery UI Datepicker - Default functionality</title>
-  <link rel="stylesheet" href="{% static 'multidatepicker/css/jquery-ui.css'%}">
+  <link rel="stylesheet" href="{% static 'multidatepicker/css/jquery-ui-1.10.3.custom.css'%}">
   <script src="{% static 'js/jquery-2.1.1.min.js'%}"></script>
   <script src="{% static 'jqueryui/jquery-ui.js'%}"></script>
   <script src="{% static 'multidatepicker/jquery-ui.multidatespicker.js'%}"></script>
@@ -14,12 +14,12 @@
 	var y = today.getFullYear();
 	$('#full-year').multiDatesPicker();
   });
+  $('#my_multi_date_picker').multiDatesPicker();
   </script>
 </head>
 <body>
  
 <span role="text" id="full-year">Date</span>
- 
  
 </body>
 </html>
