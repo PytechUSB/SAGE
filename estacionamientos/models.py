@@ -215,3 +215,10 @@ class TarifaHoraPico(EsquemaTarifario):
 
 	def tipo(self):
 		return("Tarifa diferenciada por hora pico")
+
+class TarifaDiasFeriados(EsquemaTarifario):
+	def calcularPrecio(self,horaInicio,horaFinal):
+		pass
+
+	def tipo(self):
+		return("Tarifa diferenciada para días feriados")
