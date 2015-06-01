@@ -6,7 +6,6 @@ from django.contrib.contenttypes.models import ContentType
 from decimal import Decimal, ROUND_DOWN
 from datetime import timedelta, datetime
 from django.db.models.fields import IntegerField
-from estacionamientos.controller import asigna_id_unico
 from django.db.models.fields.related import ForeignKey
 SMAX = 10000
 
@@ -109,7 +108,7 @@ class ConfiguracionSMS(models.Model):
 		return self.estacionamiento.nombre+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
 
 class Pago(models.Model):
-	id				 = models.IntegerField(primary_key = True, default = asigna_id_unico())
+	id				 = models.IntegerField(primary_key = True)
 	fechaTransaccion = models.DateTimeField()
 	cedulaTipo       = models.CharField(max_length = 1)
 	cedula           = models.CharField(max_length = 10)
@@ -122,7 +121,7 @@ class Pago(models.Model):
 		return str(self.id)+" "+str(self.reserva.estacionamiento.nombre)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
 
 class Recargas(models.Model):
-	id				 = models.IntegerField(primary_key = True, default = asigna_id_unico())
+	id				 = models.IntegerField(primary_key = True)
 	fechaTransaccion = models.DateTimeField()
 	cedulaTipo       = models.CharField(max_length = 1)
 	cedula           = models.CharField(max_length = 10)
@@ -134,7 +133,7 @@ class Recargas(models.Model):
 		return str(self.id)+" "+str(self.billetera.id)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
 	
 class Cancelaciones(models.Model):
-	id 				 = models.IntegerField(primary_key = True, default = asigna_id_unico())
+	id 				 = models.IntegerField(primary_key = True)
 	pagoCancelado	 = models.ForeignKey(Pago)
 	billetera		 = models.ForeignKey(BilleteraElectronica)
 	monto			 = models.DecimalField(decimal_places = 2, max_digits = 256)

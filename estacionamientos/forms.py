@@ -784,5 +784,48 @@ class BilleteraPagoForm(forms.Form):
     )
     
     
+class CancelaReservaForm(forms.Form):    
+    id_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'Solo puede contener caracteres numéricos.'
+    )
     
+    ID = forms.CharField(
+        required   = True,
+        max_length = MAXID,
+        label      = "ID",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Introduzca el ID'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
     
+    cedulaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'cedulaTipo',
+        choices  = (
+            ('V', 'V'),
+            ('E', 'E')
+        ),
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
+        )
+    )
+
+    cedula = forms.CharField(
+        required   = True,
+        max_length=MAXCEDULA,
+        label      = "Cédula",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )

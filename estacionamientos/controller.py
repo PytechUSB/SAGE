@@ -2,14 +2,7 @@
 from datetime import datetime, timedelta, time
 from decimal import Decimal
 from collections import OrderedDict
-from estacionamientos.models import (
-	Estacionamiento, 
-	Propietario, 
-	Reserva, 
-	Pago, 
-	BilleteraElectronica, 
-	Recargas,
-	Cancelaciones)
+from estacionamientos.models import Propietario, Estacionamiento, Reserva, Pago, BilleteraElectronica, Recargas,Cancelaciones
 
 # chequeo de horarios de extended
 def HorarioEstacionamiento(HoraInicio, HoraFin):
@@ -129,6 +122,15 @@ def billetera_autenticar(identificador, PIN):
 		
 	except(Exception):
 		return None
+	
+def pago_autenticar(identificador, cedulaTipo, cedula):
+	try:
+		pago = Pago.objects.get(pk = identificador)
+		if (pago.cedula == cedula and pago.cedulaTipo == cedulaTipo):
+			return True
+		return False
+	except:
+		return False
 	
 def asigna_id_unico():
 	num_pagos_reservas = len(Pago.objects.all())

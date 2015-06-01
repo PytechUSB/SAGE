@@ -3,7 +3,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 import urllib
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.dateparse import parse_datetime
 from urllib.parse import urlencode
 from matplotlib import pyplot
@@ -23,7 +23,9 @@ from estacionamientos.controller import (
     calcular_porcentaje_de_tasa,
     consultar_ingresos,
     billetera_autenticar,
-    asigna_id_unico)
+    pago_autenticar,
+    asigna_id_unico
+)
 
 from estacionamientos.forms import (
     EstacionamientoExtendedForm,
@@ -34,7 +36,9 @@ from estacionamientos.forms import (
     RifForm,
     CedulaForm,
     BilleteraForm,
-    BilleteraPagoForm
+    BilleteraPagoForm,
+    authBilleteraForm,
+    CancelaReservaForm
 )
 from estacionamientos.models import (
     Propietario,
@@ -49,7 +53,6 @@ from estacionamientos.models import (
     TarifaFinDeSemana,
     TarifaHoraPico
 )
-from estacionamientos.forms import authBilleteraForm
 
 # Vista para procesar los propietarios
 def propietario_all(request):
@@ -780,7 +783,7 @@ def billetera_datos(request):
         # el constructor del modelo
 
         if formAuth.is_valid():
-            billetera_autenticada = billetera_autenticar(formAuth.cleaned_data['ID'], formAuth.cleaned_data['Pin'])
+            billetera_autenticada = billetera_autenticar(int(formAuth.cleaned_data['ID']), formAuth.cleaned_data['Pin'])
             if(billetera_autenticada != None):
                 return render(
                     request,
@@ -874,3 +877,17 @@ def billetera_recarga(request, _id):
         { 'form': form
         }
     )
+    
+def ingresar_reserva(request):
+    form = CancelaReservaForm()
+    
+    if request.method == 'POST':
+        form = CancelaReservaForm(request.POST)
+        
+        if form.is_valid():
+            if (pago_autenticar(int(form.cleaned_data['ID']), form.cleaned_data['cedulaTipo'], form.cleaned_data['cedula'])):
+                return render(
+                    request,
+                    'templateporasignar.html',
+                    { 'id' : int(form.cleaned_data['ID'])}
+                )
