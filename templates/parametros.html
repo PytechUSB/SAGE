@@ -28,16 +28,15 @@
       <tr><td>{{estacionamiento.tarifa.inicioEspecial}}</td></tr>
       <tr><td><b><i class="fa fa-clock-o"></i> Fin tarifa especial:</b></td></tr>
       <tr><td>{{estacionamiento.tarifa.finEspecial}}</td></tr>
-    {% elif estacionamiento.tarifa.tipo == "Tarifa diferenciada para días feriados" %}
-      <tr><td><b><i class="fa fa-money"></i></i> Tarifa regular:</b></td></tr>
-      <tr><td>BsF. {{estacionamiento.tarifa}}</td></tr>
-      <tr><td><b><i class="fa fa-money"></i></i> Tarifa especial:</b></td></tr>
-      <tr><td>BsF. {{estacionamiento.tarifa.tarifa2}}</td></tr>
-      <tr><td><b><i class="fa fa-calendar-o"></i> Días feriados:</b></td></tr>
-      <tr><td>{{estacionamiento.feriadosl}}</td></tr>
     {% elif estacionamiento.capacidad %}
       <tr><td><b><i class="fa fa-money"></i></i> Tarifa:</b></td></tr>
       <tr><td>BsF. {{estacionamiento.tarifa.tarifa|floatformat:2|intcomma}}</td></tr>
+    {% endif %}
+    {% if estacionamiento.tarifa.tarifaFeriados %}
+      <tr><td><b><i class="fa fa-money"></i></i> Tarifa días feriados:</b></td></tr>
+      <tr><td>BsF. {{estacionamiento.tarifa.tarifaFeriados|floatformat:2|intcomma}}</td></tr>
+      <tr><td><b><i class="fa fa-calendar-o"></i> Días feriados:</b></td></tr>
+      <tr><td>{{estacionamiento.feriadosl}}</td></tr>
     {% endif %}
   </tbody>
 </table>

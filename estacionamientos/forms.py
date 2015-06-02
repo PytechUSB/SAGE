@@ -269,8 +269,7 @@ class EstacionamientoExtendedForm(forms.Form):
         ('TarifaMinuto', 'Por minuto'),
         ('TarifaHorayFraccion', 'Por hora y fracción'),
         ('TarifaHoraPico', 'Diferenciada por horario pico'),
-        ('TarifaFinDeSemana', 'Diferenciada para fines de semana'),
-        ('TarifaDiasFeriados', 'Diferenciada para días feriados')
+        ('TarifaFinDeSemana', 'Diferenciada para fines de semana')
     ]
 
     feriados = forms.CharField(
@@ -330,6 +329,18 @@ class EstacionamientoExtendedForm(forms.Form):
             , 'placeholder' : 'Horario Fin Reserva'
             , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
             , 'message'     : 'La entrada debe ser una hora válida.'
+            }
+        )
+    )
+
+    tarifaFeriados = forms.DecimalField(
+            required   = False,
+            validators = [tarifa_validator],
+            widget     = forms.TextInput(attrs = {
+                'class'       : 'form-control',
+                'placeholder' : 'Tarifa 2',
+                'pattern'     : '^([0-9]+(\.[0-9]+)?)$',
+                'message'     : 'La entrada debe ser un número decimal.'
             }
         )
     )

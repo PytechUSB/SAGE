@@ -222,6 +222,7 @@ def estacionamiento_detail(request, _id):
                 'horarioout' : estacionamiento.cierre,
                 'tarifa' : estacionamiento.tarifa.tarifa,
                 'tarifa2' : estacionamiento.tarifa.tarifa2,
+                'tarifaFeriados' : estacionamiento.tarifa.tarifaFeriados,
                 'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
                 'finTarifa2' : estacionamiento.tarifa.finEspecial,
                 'puestos' : estacionamiento.capacidad,
@@ -245,11 +246,13 @@ def estacionamiento_detail(request, _id):
             inicioTarifa2 = form.cleaned_data['inicioTarifa2']
             finTarifa2    = form.cleaned_data['finTarifa2']
             tarifa2       = form.cleaned_data['tarifa2']
-            feriados = form.cleaned_data['feriados']
+            tarifaFeriados = form.cleaned_data['tarifaFeriados']
+            feriados      = form.cleaned_data['feriados']
 
             esquemaTarifa = eval(tipo)(
                 tarifa         = tarifa,
                 tarifa2        = tarifa2,
+                tarifaFeriados = tarifaFeriados,
                 inicioEspecial = inicioTarifa2,
                 finEspecial    = finTarifa2
             )

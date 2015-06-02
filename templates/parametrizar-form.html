@@ -22,22 +22,24 @@
           </div>
         </div>
       {% endfor %}
-      <div class="control-group">
+      <div class="control-group" align ="center">
+      <!-- Calendario -->
+      <div id="calendar_feriados" style="display: none">
+        <i class="fa fa-calendar" id="calendar" onclick="calendar()"></i> &nbsp;
+        <span role="text" id="multi_date_picker"></span>
+        FERIADOS: {{ feriados }}
+      </div>
+      <br>
+      <!--Checkbox para tarifa en dias feriados-->
+      <input type="checkbox" value="No" id="check_feriados" onchange="formFeriados(this)"> Tarifa para días feriados<br>
         <label></label>
-        <div class="controls"align ="center">
+        <div class="controls" align ="center">
           <button type="submit" class="btn btn-primary" onclick="getDates()">
             Parametrizar Estacionamiento
           </button>
-
-    <br><br>
-    <!-- Calendario -->
-    <i class="fa fa-calendar" id="calendar" onclick="calendar()"></i>
-    <span role="text" id="multi_date_picker"></span>
-
         </div>
       </div>
     </form>
-	FERIADOS: {{ feriados }}
   </div>
 </div>
 {% include "validator.js.html" %}
@@ -50,18 +52,22 @@
   feriados     = document.getElementById('id_feriados');
   feriados.value= "HOLA";
   tarifa2.style.display='none';
+  tarifaFeriados.style.display = 'none';
   inicio.style.display='none';
   fin.style.display='none';
   if (esquema) {
+
     esquema.onchange=function() {
       if (this.value == "TarifaHoraPico") {
+        tarifa1.placeholder="Tarifa normal";
         inicio.style.display='';
         inicio.placeholder = "Inicio horario pico"
         fin.style.display='';
         fin.placeholder = "Fin horario pico"
         tarifa2.style.display = '';
-        tarifa1.placeholder="Tarifa normal";
         tarifa2.placeholder="Tarifa pico";
+        tarifaFeriados.style.display = 'none';
+        tarifaFeriados.value = ""
       } else if (this.value == "TarifaFinDeSemana") {
         inicio.style.display='none';
         inicio.value = ""
@@ -70,6 +76,8 @@
         tarifa1.placeholder="Tarifa normal";
         tarifa2.style.display = '';
         tarifa2.placeholder="Tarifa fin de semana";
+        tarifaFeriados.style.display = 'none';
+        tarifaFeriados.value = ""
       } else {
         tarifa1.placeholder="Tarifa";
         inicio.style.display='none';
@@ -78,28 +86,41 @@
         fin.value = ""
         tarifa2.style.display='none';
         tarifa2.value = ""
+        tarifaFeriados.style.display = 'none';
+        tarifaFeriados.value = ""
       }
     }
   }
 </script>
+
+<!--OPCION PARA AGREGAR UNA TARIFA PARA DIAS FERIADOS-->
 {% block scripts %}
 	<script type="text/javascript">
     var show=false;
     function calendar() {
-       		show=!show;
-    		if (show){
+      show=!show;
+    	if (show){
 				$('#multi_date_picker').show();
 				$('#multi_date_picker').multiDatesPicker();
 			} else {
 				$('#multi_date_picker').hide();
 			}
 		};
-	
-   </script>	
-   <script type="text/javascript">
-	function getDates() {
+    function getDates() {
     		val=$('#multi_date_picker').multiDatesPicker('getDates');
     		feriados.value = val;
 		};
-   </script>	
+    var agregar=false;
+    function formFeriados(element) {
+      if (element.checked){
+        document.getElementById('calendar_feriados').style.display = 'block';
+        tarifaFeriados.style.display = '';
+        tarifaFeriados.placeholder="Tarifa días feriados";
+      } else {
+        document.getElementById('calendar_feriados').style.display = 'none';
+        tarifaFeriados.style.display = 'none';
+        tarifaFeriados.value = ""
+      }
+    };
+  </script>	
 {% endblock %}
