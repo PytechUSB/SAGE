@@ -52,7 +52,7 @@ from estacionamientos.models import (
     TarifaHorayFraccion,
     TarifaFinDeSemana,
     TarifaHoraPico
-)
+, Cancelaciones)
 
 # Vista para procesar los propietarios
 def propietario_all(request):
@@ -884,12 +884,22 @@ def validar_reserva(request):
     if request.method == 'POST':
         form = CancelaReservaForm(request.POST)
         
+        
         if form.is_valid():
-            if (pago_autenticar(int(form.cleaned_data['ID']), 
-                    form.cleaned_data['cedulaTipo'], 
-                    form.cleaned_data['cedula'])):
-                direccion = "/estacionamientos/" + str(form.cleaned_data['ID']) + "/validar_billetera"
-                return HttpResponseRedirect(direccion)
+            pago = pago_autenticar(int(form.cleaned_data['ID']), form.cleaned_data['cedulaTipo'], form.cleaned_data['cedula'])
+            if (pago != None):
+                if (pago.cancelado):
+                    return render(
+                        request,
+                        'mensaje.html',
+                        { 'color': 'red'
+                        , 'mensaje' : 'Esta reservacion ya ha sido cancelada'
+                        }
+                    )
+                    
+                else:
+                    direccion = "/estacionamientos/" + str(form.cleaned_data['ID']) + "/validar_billetera"
+                    return HttpResponseRedirect(direccion)
             
             else:
                 return render(
@@ -923,7 +933,7 @@ def validar_billetera(request, id_pago):
             billetera = billetera_autenticar(int(form.cleaned_data['ID']), form.cleaned_data['Pin'])
             if (billetera != None):
                 if(billetera.validar_recarga(pago.monto)):
-                    direccion = "/estacionamientos/" + str(billetera.id) + "/" + str(pago.id) + "/cancelar_reserva"
+                    direccion = "/estacionamientos/" + str(pago.id) + "/" + str(billetera.id) + "/cancelar_reserva"
                     return HttpResponseRedirect(direccion)
                     
                 else:
@@ -952,20 +962,37 @@ def validar_billetera(request, id_pago):
     )         
     
 def cancelar_reserva(request, id_pago, id_billetera):
-    try:
+    '''try:
         pago = Pago.objects.get(pk = id_pago)
-        billetera = BilleteraElectronica.objects.get(pk = id_billetera)
+        billeteraE = BilleteraElectronica.objects.get(pk = id_billetera)
     except ObjectDoesNotExist:
-        raise Http404     
+        print('hola')
+        raise Http404     '''
+    
+    pago = Pago.objects.get(pk = id_pago)
+    billeteraE = BilleteraElectronica.objects.get(pk = id_billetera)
     
     if request.method == 'POST':
+        cancelacion = Cancelaciones(
+                                   id = asigna_id_unico(),
+                                   pagoCancelado = pago,
+                                   billetera = billeteraE,
+                                   monto = pago.monto,
+                                   fechaTransaccion = datetime.now()
+                                   )
+        cancelacion.save()
+        billeteraE.recargar_saldo(pago.monto)
+        billeteraE.save()
+        pago.cancelado = True
+        pago.save()
         return render(
             request, 
             'cancelar_reserva.html',
             { 'pago' : pago
-            , 'billetera' : billetera
-            , 'color' : 'red'
-            , 'mensaje2': 'reservacion cancelada'
+            , 'billetera' : billeteraE
+            , 'cancelacion' : cancelacion
+            , 'color' : 'green'
+            , 'mensaje2': 'Reservacion cancelada satisfactoriamente'
             }
         )
         
@@ -974,8 +1001,8 @@ def cancelar_reserva(request, id_pago, id_billetera):
             request, 
             'cancelar_reserva.html',
             { 'pago' : pago
-            , 'billetera' : billetera
+            , 'billetera' : billeteraE
             , 'color' : 'red'
-            , 'mensaje1': '¿Desea cancelar la reservacion?'
+            , 'mensaje1': '¿Desea cancelar esta reservacion?'
             }
         )

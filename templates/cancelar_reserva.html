@@ -17,9 +17,12 @@
    >
   {% csrf_token %}
   <div class="col-sm-10">
-    <h3><i class="fa fa-trash-o"></i>
-      Datos de la reservacion a cancelar
+    <h3><i class="fa fa-times"></i>
+      Cancelar Reserva
     </h3>
+    <div class="col-md-7" style="color:{{color}}">
+    {{mensaje1}}
+    </div>
          <div class="col-md-4">
             <table class="table table-striped">
               <tbody>
@@ -67,7 +70,7 @@
           >
           <input
             type="button"
-            value="Volver"
+            value="Salir"
             onclick="self.close()"
             class="btn btn-primary"
           >   
@@ -79,22 +82,46 @@
       
 {% if mensaje2 %}
 
- <div class="col-sm-10">
-    <h3><i class="fa fa-trash-o"></i>
-      Reservacion cancelada satisfactoriamente
+<div class="col-sm-10">
+    <h3><i class="fa fa-times"></i>
+      Cancelar Reserva
     </h3>
+    <div class="col-md-7" style="color:{{color}}">
+    {{mensaje2}}
+    </div>
          <div class="col-md-4">
             <table class="table table-striped">
               <tbody>
+               <tr><td><b><i class="fa fa-circle"></i>
+                  Número de Transacción: 
+                </b></td></tr>
+                <tr><td>
+                  {{cancelacion.id}}
+                </td></tr>
+              
                 <tr><td><b><i class="fa fa-circle"></i>
-                  ID de la cancelacion:
+                  Nombre del estacionamiento:
                 </b></td></tr>
                 <tr><td>
                   {{pago.reserva.estacionamiento.nombre}}
                 </td></tr>
 
                 <tr><td><b><i class="fa fa-clock-o"></i>
-                  ID billetera recargada:
+                  Horario inicio de reserva:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.inicioReserva}}
+                </td></tr>
+				
+                <tr><td><b><i class="fa fa-clock-o"></i>
+                  Horario fin de reserva:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.finalReserva}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
+                  ID billetera a recargar:
                 </b></td></tr>
                 <tr><td>
                   {{billetera.id}}
@@ -111,13 +138,15 @@
             <div align="center">
           <input
             type="button"
-            value="Volver"
+            value="Salir"
             onclick="self.close()"
             class="btn btn-primary"
           >   
             </div>
           </div>
         </div>
+        </form>
+
 
 {% endif %}
 
@@ -128,7 +157,7 @@
 
 		$('document').ready(function() {
 			
-			window.resizeTo(400,550);
+			window.resizeTo(400,650);
 			
 		});
 		

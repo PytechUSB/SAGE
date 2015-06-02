@@ -127,10 +127,10 @@ def pago_autenticar(identificador, cedulaTipo, cedula):
 	try:
 		pago = Pago.objects.get(pk = identificador)
 		if (pago.cedula == cedula and pago.cedulaTipo == cedulaTipo):
-			return True
-		return False
+			return pago
+		return None
 	except:
-		return False
+		return None
 	
 def asigna_id_unico():
 	num_pagos_reservas = len(Pago.objects.all())
