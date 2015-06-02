@@ -101,7 +101,7 @@ def consultar_ingresos(rif):
 	listaIngresos = []
 	
 	for estacionamiento in listaEstacionamientos:
-		listaFacturas = Pago.objects.exclude(reserva = None)
+		listaFacturas = Pago.objects.exclude(cancelado = True)
 		listaFacturas = listaFacturas.filter(
 			reserva__estacionamiento__nombre = estacionamiento.nombre
 		)
