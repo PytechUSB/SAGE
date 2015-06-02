@@ -27,7 +27,6 @@
       <div id="calendar_feriados" style="display: none">
         <i class="fa fa-calendar" id="calendar" onclick="calendar()"></i> &nbsp;
         <span role="text" id="multi_date_picker"></span>
-        FERIADOS: {{ feriados }}
       </div>
       <br>
       <!--Checkbox para tarifa en dias feriados-->
@@ -50,7 +49,6 @@
   inicio  = document.getElementById('id_inicioTarifa2');
   fin     = document.getElementById('id_finTarifa2');
   feriados     = document.getElementById('id_feriados');
-  feriados.value= "HOLA";
   tarifa2.style.display='none';
   tarifaFeriados.style.display = 'none';
   inicio.style.display='none';
@@ -97,11 +95,15 @@
 {% block scripts %}
 	<script type="text/javascript">
     var show=false;
+    var dates;
     function calendar() {
       show=!show;
     	if (show){
+    		   dates=feriados.value.split(",");
 				$('#multi_date_picker').show();
-				$('#multi_date_picker').multiDatesPicker();
+				$('#multi_date_picker').multiDatesPicker({
+					addDates: dates
+				});
 			} else {
 				$('#multi_date_picker').hide();
 			}

@@ -216,7 +216,6 @@ def estacionamiento_detail(request, _id):
     if request.method == 'GET':
         
         if estacionamiento.tarifa:
-            
             form_data = {
                 'horarioin' : estacionamiento.apertura,
                 'horarioout' : estacionamiento.cierre,
@@ -229,7 +228,6 @@ def estacionamiento_detail(request, _id):
                 'esquema' : estacionamiento.tarifa.__class__.__name__,
                 'feriados' : estacionamiento.feriados
             }
-            print("Get "+ estacionamiento.feriados)
             form = EstacionamientoExtendedForm(data = form_data)
         else:
             form = EstacionamientoExtendedForm()
@@ -273,12 +271,10 @@ def estacionamiento_detail(request, _id):
             estacionamiento.apertura  = horaIn
             estacionamiento.cierre    = horaOut
             estacionamiento.feriados = feriados
-            print("HOLA "+ feriados)
             estacionamiento.capacidad = form.cleaned_data['puestos']
 
             estacionamiento.save()
-            form = EstacionamientoExtendedForm()
-
+            
     return render(
         request,
         'detalle-estacionamiento.html',

@@ -35,8 +35,6 @@
     {% if estacionamiento.tarifa.tarifaFeriados %}
       <tr><td><b><i class="fa fa-money"></i></i> Tarifa días feriados:</b></td></tr>
       <tr><td>BsF. {{estacionamiento.tarifa.tarifaFeriados|floatformat:2|intcomma}}</td></tr>
-      <tr><td><b><i class="fa fa-calendar-o"></i> Días feriados:</b></td></tr>
-      <tr><td>{{estacionamiento.feriadosl}}</td></tr>
     {% endif %}
   </tbody>
 </table>
