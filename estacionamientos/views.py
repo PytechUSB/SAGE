@@ -962,9 +962,12 @@ def cancelar_reserva(request, id_pago, id_billetera):
         return render(
             request, 
             'cancelar_reserva.html',
-            { 'mensaje': '¿Desea cancelar la reservacion?'
+            { 'pago' : pago
+            , 'billetera' : billetera
+            , 'color' : 'red'
+            , 'mensaje2': 'reservacion cancelada'
             }
-        )  
+        )
         
     else:
         return render(
@@ -973,5 +976,6 @@ def cancelar_reserva(request, id_pago, id_billetera):
             { 'pago' : pago
             , 'billetera' : billetera
             , 'color' : 'red'
+            , 'mensaje1': '¿Desea cancelar la reservacion?'
             }
         )
