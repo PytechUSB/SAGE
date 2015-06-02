@@ -30,6 +30,7 @@ class Estacionamiento(models.Model):
 	propietario = models.ForeignKey(Propietario)
 
 	# Campos para referenciar al esquema de tarifa
+	feriados	 = models.TextField(null=True)
 	content_type = models.ForeignKey(ContentType, null = True)
 	object_id    = models.PositiveIntegerField(null = True)
 	tarifa       = GenericForeignKey()

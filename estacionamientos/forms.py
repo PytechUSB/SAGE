@@ -273,6 +273,11 @@ class EstacionamientoExtendedForm(forms.Form):
         ('TarifaDiasFeriados', 'Diferenciada para días feriados')
     ]
 
+    feriados = forms.CharField(
+        required = False,
+        widget   = forms.HiddenInput()
+    )
+
     esquema = forms.ChoiceField(
         required = True,
         choices  = choices_esquema,

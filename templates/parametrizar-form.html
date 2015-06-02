@@ -25,7 +25,7 @@
       <div class="control-group">
         <label></label>
         <div class="controls"align ="center">
-          <button type="submit" class="btn btn-primary">
+          <button type="submit" class="btn btn-primary" onclick="getDates()">
             Parametrizar Estacionamiento
           </button>
 
@@ -37,7 +37,7 @@
         </div>
       </div>
     </form>
-
+	FERIADOS: {{ feriados }}
   </div>
 </div>
 {% include "validator.js.html" %}
@@ -82,10 +82,19 @@
 </script>
 {% block scripts %}
 	<script type="text/javascript">
+    var show=false;
     function calendar() {
-			var today = new Date();
-			var y = today.getFullYear();
-			$('#multi_date_picker').multiDatesPicker();
-		}
+       		show=!show;
+    		if (show){
+				$('#multi_date_picker').show();
+				$('#multi_date_picker').multiDatesPicker();
+			} else {
+				$('#multi_date_picker').hide();
+			}
+		};
+	function getDates() {
+    		feriados=$('#multi_date_picker').multiDatesPicker('getDates');
+    		alert(feriados);
+		};
   </script>
 {% endblock %}
