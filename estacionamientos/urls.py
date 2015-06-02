@@ -23,5 +23,7 @@ urlpatterns = patterns('',
     url(r'^crear_billetera$', views.billetera_all, name = 'billetera_all'),
     url(r'^datos_billetera$', views.billetera_datos, name = 'billetera_datos'),
     url(r'^(?P<_id>\d+)/recarga_billetera$', views.billetera_recarga, name = 'billetera_recarga'),
-    url(r'^validar_reserva$', views.validar_reserva, name = 'validar_reserva')
+    url(r'^validar_reserva$', views.validar_reserva, name = 'validar_reserva'),
+    url(r'^(?P<id_pago>\d+)/validar_billetera$', views.validar_billetera, name = 'validar_billetera'),
+    url(r'^(?P<id_pago>\d+)/(?P<id_billetera>\d+)/cancelar_reserva$', views.cancelar_reserva, name = 'cancelar_reserva')
 )

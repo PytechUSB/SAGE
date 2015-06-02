@@ -2,7 +2,7 @@
 {% load humanize %}
 
 {% block title %}
-  SAGE - Ingresar Reserva
+  SAGE - Ingresar Billetera
 {% endblock %}
 
 {% block menu %}{% endblock %}
@@ -13,7 +13,7 @@
           <div class="panel-title">
            <i class="fa fa-check pull-left"></i>
             <h4>
-              Validar Reserva
+              Validar Billetera
             </h4>
           </div>
          </div>
@@ -36,21 +36,15 @@
               </p>
               {{ form.ID.errors }}
               <p>
-                <table><tbody><tr>
-                  <td>
-                    {{ form.cedulaTipo }}
-                  </td>
-                  <td>
-                    {{ form.cedula }}
-                  </td>
-                </tr></tbody></table>
+                {{ form.Pin }}
                 <span
                   class='error'
-                  id='{{form.cedula.name}}_error'
+                  id='{{form.Pin.name}}_error'
                   aria-live="polite"
                 ></span>
-                {{ form.cedula.errors }}   
-                <div>
+              </p>
+              {{ form.Pin.errors }}
+                
               </p>
                  <div class="control-group" align="center">
 	              <input
@@ -61,12 +55,15 @@
 		          <input
 		            type="button"
 		            value="Volver"
-		            onclick="self.close()"
+		            onClick="javascript:history.go(-1);" 
 		            class="btn btn-primary"
 		          >   
           <p></p>
           </div>
+          </div>
         </form>
+      </div>
+    </div> 
 {% endblock %}
 
 {% block scripts %}

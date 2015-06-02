@@ -923,18 +923,13 @@ def validar_billetera(request, id_pago):
             billetera = billetera_autenticar(int(form.cleaned_data['ID']), form.cleaned_data['Pin'])
             if (billetera != None):
                 if(billetera.validar_recarga(pago.monto)):
-                    return render(
-                        request, 
-                        'validar_billetera.html',
-                        { 'pago' : pago
-                        , 'billetera' : billetera
-                        }
-                    )
+                    direccion = "/estacionamientos/" + str(billetera.id) + "/" + str(pago.id) + "/cancelar_reserva"
+                    return HttpResponseRedirect(direccion)
                     
                 else:
                     return render(
                         request,
-                        'template-mensaje',
+                        'mensaje.html',
                         { 'color' : 'red'
                         , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
                         }
@@ -943,7 +938,7 @@ def validar_billetera(request, id_pago):
             else:
                 return render(
                         request,
-                        'template-mensaje',
+                        'mensaje.html',
                         { 'color' : 'red'
                         , 'mensaje' : 'Autenticacion Denegada'
                         }
@@ -954,4 +949,26 @@ def validar_billetera(request, id_pago):
         'validar_billetera.html',
         {'form' : form
         }
-    )                
+    )         
+    
+def cancelar_reserva(request, id_pago, id_billetera):
+    try:
+        pago = Pago.objects.get(pk = id_pago)
+        billetera = BilleteraElectronica.objects.get(pk = id_billetera)
+    except ObjectDoesNotExist:
+        raise Http404     
+    
+    if request.method == 'POST':
+        pass
+        
+        
+    else:
+        return render(
+            request, 
+            'cancelar_reserva.html',
+            { 'pago' : pago
+            , 'billetera' : billetera
+            , 'color' : 'red'
+            , 'mensaje': '¿Desea cancelar la reservacion?'
+            }
+        )
