@@ -378,7 +378,7 @@ def estacionamiento_reserva(request, _id):
                     inicioReserva   = inicioReserva,
                     finalReserva    = finalReserva,
                 )
-
+                print(inicioReserva)
                 monto = Decimal(
                     estacionamiento.tarifa.calcularPrecio(
                         inicioReserva,finalReserva
