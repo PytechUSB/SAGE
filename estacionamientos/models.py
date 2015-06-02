@@ -30,7 +30,6 @@ class Estacionamiento(models.Model):
 	propietario = models.ForeignKey(Propietario)
 
 	# Campos para referenciar al esquema de tarifa
-	feriados	 = models.TextField(null=True)
 	content_type = models.ForeignKey(ContentType, null = True)
 	object_id    = models.PositiveIntegerField(null = True)
 	tarifa       = GenericForeignKey()
@@ -123,6 +122,7 @@ class Pago(models.Model):
 class EsquemaTarifario(models.Model):
 
 	# No se cuantos digitos deberiamos poner
+	feriados	 = models.TextField(null=True)
 	tarifa         = models.DecimalField(max_digits=20, decimal_places=2)
 	tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
 	tarifaFeriados = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
@@ -143,6 +143,8 @@ class TarifaHora(EsquemaTarifario):
 		a = ceil(a) #  De las horas se calcula el techo de ellas
 		return(Decimal(self.tarifa*a).quantize(Decimal('1.00')))
 	def tipo(self):
+		if (self.tarifaFeriados):
+			return("Por Hora con feriados")
 		return("Por Hora")
 
 class TarifaMinuto(EsquemaTarifario):
@@ -151,7 +153,9 @@ class TarifaMinuto(EsquemaTarifario):
 		minutes = minutes.days*24*60+minutes.seconds/60
 		return (Decimal(minutes)*Decimal(self.tarifa/60)).quantize(Decimal('1.00'))
 	def tipo(self):
-		return("Por Minuto")
+		if (self.tarifaFeriados):
+			return("Por minuto con feriados")
+		return("Por minuto")
 
 class TarifaHorayFraccion(EsquemaTarifario):
 	def calcularPrecio(self,horaInicio,horaFinal):
@@ -170,6 +174,8 @@ class TarifaHorayFraccion(EsquemaTarifario):
 		return(Decimal(valor).quantize(Decimal('1.00')))
 
 	def tipo(self):
+		if (self.tarifaFeriados):
+			return("Por Hora y Fraccion con feriados")
 		return("Por Hora y Fraccion")
 
 class TarifaFinDeSemana(EsquemaTarifario):
@@ -196,6 +202,8 @@ class TarifaFinDeSemana(EsquemaTarifario):
 		).quantize(Decimal('1.00'))
 
 	def tipo(self):
+		if (self.tarifaFeriados):
+			return("Tarifa diferenciada para fines de semana con feriados")
 		return("Tarifa diferenciada para fines de semana")
 
 class TarifaHoraPico(EsquemaTarifario):

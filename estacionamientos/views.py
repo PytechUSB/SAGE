@@ -226,7 +226,7 @@ def estacionamiento_detail(request, _id):
                 'finTarifa2' : estacionamiento.tarifa.finEspecial,
                 'puestos' : estacionamiento.capacidad,
                 'esquema' : estacionamiento.tarifa.__class__.__name__,
-                'feriados' : estacionamiento.feriados
+                'feriados' : estacionamiento.tarifa.feriados
             }
             form = EstacionamientoExtendedForm(data = form_data)
         else:
@@ -248,6 +248,7 @@ def estacionamiento_detail(request, _id):
             feriados      = form.cleaned_data['feriados']
 
             esquemaTarifa = eval(tipo)(
+                feriados         = feriados,
                 tarifa         = tarifa,
                 tarifa2        = tarifa2,
                 tarifaFeriados = tarifaFeriados,
@@ -270,7 +271,6 @@ def estacionamiento_detail(request, _id):
             estacionamiento.tarifa    = esquemaTarifa
             estacionamiento.apertura  = horaIn
             estacionamiento.cierre    = horaOut
-            estacionamiento.feriados = feriados
             estacionamiento.capacidad = form.cleaned_data['puestos']
 
             estacionamiento.save()
