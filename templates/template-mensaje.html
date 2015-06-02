@@ -14,63 +14,6 @@
         {{mensaje}}
         <hr>
       </div>
-      <div>
-      	{%if billetera%}
-        <div class="col-sm-10">
-	     <div class="panel panel-default">
-	       <div class="panel-heading">
-	          <div class="panel-title">
-	      <h3><i class="fa fa-credit-card"></i>
-	        Datos de la Billetera Electronica   
-	      </h3>
-	          </div>
-	      </div> 
-
-	       <table class="table table-striped">
-	         <tbody>
-	           <tr><td><b><i class="fa fa-circle"></i>
-	             Número de Billetera (ID):
-	           </b></td></tr>
-	           <tr><td>
-	             {{billetera.id}}
-	           </td></tr>
-	 
-	           <tr><td><b><i class="fa fa-user"></i>
-	             Nombre del tarjetahabiente:
-	           </b></td></tr>
-	           <tr><td>
-	             {{billetera.nombre}}
-	           </td></tr>
-	                
-	           <tr><td><b><i class="fa fa-user"></i>
-	             Apellido del tarjetahabiente:
-	           </b></td></tr>
-	           <tr><td>
-	             {{billetera.apellido}}
-	           </td></tr>
-	
-	           <tr><td><b><i class="fa fa-user"></i>
-	             Cédula:
-	           </b></td></tr>
-	           <tr><td>
-	             {{billetera.cedulaTipo}}-{{billetera.cedula}}
-	           </td></tr>
-	
-	           <tr><td><b><i class="fa fa-money"></i>
-	             Saldo:
-	           </b></td></tr>
-	           <tr><td>
-	             {{billetera.saldo|floatformat:2|intcomma}} 
-	             <label for="se recomienda recargar" id='id_mensaje'><font color="red">Se recomienda recargar</font></label>
-	           </td></tr>
-	
-	        </tbody>
-	        </table>
-
-	    </div>
-	   </div>     
-        {%endif%}
-      </div>
     </div>
     <form  method="get" class="form form-vertical">
         <div class="control-group" align="center">

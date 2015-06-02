@@ -487,7 +487,7 @@ def estacionamiento_pago(request,_id):
                 
                 if (billeteraE == None):
                     return render(
-                        request, 'template-mensaje.html',
+                        request, 'mensaje.html',
                         {'color' : 'red'
                         , 'mensaje' : 'Autenticacion Denegada'
                         }
@@ -496,7 +496,7 @@ def estacionamiento_pago(request,_id):
                 else:
                     if(not billeteraE.validar_consumo(monto)):
                         return render(
-                            request, 'template-mensaje.html',
+                            request, 'mensaje.html',
                             {'color' : 'red'
                             , 'mensaje' : 'Saldo Insuficiente'
                             }
@@ -747,7 +747,7 @@ def billetera_all(request):
                     with transaction.atomic():    
                         obj.save()
                         return render(
-                            request, 'template-mensaje.html',
+                            request, 'datos-billetera.html',
                             {'color' : 'green'
                              ,'billetera': obj
                              , 'mensaje' : 'Billetera Creada Satisfactoriamente'
