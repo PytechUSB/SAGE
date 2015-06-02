@@ -959,8 +959,12 @@ def cancelar_reserva(request, id_pago, id_billetera):
         raise Http404     
     
     if request.method == 'POST':
-        pass
-        
+        return render(
+            request, 
+            'cancelar_reserva.html',
+            { 'mensaje': '¿Desea cancelar la reservacion?'
+            }
+        )  
         
     else:
         return render(
@@ -969,6 +973,5 @@ def cancelar_reserva(request, id_pago, id_billetera):
             { 'pago' : pago
             , 'billetera' : billetera
             , 'color' : 'red'
-            , 'mensaje': '¿Desea cancelar la reservacion?'
             }
         )
