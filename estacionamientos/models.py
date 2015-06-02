@@ -137,6 +137,7 @@ class EsquemaTarifario(models.Model):
 
 class TarifaHora(EsquemaTarifario):
 	def calcularPrecio(self,horaInicio,horaFinal):
+		print("TARIFA FERIADOS:" + str(self.tarifaFeriados))
 		a = horaFinal-horaInicio
 		a = a.days*24+a.seconds/3600
 		a = ceil(a) #  De las horas se calcula el techo de ellas
