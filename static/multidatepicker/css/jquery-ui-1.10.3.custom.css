@@ -27,6 +27,10 @@
 	width: 1px;
 }
 
+#calendar{
+	cursor: pointer;
+}
+
 .ui-helper-reset {
 	margin: 0;
 	padding: 0;

@@ -1,25 +1,46 @@
 {% load staticfiles %}
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>jQuery UI Datepicker - Default functionality</title>
-  <link rel="stylesheet" href="{% static 'multidatepicker/css/jquery-ui-1.10.3.custom.css'%}">
-  <script src="{% static 'js/jquery-2.1.1.min.js'%}"></script>
-  <script src="{% static 'jqueryui/jquery-ui.js'%}"></script>
-  <script src="{% static 'multidatepicker/jquery-ui.multidatespicker.js'%}"></script>
-  <script>
-  $(function() {
-    var today = new Date();
-	var y = today.getFullYear();
-	$('#full-year').multiDatesPicker();
-  });
-  $('#my_multi_date_picker').multiDatesPicker();
-  </script>
-</head>
-<body>
- 
-<span role="text" id="full-year">Date</span>
- 
-</body>
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>{% block title %}SAGE{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1">
+    <link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
+    <link href="{% static 'css/font-awesome.min.css'%}" rel="stylesheet">
+    <link href="{% static 'css/base.css'%}" rel="stylesheet">
+	  <link href="{% static 'multidatepicker/css/jquery-ui-1.10.3.custom.css'%}" rel="stylesheet">
+  </head>
+  {% block body %}<body>{% endblock %}
+    {% block header %}
+      <div id="top-nav" class="navbar navbar-inverse navbar-static-top">
+        <div class="container">
+          <div class="navbar-header">
+            <div class="navbar-brand" href="#">
+              SAGE
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endblock %}
+
+    {% block outerContents %}
+    <div class="container">
+      <div class="row">
+        {% block menu %}
+        {% include "menu.html" %}
+        {% endblock %}
+        {% block innerContents %}
+        {% endblock %}
+      </div>
+    </div>
+    {% endblock %}
+    
+    <script type="text/javascript" src="{% static 'js/jquery-2.1.1.min.js'%}" ></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js'%}" ></script>
+	  <script type="text/javascript" src="{% static 'jqueryui/jquery-ui.js'%}" ></script>
+	  <script type="text/javascript" src="{% static 'multidatepicker/jquery-ui.multidatespicker.js'%}" ></script>
+    {% block scripts %}
+	  {% endblock %}
+  </body>
 </html>

@@ -1,3 +1,4 @@
+{% load staticfiles %}	  
 <div class="panel panel-default">
   <div class="panel-heading">
     <div class="panel-title">
@@ -23,13 +24,20 @@
       {% endfor %}
       <div class="control-group">
         <label></label>
-        <div class="controls">
+        <div class="controls"align ="center">
           <button type="submit" class="btn btn-primary">
             Parametrizar Estacionamiento
           </button>
+
+    <br><br>
+    <!-- Calendario -->
+    <i class="fa fa-calendar" id="calendar" onclick="calendar()"></i>
+    <span role="text" id="multi_date_picker"></span>
+
         </div>
       </div>
     </form>
+
   </div>
 </div>
 {% include "validator.js.html" %}
@@ -72,3 +80,12 @@
     }
   }
 </script>
+{% block scripts %}
+	<script type="text/javascript">
+    function calendar() {
+			var today = new Date();
+			var y = today.getFullYear();
+			$('#multi_date_picker').multiDatesPicker();
+		}
+  </script>
+{% endblock %}
