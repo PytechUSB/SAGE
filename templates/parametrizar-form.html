@@ -47,6 +47,8 @@
   tarifa2 = document.getElementById('id_tarifa2');
   inicio  = document.getElementById('id_inicioTarifa2');
   fin     = document.getElementById('id_finTarifa2');
+  feriados     = document.getElementById('id_feriados');
+  feriados.value= "HOLA";
   tarifa2.style.display='none';
   inicio.style.display='none';
   fin.style.display='none';
@@ -92,9 +94,12 @@
 				$('#multi_date_picker').hide();
 			}
 		};
+	
+   </script>	
+   <script type="text/javascript">
 	function getDates() {
-    		feriados=$('#multi_date_picker').multiDatesPicker('getDates');
-    		alert(feriados);
+    		val=$('#multi_date_picker').multiDatesPicker('getDates');
+    		feriados.value = val;
 		};
-  </script>
+   </script>	
 {% endblock %}

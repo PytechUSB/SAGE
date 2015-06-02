@@ -212,8 +212,9 @@ def estacionamiento_detail(request, _id):
         estacionamiento = Estacionamiento.objects.get(id = _id)
     except ObjectDoesNotExist:
         raise Http404
-
+    
     if request.method == 'GET':
+        
         if estacionamiento.tarifa:
             
             form_data = {
@@ -224,8 +225,10 @@ def estacionamiento_detail(request, _id):
                 'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
                 'finTarifa2' : estacionamiento.tarifa.finEspecial,
                 'puestos' : estacionamiento.capacidad,
-                'esquema' : estacionamiento.tarifa.__class__.__name__
+                'esquema' : estacionamiento.tarifa.__class__.__name__,
+                'feriados' : estacionamiento.feriados
             }
+            print("Get "+ estacionamiento.feriados)
             form = EstacionamientoExtendedForm(data = form_data)
         else:
             form = EstacionamientoExtendedForm()
@@ -242,6 +245,7 @@ def estacionamiento_detail(request, _id):
             inicioTarifa2 = form.cleaned_data['inicioTarifa2']
             finTarifa2    = form.cleaned_data['finTarifa2']
             tarifa2       = form.cleaned_data['tarifa2']
+            feriados = form.cleaned_data['feriados']
 
             esquemaTarifa = eval(tipo)(
                 tarifa         = tarifa,
@@ -265,6 +269,8 @@ def estacionamiento_detail(request, _id):
             estacionamiento.tarifa    = esquemaTarifa
             estacionamiento.apertura  = horaIn
             estacionamiento.cierre    = horaOut
+            estacionamiento.feriados = feriados
+            print("HOLA "+ feriados)
             estacionamiento.capacidad = form.cleaned_data['puestos']
 
             estacionamiento.save()
