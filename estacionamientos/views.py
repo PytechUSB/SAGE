@@ -754,12 +754,7 @@ def billetera_all(request):
                              }
                         )
                 except (IntegrityError):
-                    return render(
-                        request, 'template-mensaje.html',
-                        {'color' : 'red'
-                         , 'mensaje' : 'Ya posee una billetera asociada'
-                         }
-                    )
+                    pass
                 
 
     return render(

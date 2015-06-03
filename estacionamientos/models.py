@@ -53,9 +53,6 @@ class BilleteraElectronica (models.Model):
 	cedulaTipo = models.CharField(max_length = 1)
 	PIN = models.CharField(max_length = 8)
 	
-	class Meta:
-		unique_together = (("cedulaTipo", "cedula"),)
-	
 	def __str__(self):
 		return str(self.id)
 	
