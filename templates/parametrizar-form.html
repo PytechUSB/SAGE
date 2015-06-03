@@ -169,7 +169,7 @@
 {% block scripts %}
 	<script type="text/javascript">
     var show=false;
-    var dates;
+    var dates=feriados.value.split(",");
     function calendar() {
       show=!show;
     	if (show){
@@ -189,21 +189,21 @@
 		};
     function getDates() {
     		val=$('#multi_date_picker').multiDatesPicker('getDates');
-    		feriados.value = val;
+    		if (val!='') feriados.value = val;
 		};
     function formFeriados(element) {
       if (element.checked){
         document.getElementById('calendar_feriados').style.display = 'block';
-        tarifaFeriados.style.display = '';
-	 	    esquemaFeriados.style.display = '';
+        tarifaFeriados.style.display  = '';
+	 	esquemaFeriados.style.display = '';
       } else {
         document.getElementById('calendar_feriados').style.display = 'none';
         tarifaFeriados.style.display	   = 'none';
-	 	    esquemaFeriados.style.display 	   = 'none';
-	 	    esquemaFeriados.value		 	   = 'TarifaHora';
-	      tarifaFeriados2.style.display 	   = 'none';
-	  	  inicioTarifaFeriados.style.display = 'none';
-	  	  finTarifaFeriados.style.display    = 'none';
+	 	esquemaFeriados.style.display 	   = 'none';
+	 	esquemaFeriados.value		 	   = 'TarifaHora';
+	    tarifaFeriados2.style.display 	   = 'none';
+	  	inicioTarifaFeriados.style.display = 'none';
+	  	finTarifaFeriados.style.display    = 'none';
         tarifaFeriados.value 			   = "";
       }
     };
