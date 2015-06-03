@@ -243,24 +243,26 @@ class EstacionamientoExtendedForm(forms.Form):
     horarioin = forms.TimeField(
         required = True,
         label    = 'Horario Apertura',
-        widget   = forms.TextInput(attrs =
+        widget   = forms.TimeInput(attrs =
             { 'class':'form-control'
             , 'placeholder' : 'Horario Apertura'
             , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
             , 'message'     : 'La entrada debe ser una hora válida.'
-            }
+            }, 
+            format='%H:%M'
         )
     )
 
     horarioout = forms.TimeField(
         required = True,
         label    = 'Horario Cierre',
-        widget   = forms.TextInput(attrs =
+        widget   = forms.TimeInput(attrs =
             { 'class'       : 'form-control'
             , 'placeholder' : 'Horario Cierre'
             , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
             , 'message'     : 'La entrada debe ser una hora válida.'
-            }
+            }, 
+            format='%H:%M'
         )
     )
 
