@@ -1,3 +1,4 @@
+{% load staticfiles %}
 {% load humanize %}
 <table class="table table-striped">
   <thead></thead>
@@ -55,6 +56,45 @@
 	      <tr><td><b><i class="fa fa-money"></i></i> Tarifa días feriados:</b></td></tr>
 	      <tr><td>BsF. {{estacionamiento.tarifaFeriados|floatformat:2|intcomma}}</td></tr>
 	    {% endif %}
+        <tr><td>
+       	  <div>
+	        <i class="fa fa-calendar" id="opener"><b> Días Feriados</b></i>
+	        <span id="dialog" title="Feriados"></span>
+	      </div>
+      	</td></tr>
     {% endif %}
   </tbody>
 </table>
+ <script>
+  $(function() {
+    $( "#dialog" ).dialog({
+      autoOpen: false,
+      resizable: false,
+      width : 895,
+      position : {at: "center top"},
+      open: function(){
+      			var y = new Date().getFullYear();
+		        var dates=feriados.value.split(",");
+				$('#dialog').multiDatesPicker({
+					dateFormat: "yy-mm-dd", 
+					defaultDate: y+'-1-1',
+					numberOfMonths: [3,4],
+					disabled: true,
+					addDates: dates
+				});
+	  },
+      show: {
+        effect: "blind",
+        duration: 1000
+      },
+      hide: {
+        effect: "blind",
+        duration: 1000
+      }
+    });
+ 
+    $( "#opener" ).click(function() {
+      $( "#dialog" ).dialog( "open" );
+    });
+  });
+  </script>
