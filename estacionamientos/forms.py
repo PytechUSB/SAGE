@@ -269,7 +269,8 @@ class EstacionamientoExtendedForm(forms.Form):
         ('TarifaMinuto', 'Por minuto'),
         ('TarifaHorayFraccion', 'Por hora y fracción'),
         ('TarifaHoraPico', 'Diferenciada por horario pico'),
-        ('TarifaFinDeSemana', 'Diferenciada para fines de semana')
+        ('TarifaFinDeSemana', 'Diferenciada para fines de semana'),
+        ('TarifaFeriados', 'Diferenciada para días feriados')
     ]
 
     feriados = forms.CharField(
