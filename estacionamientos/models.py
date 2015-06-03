@@ -37,7 +37,7 @@ class Estacionamiento(models.Model):
 	
 	content_type2 = models.ForeignKey(ContentType, related_name = 'tarifaFeriados', null = True)
 	object_id2    = models.PositiveIntegerField(null = True)
-	tarifaFeriados       = GenericForeignKey(ct_field="content_type2", fk_field="object_id2")
+	tarifaFeriados  = GenericForeignKey(ct_field="content_type2", fk_field="object_id2")
 	
 	apertura     = models.TimeField(blank = True, null = True)
 	cierre       = models.TimeField(blank = True, null = True)
