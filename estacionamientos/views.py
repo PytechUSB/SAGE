@@ -220,12 +220,16 @@ def estacionamiento_detail(request, _id):
                 'horarioout' : estacionamiento.cierre,
                 'tarifa' : estacionamiento.tarifa.tarifa,
                 'tarifa2' : estacionamiento.tarifa.tarifa2,
-                'tarifaFeriados' : estacionamiento.tarifa.tarifaFeriados,
                 'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
                 'finTarifa2' : estacionamiento.tarifa.finEspecial,
+                'tarifaFeriados' : estacionamiento.tarifaFeriados.tarifa,
+                'tarifaFeriados2' : estacionamiento.tarifaFeriados.tarifa2,
+                'inicioTarifaFeriados2' : estacionamiento.tarifa.inicioEspecial,
+                'finTarifaFeriados2' : estacionamiento.tarifa.finEspecial,
                 'puestos' : estacionamiento.capacidad,
                 'esquema' : estacionamiento.tarifa.__class__.__name__,
-                'feriados' : estacionamiento.tarifa.feriados
+                'esquemaFeriados' : estacionamiento.tarifaFeriados.__class__.__name__,
+                'feriados' : estacionamiento.feriados
             }
             form = EstacionamientoExtendedForm(data = form_data)
         else:
@@ -245,17 +249,12 @@ def estacionamiento_detail(request, _id):
             tarifa2       = form.cleaned_data['tarifa2']
             tarifaFeriados = form.cleaned_data['tarifaFeriados']
             feriados      = form.cleaned_data['feriados']
-
-            esquemaTarifa = eval(tipo)(
-                feriados         = feriados,
-                tarifa         = tarifa,
-                tarifa2        = tarifa2,
-                tarifaFeriados = tarifaFeriados,
-                inicioEspecial = inicioTarifa2,
-                finEspecial    = finTarifa2
-            )
-
-            esquemaTarifa.save()
+            tipo2          = form.cleaned_data['esquemaFeriados']
+            inicioTarifaFeriados = form.cleaned_data['inicioTarifaFeriados']
+            finTarifaFeriados    = form.cleaned_data['finTarifaFeriados']
+            tarifaFeriados2       = form.cleaned_data['tarifaFeriados2']
+            tarifaFeriados = form.cleaned_data['tarifaFeriados']
+            
             # debería funcionar con excepciones, y el mensaje debe ser mostrado
             # en el mismo formulario
             if not HorarioEstacionamiento(horaIn, horaOut):
@@ -266,7 +265,28 @@ def estacionamiento_detail(request, _id):
                     , 'mensaje': 'El horario de apertura debe ser menor al horario de cierre'
                     }
                 )
+
+            esquemaTarifa = eval(tipo)(
+                tarifa         = tarifa,
+                tarifa2        = tarifa2,
+                inicioEspecial = inicioTarifa2,
+                finEspecial    = finTarifa2
+            )
+            if (tarifaFeriados):
+                esquemaTarifaFeriados = eval(tipo2)(
+                    tarifa         = tarifaFeriados,
+                    tarifa2        = tarifaFeriados2,
+                    inicioEspecial = inicioTarifaFeriados,
+                    finEspecial    = finTarifaFeriados
+                )
+                esquemaTarifaFeriados.save()
+                estacionamiento.tarifaFeriados    = esquemaTarifaFeriados
+            else:
+                estacionamiento.tarifaFeriados    = None
+            esquemaTarifa.save()
+            
             # debería funcionar con excepciones
+            estacionamiento.feriados    = feriados
             estacionamiento.tarifa    = esquemaTarifa
             estacionamiento.apertura  = horaIn
             estacionamiento.cierre    = horaOut

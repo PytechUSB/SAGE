@@ -30,9 +30,11 @@ class Estacionamiento(models.Model):
 	propietario = models.ForeignKey(Propietario)
 
 	# Campos para referenciar al esquema de tarifa
+	feriados     = models.TextField(null=True)
 	content_type = models.ForeignKey(ContentType, null = True)
 	object_id    = models.PositiveIntegerField(null = True)
 	tarifa       = GenericForeignKey()
+	tarifaFeriados       = GenericForeignKey()
 	apertura     = models.TimeField(blank = True, null = True)
 	cierre       = models.TimeField(blank = True, null = True)
 	capacidad    = models.IntegerField(blank = True, null = True)
@@ -122,37 +124,11 @@ class Pago(models.Model):
 class EsquemaTarifario(models.Model):
 
 	# No se cuantos digitos deberiamos poner
-	feriados	 = models.TextField(null=True)
 	tarifa         = models.DecimalField(max_digits=20, decimal_places=2)
 	tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
-	tarifaFeriados = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
 	inicioEspecial = models.TimeField(blank = True, null = True)
 	finEspecial    = models.TimeField(blank = True, null = True)
 	
-	def getFeriados(self):
-		return self.feriados.split(",")
-
-	#devuelve la cantidad de minutos que cae la reserva en un dia feriado
-	def minutosFeriados(self,horaInicio,horaFinal):
-		if (self.tarifaFeriados):
-			feriados = self.feriados.split(",")
-			minutosFeriados  = 0
-			fechaAnterior = ""
-			diaFeriado = False
-			tiempoActual       = horaInicio
-			minuto             = timedelta(minutes=1)
-			while tiempoActual < horaFinal:
-				if tiempoActual.date()!=fechaAnterior: # Esta guarda se cumple para el primer ciclo y al cambiar de dia
-					fechaAnterior = tiempoActual.date()
-					diaFeriado=False
-					if str(fechaAnterior) in feriados:
-						diaFeriado=True
-				if (diaFeriado): minutosFeriados += 1
-				tiempoActual += minuto
-		else:
-			minutosFeriados = 0
-		return minutosFeriados
-
 	class Meta:
 		abstract = True
 	def __str__(self):
@@ -161,47 +137,25 @@ class EsquemaTarifario(models.Model):
 
 class TarifaHora(EsquemaTarifario):
 	def calcularPrecio(self,horaInicio,horaFinal):
-
-		values=str(horaInicio).split(" ")
-		diasferiados=self.feriados.split(",")
-		if (values[0] in diasferiados):
-			print("Es feriado"+values[0])
-		else: print("No es feriado"+values[0])
 		a = horaFinal-horaInicio
 		a = a.days*24+a.seconds/3600
 		a = ceil(a) #  De las horas se calcula el techo de ellas
 		return(Decimal(self.tarifa*a).quantize(Decimal('1.00')))
 	def tipo(self):
-		if (self.tarifaFeriados):
-			return("Por Hora con feriados")
 		return("Por Hora")
 
 class TarifaMinuto(EsquemaTarifario):
 	def calcularPrecio(self,horaInicio,horaFinal):
-		minutosNormales = horaFinal-horaInicio
-		minutosNormales = minutosNormales.days*24*60+minutosNormales.seconds/60
-		
-		#Sacamos los feriados
-		minutosFeriados  = self.minutosFeriados(horaInicio,horaFinal)
-
-		return ((Decimal(minutosNormales-minutosFeriados)*Decimal(self.tarifa/60))
-				+(Decimal(minutosFeriados)*Decimal(self.tarifaFeriados/60))).quantize(Decimal('1.00'))
+		minutes = horaFinal-horaInicio
+		minutes = minutes.days*24*60+minutes.seconds/60
+		return (Decimal(minutes)*Decimal(self.tarifa/60)).quantize(Decimal('1.00'))
 	def tipo(self):
-		if (self.tarifaFeriados):
-			return("Por minuto con feriados")
-		return("Por minuto")
+		return("Por Minuto")
 
 class TarifaHorayFraccion(EsquemaTarifario):
 	def calcularPrecio(self,horaInicio,horaFinal):
 		time = horaFinal-horaInicio
 		time = time.days*24*3600+time.seconds
-
-		#Sacamos los segundos que caen en la tarifa feriada
-		segundosFeriados  = self.minutosFeriados(horaInicio,horaFinal) *60
-		valorF=0
-
-		time -= segundosFeriados
-
 		if(time>3600):
 			valor = (floor(time/3600)*self.tarifa)
 			if((time%3600)==0):
@@ -212,35 +166,15 @@ class TarifaHorayFraccion(EsquemaTarifario):
 				valor += self.tarifa/2
 		else:
 			valor = self.tarifa
-
-		if(segundosFeriados>3600):
-			valorF = (floor(segundosFeriados/3600)*self.tarifaFeriados)
-			if((segundosFeriados%3600)==0):
-				pass
-			elif((segundosFeriados%3600)>1800):
-				valorF += self.tarifaFeriados
-			else:
-				valorF += self.tarifaFeriados/2
-		elif(segundosFeriados!=0):
-			valorF = self.tarifaFeriados
-
-		return(Decimal(valor + valorF).quantize(Decimal('1.00')))
+		return(Decimal(valor).quantize(Decimal('1.00')))
 
 	def tipo(self):
-		if (self.tarifaFeriados):
-			return("Por Hora y Fraccion con feriados")
 		return("Por Hora y Fraccion")
 
 class TarifaFinDeSemana(EsquemaTarifario):
 	def calcularPrecio(self,inicio,final):
-		# Auxiliares para feriados
-		feriados=self.getFeriados()
-		minutosFeriados = 0
-		fechaAnterior = ""
-		diaFeriado=False
-		
 		minutosNormales    = 0
-		minutosFinDeSemana= 0
+		minutosFinDeSemana = 0
 		tiempoActual       = inicio
 		minuto             = timedelta(minutes=1)
 		while tiempoActual < final:
@@ -250,28 +184,17 @@ class TarifaFinDeSemana(EsquemaTarifario):
 			# ..
 			# 5 = Sabado
 			# 6 = Domingo
-			if tiempoActual.date()!=fechaAnterior: # Esta guarda se cumple para el primer ciclo y al cambiar de dia
-				#print("Actual:"+str(tiempoActual.date()))
-				fechaAnterior = tiempoActual.date()
-				diaFeriado=False
-				if str(fechaAnterior) in feriados:
-					diaFeriado=True
-			if (diaFeriado): minutosFeriados += 1
-			else:		
-				if tiempoActual.weekday() < 5:
-					minutosNormales += 1
-				else:
-					minutosFinDeSemana += 1
+			if tiempoActual.weekday() < 5:
+				minutosNormales += 1
+			else:
+				minutosFinDeSemana += 1
 			tiempoActual += minuto
 		return Decimal(
 			minutosNormales*self.tarifa/60 +
-			minutosFinDeSemana*self.tarifa2/60 +
-			minutosFeriados*self.tarifaFeriados/60
+			minutosFinDeSemana*self.tarifa2/60
 		).quantize(Decimal('1.00'))
 
 	def tipo(self):
-		if (self.tarifaFeriados):
-			return("Tarifa diferenciada para fines de semana con feriados")
 		return("Tarifa diferenciada para fines de semana")
 
 class TarifaHoraPico(EsquemaTarifario):
@@ -294,10 +217,3 @@ class TarifaHoraPico(EsquemaTarifario):
 
 	def tipo(self):
 		return("Tarifa diferenciada por hora pico")
-
-class TarifaFeriados(EsquemaTarifario):
-	def calcularPrecio(self,reservaInicio,reservaFinal):
-		pass
-
-	def tipo(self):
-		return("Tarifa diferenciada por días feriados")
