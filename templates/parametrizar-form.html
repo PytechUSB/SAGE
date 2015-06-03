@@ -50,7 +50,12 @@
   fin     = document.getElementById('id_finTarifa2');
   feriados     = document.getElementById('id_feriados');
   tarifaFeriados.style.display = 'none';
-  tarifaFeriados.value = ""
+  if (tarifaFeriados.value != ""){
+  	document.getElementById("check_feriados").checked = true;
+    document.getElementById('calendar_feriados').style.display = 'block';
+    tarifaFeriados.style.display = '';
+    tarifaFeriados.placeholder="Tarifa días feriados";
+  }
   if (esquema.value == "TarifaHoraPico") {
     tarifa1.placeholder="Tarifa normal";
     inicio.style.display='';
@@ -142,7 +147,7 @@
       } else {
         document.getElementById('calendar_feriados').style.display = 'none';
         tarifaFeriados.style.display = 'none';
-        tarifaFeriados.value = ""
+        tarifaFeriados.value = "";
       }
     };
   </script>	

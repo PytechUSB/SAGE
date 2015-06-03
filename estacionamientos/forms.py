@@ -333,13 +333,12 @@ class EstacionamientoExtendedForm(forms.Form):
         )
     )
     
-    
     tarifaFeriados = forms.DecimalField(
             required   = False,
             validators = [tarifa_validator],
             widget     = forms.TextInput(attrs = {
                 'class'       : 'form-control',
-                'placeholder' : 'Tarifa 2',
+                'placeholder' : 'Tarifa feriados',
                 'pattern'     : '^([0-9]+(\.[0-9]+)?)$',
                 'message'     : 'La entrada debe ser un número decimal.'
             }
