@@ -1,4 +1,5 @@
-{% load staticfiles %}	  
+{% load staticfiles %}
+<meta charset="utf-8">	
 <div class="panel panel-default">
   <div class="panel-heading">
     <div class="panel-title">
@@ -42,6 +43,7 @@
   </div>
 </div>
 {% include "validator.js.html" %}
+<script type="text/javascript" src="{% static 'multidatepicker/js/lang-css.js'%}" ></script>
 <script type="text/javascript">
   esquema 		  = document.getElementById('id_esquema');
   esquemaFeriados = document.getElementById('id_esquemaFeriados');
@@ -170,6 +172,13 @@
 	<script type="text/javascript">
     var show=false;
     var dates=feriados.value.split(",");
+    $.datepicker.setDefaults(
+	  $.extend(
+	    {'dateFormat':'yy-mm-dd'},
+	    $.datepicker.regional['es']
+	  )
+	);
+	$.datepicker.setDefaults($.datepicker.regional["es"]);
     function calendar() {
       show=!show;
     	if (show){
@@ -177,6 +186,9 @@
 				$('#multi_date_picker').show();
 				if (dates.length>1) {
 					$('#multi_date_picker').multiDatesPicker({
+						monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+	'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+						dayNamesMin: ['D','L','M','X','J','V','S'],
 						dateFormat: "yy-mm-dd", 
 						addDates: dates
 					});

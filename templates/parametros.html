@@ -74,6 +74,9 @@
       			var y = new Date().getFullYear();
 		        var dates=feriados.value.split(",");
 				$('#dialog').multiDatesPicker({
+					monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+					dayNamesMin: ['D','L','M','X','J','V','S'],
 					dateFormat: "yy-mm-dd", 
 					defaultDate: y+'-1-1',
 					numberOfMonths: [3,4],
