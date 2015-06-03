@@ -832,7 +832,7 @@ def billetera_recarga(request, _id):
             if (form.cleaned_data["monto"] <= Decimal(0.00)):
                 return render(
                     request,
-                    'template-mensaje.html',
+                    'mensaje.html',
                     {'color' : 'red'
                     , 'mensaje' : 'Monto debe ser mayor que 0.00'
                     }
@@ -841,7 +841,7 @@ def billetera_recarga(request, _id):
             elif (not billeteraE.validar_recarga(form.cleaned_data["monto"])):
                 return render(
                     request,
-                    'template-mensaje.html',
+                    'mensaje.html',
                     {'color' : 'red'
                     , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
                     }
