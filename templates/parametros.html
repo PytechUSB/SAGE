@@ -14,7 +14,7 @@
       <tr><td><b><i class="fa fa-circle"></i></i> Esquema:</b></td></tr>
       <tr><td>{{estacionamiento.tarifa.tipo}} </td></tr>
     {% endif %}
-    {% if estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana" %}
+    {% if estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana con feriados" %}
       <tr><td><b><i class="fa fa-money"></i></i> Tarifa regular:</b></td></tr>
       <tr><td>BsF. {{estacionamiento.tarifa}}</td></tr>
       <tr><td><b><i class="fa fa-money"></i></i> Tarifa fin de semana:</b></td></tr>
