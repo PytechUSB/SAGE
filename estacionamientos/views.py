@@ -45,8 +45,7 @@ from estacionamientos.models import (
     TarifaMinuto,
     TarifaHorayFraccion,
     TarifaFinDeSemana,
-    TarifaHoraPico,
-    TarifaDiasFeriados
+    TarifaHoraPico
 )
 from estacionamientos.forms import authBilleteraForm
 
