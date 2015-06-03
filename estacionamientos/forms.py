@@ -335,7 +335,7 @@ class EstacionamientoExtendedForm(forms.Form):
     )
     
     esquemaFeriados = forms.ChoiceField(
-        required = True,
+        required = False,
         choices  = choices_esquema,
         widget   = forms.Select(attrs =
             { 'class' : 'form-control' }

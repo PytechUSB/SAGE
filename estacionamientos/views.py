@@ -222,15 +222,18 @@ def estacionamiento_detail(request, _id):
                 'tarifa2' : estacionamiento.tarifa.tarifa2,
                 'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
                 'finTarifa2' : estacionamiento.tarifa.finEspecial,
-                'tarifaFeriados' : estacionamiento.tarifaFeriados.tarifa,
-                'tarifaFeriados2' : estacionamiento.tarifaFeriados.tarifa2,
-                'inicioTarifaFeriados2' : estacionamiento.tarifa.inicioEspecial,
-                'finTarifaFeriados2' : estacionamiento.tarifa.finEspecial,
                 'puestos' : estacionamiento.capacidad,
                 'esquema' : estacionamiento.tarifa.__class__.__name__,
-                'esquemaFeriados' : estacionamiento.tarifaFeriados.__class__.__name__,
                 'feriados' : estacionamiento.feriados
             }
+            if estacionamiento.tarifaFeriados:
+                form_data.update({
+                    'tarifaFeriados' : estacionamiento.tarifaFeriados.tarifa,
+                    'tarifaFeriados2' : estacionamiento.tarifaFeriados.tarifa2,
+                    'inicioTarifaFeriados2' : estacionamiento.tarifaFeriados.inicioEspecial,
+                    'finTarifaFeriados2' : estacionamiento.tarifaFeriados.finEspecial,
+                    'esquemaFeriados' : estacionamiento.tarifaFeriados.__class__.__name__
+                })
             form = EstacionamientoExtendedForm(data = form_data)
         else:
             form = EstacionamientoExtendedForm()
@@ -281,8 +284,8 @@ def estacionamiento_detail(request, _id):
                 esquemaTarifaFeriados.save()
                 estacionamiento.tarifaFeriados    = esquemaTarifaFeriados
             else:
-                estacionamiento.tarifaFeriados.delete()
-                estacionamiento.tarifaFeriados    = None
+                if (estacionamiento.tarifaFeriados):
+                    estacionamiento.tarifaFeriados.delete()
             esquemaTarifa.save()
             
             # debería funcionar con excepciones
