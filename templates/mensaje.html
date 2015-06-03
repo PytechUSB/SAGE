@@ -12,8 +12,12 @@
         SAGE
     </h3>
     <hr>
-    <div style="color:{{color}}">
-        {{mensaje}}
+    <div style="color:{{color}}"><b>
+        {{mensaje}}<p></p>
+        {% if mensaje2 %}
+        {{mensaje2}}<p></p>
+        {{mensaje3}}
+        {% endif %}</b>
         <hr>
       </div>
       <div class="control-group" align="center">

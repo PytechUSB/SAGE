@@ -946,6 +946,8 @@ def validar_billetera(request, id_pago):
                         'mensaje.html',
                         { 'color' : 'red'
                         , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
+                        , 'mensaje2' : '1) Presione volver e ingrese una billetera diferente'
+                        , 'mensaje3' : '2) NO CIERRE esta ventana y cree una nueva billetera'
                         }
                     )
                     
@@ -1007,3 +1009,4 @@ def cancelar_reserva(request, id_pago, id_billetera):
             , 'mensaje1': '¿Desea cancelar esta reservacion?'
             }
         )
+        
