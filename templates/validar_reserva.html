@@ -68,3 +68,19 @@
           </div>
         </form>
 {% endblock %}
+{% block scripts %}
+
+
+<script>
+
+		$('document').ready(function() {
+			
+			window.resizeTo(400,400);
+			
+			
+		});
+		
+</script>
+
+{% include "validator.js.html" %}
+{% endblock %}
