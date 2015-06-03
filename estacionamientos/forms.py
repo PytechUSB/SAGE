@@ -277,6 +277,7 @@ class EstacionamientoExtendedForm(forms.Form):
 
     feriados = forms.CharField(
         required = False,
+        initial  = '2015-05-01,2015-06-24,2015-07-05,2015-07-24,2015-10-12,2015-12-25',
         widget   = forms.HiddenInput()
     )
 

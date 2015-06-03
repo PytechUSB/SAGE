@@ -33,11 +33,9 @@
       <tr><td><b><i class="fa fa-money"></i></i> Tarifa:</b></td></tr>
       <tr><td>BsF. {{estacionamiento.tarifa.tarifa|floatformat:2|intcomma}}</td></tr>
     {% endif %}
-    {% if estacionamiento.tarifaFeriados.tarifa %}
-    	{% if estacionamiento.tarifaFeriados %}
+    {% if estacionamiento.tarifaFeriados %}
 	      <tr><td><b><i class="fa fa-circle"></i></i> Esquema Feriados:</b></td></tr>
 	      <tr><td>{{estacionamiento.tarifaFeriados.tipo}} </td></tr>
-	    {% endif %}
 	    {% if estacionamiento.tarifaFeriados.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana con feriados" %}
 	      <tr><td><b><i class="fa fa-money"></i></i> Tarifa regular:</b></td></tr>
 	      <tr><td>BsF. {{estacionamiento.tarifaFeriados|floatformat:2|intcomma}}</td></tr>

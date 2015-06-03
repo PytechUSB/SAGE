@@ -294,8 +294,8 @@ def estacionamiento_detail(request, _id):
             estacionamiento.apertura  = horaIn
             estacionamiento.cierre    = horaOut
             estacionamiento.capacidad = form.cleaned_data['puestos']
+
             estacionamiento.save()
-            estacionamiento = Estacionamiento.objects.get(id = _id)
             
     return render(
         request,
