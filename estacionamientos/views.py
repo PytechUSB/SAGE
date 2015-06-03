@@ -12,7 +12,7 @@ from collections import OrderedDict
 from django.db import transaction
 from django.db.utils import IntegrityError
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from estacionamientos.controller import (
     HorarioEstacionamiento,
@@ -832,7 +832,7 @@ def billetera_recarga(request, _id):
             if (form.cleaned_data["monto"] <= Decimal(0.00)):
                 return render(
                     request,
-                    'template-mensaje.html',
+                    'mensaje.html',
                     {'color' : 'red'
                     , 'mensaje' : 'Monto debe ser mayor que 0.00'
                     }
@@ -841,7 +841,7 @@ def billetera_recarga(request, _id):
             elif (not billeteraE.validar_recarga(form.cleaned_data["monto"])):
                 return render(
                     request,
-                    'template-mensaje.html',
+                    'mensaje.html',
                     {'color' : 'red'
                     , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
                     }
@@ -895,6 +895,15 @@ def validar_reserva(request):
                         { 'color': 'red'
                         , 'mensaje' : 'Esta reservacion ya ha sido cancelada'
                         }
+                    )
+                
+                elif (datetime.now() >= (pago.reserva.inicioReserva - timedelta(seconds = 60))):
+                    return render(
+                        request,
+                        'mensaje.html',
+                        { 'color': 'red'
+                        , 'mensaje': 'Cancelacion denegada, las cancelaciones deben hacerse al menos un minuto antes de que empiece la reservacion' 
+                        }          
                     )
                     
                 else:
@@ -962,15 +971,12 @@ def validar_billetera(request, id_pago):
     )         
     
 def cancelar_reserva(request, id_pago, id_billetera):
-    '''try:
+    try:
         pago = Pago.objects.get(pk = id_pago)
         billeteraE = BilleteraElectronica.objects.get(pk = id_billetera)
     except ObjectDoesNotExist:
-        print('hola')
-        raise Http404     '''
+        raise Http404
     
-    pago = Pago.objects.get(pk = id_pago)
-    billeteraE = BilleteraElectronica.objects.get(pk = id_billetera)
     
     if request.method == 'POST':
         cancelacion = Cancelaciones(
