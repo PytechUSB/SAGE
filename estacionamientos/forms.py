@@ -284,7 +284,7 @@ class EstacionamientoExtendedForm(forms.Form):
             { 'class' : 'form-control' }
         )
     )
-
+    
     tarifa = forms.DecimalField(
         required   = True,
         validators = [tarifa_validator],
@@ -332,7 +332,8 @@ class EstacionamientoExtendedForm(forms.Form):
             }
         )
     )
-
+    
+    
     tarifaFeriados = forms.DecimalField(
             required   = False,
             validators = [tarifa_validator],
