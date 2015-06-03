@@ -247,7 +247,6 @@ def estacionamiento_detail(request, _id):
             inicioTarifa2 = form.cleaned_data['inicioTarifa2']
             finTarifa2    = form.cleaned_data['finTarifa2']
             tarifa2       = form.cleaned_data['tarifa2']
-            tarifaFeriados = form.cleaned_data['tarifaFeriados']
             feriados      = form.cleaned_data['feriados']
             tipo2          = form.cleaned_data['esquemaFeriados']
             inicioTarifaFeriados = form.cleaned_data['inicioTarifaFeriados']
@@ -282,6 +281,7 @@ def estacionamiento_detail(request, _id):
                 esquemaTarifaFeriados.save()
                 estacionamiento.tarifaFeriados    = esquemaTarifaFeriados
             else:
+                estacionamiento.tarifaFeriados.delete()
                 estacionamiento.tarifaFeriados    = None
             esquemaTarifa.save()
             
