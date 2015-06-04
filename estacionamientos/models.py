@@ -65,8 +65,7 @@ class BilleteraElectronica (models.Model):
 	def validar_recarga(self, monto):
 		try:
 			if (((self.saldo + Decimal(monto)) <= SMAX) and (monto > 0)):
-				return True
-			
+				return True	
 		except:
 			return False
 		
@@ -76,7 +75,6 @@ class BilleteraElectronica (models.Model):
 		try:
 			if ((self.saldo >= Decimal(monto)) and (monto >= 0)):
 				return True
-		
 		except:
 			return False
 		
@@ -116,6 +114,18 @@ class Pago(models.Model):
 	
 	def __str__(self):
 		return str(self.id)+" "+str(self.reserva.estacionamiento.nombre)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
+	
+	def cancelar_reserva(self):
+		if self.validar_cancelacion(datetime.now()):
+			self.cancelado = True
+			self.save()
+		
+		
+	def validar_cancelacion(self, tiempo):
+		if ((tiempo < self.reserva.inicioReserva) and (not self.cancelado)):
+			return True
+		
+		return False
 
 class Recargas(models.Model):
 	id				 = models.IntegerField(primary_key = True)

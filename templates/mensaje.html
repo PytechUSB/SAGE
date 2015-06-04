@@ -12,6 +12,7 @@
         SAGE
     </h3>
     <hr>
+    {% if mensaje %}
     <div style="color:{{color}}"><b>
         {{mensaje}}<p></p>
         {% if mensaje2 %}
@@ -25,5 +26,22 @@
 	      Volver
 	    </button>
       </div>
+     {% endif %}
+     {% if mensajeFinal %}
+     	<div style="color:{{color}}"><b>
+        {{mensajeFinal}}</b>
+        <hr>
+        </div>
+        <div align="center">
+          <input
+            type="button"
+            value="Salir"
+            onclick="self.close()"
+            class="btn btn-primary"
+          >   
+          <p>
+          </p>
+        </div>
+      {% endif %}
 </div>
 {% endblock %}

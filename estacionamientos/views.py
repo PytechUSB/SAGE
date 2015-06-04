@@ -892,12 +892,21 @@ def validar_reserva(request):
                         }
                     )
                 
-                elif (datetime.now() >= (pago.reserva.inicioReserva - timedelta(seconds = 60))):
+                elif (not pago.validar_cancelacion(datetime.now() + timedelta(seconds = 60))):
                     return render(
                         request,
                         'mensaje.html',
                         { 'color': 'red'
                         , 'mensaje': 'Cancelacion denegada, las cancelaciones deben hacerse al menos un minuto antes de que empiece la reservacion' 
+                        }          
+                    )
+                    
+                elif (pago.monto <= 0):
+                    return render(
+                        request,
+                        'mensaje.html',
+                        { 'color': 'red'
+                        , 'mensaje': 'Cancelacion denegada, el monto de la cancelacion debe ser mayor a cero ' 
                         }          
                     )
                     
@@ -947,7 +956,7 @@ def validar_billetera(request, id_pago):
                         { 'color' : 'red'
                         , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
                         , 'mensaje2' : '1) Presione volver e ingrese una billetera diferente'
-                        , 'mensaje3' : '2) NO CIERRE esta ventana y cree una nueva billetera'
+                        , 'mensaje3' : '2) Cree una nueva billetera'
                         }
                     )
                     
@@ -976,29 +985,47 @@ def cancelar_reserva(request, id_pago, id_billetera):
     
     
     if request.method == 'POST':
-        cancelacion = Cancelaciones(
-                                   id = asigna_id_unico(),
-                                   pagoCancelado = pago,
-                                   billetera = billeteraE,
-                                   monto = pago.monto,
-                                   fechaTransaccion = datetime.now()
-                                   )
-        cancelacion.save()
-        billeteraE.recargar_saldo(pago.monto)
-        billeteraE.save()
-        pago.cancelado = True
-        pago.save()
-        return render(
-            request, 
-            'cancelar_reserva.html',
-            { 'pago' : pago
-            , 'billetera' : billeteraE
-            , 'cancelacion' : cancelacion
-            , 'color' : 'green'
-            , 'mensaje2': 'Reservacion cancelada satisfactoriamente'
-            }
-        )
-        
+        if (pago.validar_cancelacion(datetime.now()) and billeteraE.validar_recarga(pago.monto)):
+            cancelacion = Cancelaciones(
+                            id = asigna_id_unico(),
+                            pagoCancelado = pago,
+                            billetera = billeteraE,
+                            monto = pago.monto,
+                            fechaTransaccion = datetime.now()
+            )
+            cancelacion.save()
+            billeteraE.recargar_saldo(pago.monto)
+            pago.cancelar_reserva()
+            return render(
+                request, 
+                'cancelar_reserva.html',
+                { 'pago' : pago
+                , 'billetera' : billeteraE
+                , 'cancelacion' : cancelacion
+                , 'color' : 'green'
+                , 'mensaje2': 'Reservacion cancelada satisfactoriamente'
+                }
+            )
+            
+        else:
+            if (not pago.validar_cancelacion(datetime.now())):
+                return render(
+                        request,
+                        'mensaje.html',
+                        { 'color': 'red'
+                        , 'mensajeFinal': 'Cancelacion denegada, la reserva ya ha empezado' 
+                        }          
+                )
+                
+            else:
+                return render(
+                        request,
+                        'mensaje.html',
+                        { 'color': 'red'
+                        , 'mensajeFinal': 'Cancelacion denegada, la recarga no puede llevarse a cabo' 
+                        }          
+                )
+            
     else:
         return render(
             request, 
