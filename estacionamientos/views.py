@@ -401,18 +401,33 @@ def estacionamiento_reserva(request, _id):
                     finalReserva    = finalReserva,
                 )
                 print(inicioReserva)
-                monto = Decimal(
-                    estacionamiento.tarifa.calcularPrecio(
-                        inicioReserva,finalReserva
+                
+                if(estacionamiento.tarifaFeriados):
+                    monto = Decimal(
+                        estacionamiento.tarifaFeriados.calcularPrecio(
+                            inicioReserva,finalReserva
+                        )
                     )
-                )
 
-                request.session['monto'] = float(
-                    estacionamiento.tarifa.calcularPrecio(
-                        inicioReserva,
-                        finalReserva
+                    request.session['monto'] = float(
+                        estacionamiento.tarifaFeriados.calcularPrecio(
+                            inicioReserva,
+                            finalReserva
+                        )
                     )
-                )
+                else:
+                    monto = Decimal(
+                        estacionamiento.tarifa.calcularPrecio(
+                            inicioReserva,finalReserva
+                        )
+                    )
+                    request.session['monto'] = float(
+                        estacionamiento.tarifa.calcularPrecio(
+                            inicioReserva,
+                            finalReserva
+                        )
+                    )
+                    
                 request.session['finalReservaHora']    = finalReserva.hour
                 request.session['finalReservaMinuto']  = finalReserva.minute
                 request.session['inicioReservaHora']   = inicioReserva.hour
