@@ -62,10 +62,10 @@
     {% endif %}
   </tbody>
 </table>
-
 <!--Muestra el multidatespicker con los dias feriados marcados-->
 {% block scripts %}
- <script>
+  <script type="text/javascript">
+  var feria= "{{ estacionamiento.feriados }}";
   $(function() {
     $( "#dialog" ).dialog({
       autoOpen: false,
@@ -73,8 +73,8 @@
       width : 895,
       position : {at: "center top"},
       open: function(){
-      	var y = new Date().getFullYear();
-		    var dates=feriados.value.split(",");
+      		var y = new Date().getFullYear();
+		    var dates=feria.split(",");
 				$('#dialog').multiDatesPicker({
 					monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
 					dayNamesMin: ['D','L','M','X','J','V','S'],
@@ -100,5 +100,4 @@
     });
   });
   </script>
-
 {% endblock %}

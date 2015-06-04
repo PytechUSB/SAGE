@@ -43,7 +43,6 @@
   </div>
 </div>
 {% include "validator.js.html" %}
-<script type="text/javascript" src="{% static 'multidatepicker/js/lang-css.js'%}" ></script>
 <script type="text/javascript">
   esquema 		  = document.getElementById('id_esquema');
   esquemaFeriados = document.getElementById('id_esquemaFeriados');
@@ -172,13 +171,6 @@
 	<script type="text/javascript">
     var show=false;
     var dates=feriados.value.split(",");
-    $.datepicker.setDefaults(
-	  $.extend(
-	    {'dateFormat':'yy-mm-dd'},
-	    $.datepicker.regional['es']
-	  )
-	);
-	$.datepicker.setDefaults($.datepicker.regional["es"]);
     function calendar() {
       show=!show;
     	if (show){
