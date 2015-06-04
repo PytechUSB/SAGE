@@ -289,7 +289,7 @@ def estacionamiento_detail(request, _id):
             esquemaTarifa.save()
             
             # debería funcionar con excepciones
-            estacionamiento.feriados    = feriados
+            estacionamiento.feriados  = feriados
             estacionamiento.tarifa    = esquemaTarifa
             estacionamiento.apertura  = horaIn
             estacionamiento.cierre    = horaOut
@@ -402,7 +402,13 @@ def estacionamiento_reserva(request, _id):
                 )
                 print(inicioReserva)
                 
-                if(estacionamiento.tarifaFeriados):
+                diaFeriado=False
+                feriados = estacionamiento.feriados.split(',')
+                dia= inicioReserva.date()
+                if(str(dia) in feriados):
+                    diaFeriado=True
+                    
+                if(estacionamiento.tarifaFeriados and diaFeriado):
                     monto = Decimal(
                         estacionamiento.tarifaFeriados.calcularPrecio(
                             inicioReserva,finalReserva

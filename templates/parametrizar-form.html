@@ -186,8 +186,7 @@
 				$('#multi_date_picker').show();
 				if (dates.length>1) {
 					$('#multi_date_picker').multiDatesPicker({
-						monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-	'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+						monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
 						dayNamesMin: ['D','L','M','X','J','V','S'],
 						dateFormat: "yy-mm-dd", 
 						addDates: dates
@@ -207,16 +206,16 @@
       if (element.checked){
         document.getElementById('calendar_feriados').style.display = 'block';
         tarifaFeriados.style.display  = '';
-	 	esquemaFeriados.style.display = '';
+	 	    esquemaFeriados.style.display = '';
       } else {
         document.getElementById('calendar_feriados').style.display = 'none';
-        tarifaFeriados.style.display	   = 'none';
-	 	esquemaFeriados.style.display 	   = 'none';
-	 	esquemaFeriados.value		 	   = 'TarifaHora';
-	    tarifaFeriados2.style.display 	   = 'none';
-	  	inicioTarifaFeriados.style.display = 'none';
-	  	finTarifaFeriados.style.display    = 'none';
-        tarifaFeriados.value 			   = "";
+        tarifaFeriados.style.display	     = 'none';
+	 	    esquemaFeriados.style.display 	   = 'none';
+	 	    esquemaFeriados.value		 	         = 'TarifaHora';
+	      tarifaFeriados2.style.display 	   = 'none';
+	  	  inicioTarifaFeriados.style.display = 'none';
+	  	  finTarifaFeriados.style.display    = 'none';
+        tarifaFeriados.value 			         = "";
       }
     };
   </script>	
