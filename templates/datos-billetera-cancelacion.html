@@ -62,16 +62,10 @@
               </tbody>
             </table>
             <div class="control-group" align="center">
-            <a href="/estacionamientos/{{ billetera.id }}/recarga_billetera" onClick="return popup(this, 'Datos Billetera')">
+            <a href="/estacionamientos/{{ id_pago }}/{{ billetera.id }}/cancelar_reserva">
               <button class="btn btn-primary">
-                Recargar
+                Continuar
               </button> </a>
-                <input
-	              type="button"
-	              value="Volver" 
-	              id="id_volver"
-	              class="btn btn-primary"
-                 >
           <p></p>
             </div>
      </div>
@@ -91,10 +85,6 @@
            if({{billetera.saldo}} == 0){
                 $('#id_mensaje').css("display", "block");
             }; 
-			
-			$('#id_volver').click(function() {
-				$(location).attr('href',"/estacionamientos/crear_billetera");
-			});
 			
 		});
 		

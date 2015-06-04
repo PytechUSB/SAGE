@@ -950,15 +950,7 @@ def validar_billetera(request, id_pago):
                     return HttpResponseRedirect(direccion)
                     
                 else:
-                    return render(
-                        request,
-                        'mensaje.html',
-                        { 'color' : 'red'
-                        , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
-                        , 'mensaje2' : '1) Presione volver e ingrese una billetera diferente'
-                        , 'mensaje3' : '2) Cree una nueva billetera'
-                        }
-                    )
+                    return HttpResponseRedirect("/estacionamientos/" + str(pago.id) + "/" + "crear_billetera")
                     
             else:
                 return render(
@@ -974,7 +966,51 @@ def validar_billetera(request, id_pago):
         'validar_billetera.html',
         {'form' : form
         }
-    )         
+    )
+    
+def validar_billetera_saldo_excedido(request, id_pago):
+    id_pago = int(id_pago)
+    
+    try:
+        pago = Pago.objects.get(pk = id_pago)
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    form = BilleteraForm()
+    
+    if (request.method == 'POST'):
+        form = BilleteraForm(request.POST)
+        if (form.is_valid()):
+            obj = BilleteraElectronica(
+                    nombre = form.cleaned_data['nombre'],
+                    apellido = form.cleaned_data['apellido'],
+                    PIN = form.cleaned_data['PIN'],
+                    cedula = form.cleaned_data['cedula'],
+                    cedulaTipo = form.cleaned_data['cedulaTipo']
+            )
+            obj.save()
+            
+            return render(
+                request,
+                'datos-billetera-cancelacion.html',
+                { 'billetera' : obj
+                , 'id_pago' : id_pago
+                , 'mensaje' : 'Billetera Creada Satisfactoriamente'
+                , 'color' : 'green' 
+                }
+            )
+        
+    return render(
+        request,
+        'mensaje-saldo-excedido.html',
+        { 'color' : 'red'
+        , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
+        , 'mensaje2' : '1) Presione volver e ingrese una billetera diferente'
+        , 'mensaje3' : '2) Cree una nueva billetera'
+        , 'form' : form
+        }
+    )
+        
     
 def cancelar_reserva(request, id_pago, id_billetera):
     try:
