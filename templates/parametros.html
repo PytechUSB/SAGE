@@ -55,7 +55,7 @@
 	      <tr><td>BsF. {{estacionamiento.tarifaFeriados|floatformat:2|intcomma}}</td></tr>
 	    {% endif %}
         <tr><td>
-       	  <div>
+       	<div  id="feriados">
 	        <i class="fa fa-calendar" id="opener"><b> Días Feriados</b></i>
 	        <span id="dialog" title="Feriados"></span>
 	      </div>
@@ -71,11 +71,10 @@
       width : 895,
       position : {at: "center top"},
       open: function(){
-      			var y = new Date().getFullYear();
-		        var dates=feriados.value.split(",");
+      	var y = new Date().getFullYear();
+		    var dates=feriados.value.split(",");
 				$('#dialog').multiDatesPicker({
-					monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+					monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
 					dayNamesMin: ['D','L','M','X','J','V','S'],
 					dateFormat: "yy-mm-dd", 
 					defaultDate: y+'-1-1',
