@@ -108,7 +108,7 @@
           >
         </form>
       {% endif %}
-      {% if pago %}
+      {% if recarga %}
         <div class="row">
           <div class="col-md-7" style="color:{{color}}">
             {{mensaje}}
@@ -121,41 +121,41 @@
                   Número de Transacción:
                 </b></td></tr>
                 <tr><td>
-                  {{pago.id}}
+                  {{recarga.id}}
                 </td></tr>
 
                 <tr><td><b><i class="fa fa-clock-o"></i>
                   Fecha de Transacción:
                 </b></td></tr>
                 <tr><td>
-                  {{pago.fechaTransaccion}}
+                  {{recarga.fechaTransaccion}}
                 </td></tr>
 				
 				<tr><td><b><i class="fa fa-clock-o"></i>
                   ID Billetera:
                 </b></td></tr>
                 <tr><td>
-                  {{pago.billetera.id}}
+                  {{recarga.billetera.id}}
                 </td></tr>
 
                 <tr><td><b><i class="fa fa-user"></i>
                   Cédula:
                 </b></td></tr>
                 <tr><td>
-                  {{pago.cedulaTipo}}-{{pago.cedula}}
+                  {{recarga.cedulaTipo}}-{{recarga.cedula}}
                 </td></tr>
 
                 <tr><td><b><i class="fa fa-money"></i>
                   Tipo de Tarjeta:
                 </b></td></tr>
                 <tr><td>
-                  {{pago.tarjetaTipo}} </td></tr>
+                  {{recarga.tarjetaTipo}} </td></tr>
 
                 <tr><td><b><i class="fa fa-money"></i>
                   Monto:
                 </b></td></tr>
                 <tr><td>
-                  BsF. {{pago.monto|floatformat:2|intcomma }}
+                  BsF. {{recarga.monto|floatformat:2|intcomma }}
                 </td></tr>
               </tbody>
             </table>

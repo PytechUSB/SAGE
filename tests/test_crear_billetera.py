@@ -57,7 +57,7 @@ class CrearBilleteraTestCase(TestCase):
     def testCrearBilletera_CedulaExistente(self):
         crearBilletera(str(0), 'V')
         crearBilletera(str(0), 'V')
-        self.assertEqual(len(BilleteraElectronica.objects.all()), 1)
+        self.assertEqual(len(BilleteraElectronica.objects.all()), 2)
     
     # interior
     def testConsultaSaldo(self):

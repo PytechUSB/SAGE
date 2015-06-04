@@ -1,8 +1,8 @@
 # Archivo con funciones de control para SAGE
-from estacionamientos.models import Estacionamiento, Propietario, Reserva, Pago, BilleteraElectronica
 from datetime import datetime, timedelta, time
 from decimal import Decimal
 from collections import OrderedDict
+from estacionamientos.models import Propietario, Estacionamiento, Reserva, Pago, BilleteraElectronica, Recargas,Cancelaciones
 
 # chequeo de horarios de extended
 def HorarioEstacionamiento(HoraInicio, HoraFin):
@@ -63,6 +63,10 @@ def tasa_reservaciones(id_estacionamiento,prt=False):
 	e = Estacionamiento.objects.get(id = id_estacionamiento)
 	ahora = datetime.today().replace(hour=0,minute=0,second=0,microsecond=0)
 	reservas_filtradas = e.reserva_set.filter(finalReserva__gt=ahora)
+	pagos_cancelados = Pago.objects.filter(cancelado = True)
+	for cancelados in pagos_cancelados:
+		reservas_filtradas = reservas_filtradas.exclude(id = cancelados.reserva.id)
+		
 	lista_fechas=[(ahora+timedelta(i)).date() for i in range(7)]
 	lista_valores=[0 for i in range(7)]
 	ocupacion_por_dia = OrderedDict(zip(lista_fechas,lista_valores))
@@ -101,7 +105,7 @@ def consultar_ingresos(rif):
 	listaIngresos = []
 	
 	for estacionamiento in listaEstacionamientos:
-		listaFacturas = Pago.objects.exclude(reserva = None)
+		listaFacturas = Pago.objects.exclude(cancelado = True)
 		listaFacturas = listaFacturas.filter(
 			reserva__estacionamiento__nombre = estacionamiento.nombre
 		)
@@ -122,3 +126,18 @@ def billetera_autenticar(identificador, PIN):
 		
 	except(Exception):
 		return None
+	
+def pago_autenticar(identificador, cedulaTipo, cedula):
+	try:
+		pago = Pago.objects.get(pk = identificador)
+		if (pago.cedula == cedula and pago.cedulaTipo == cedulaTipo):
+			return pago
+		return None
+	except:
+		return None
+	
+def asigna_id_unico():
+	num_pagos_reservas = len(Pago.objects.all())
+	num_recargas = len(Recargas.objects.all())
+	num_cancelaciones = len(Cancelaciones.objects.all())
+	return (1 + num_pagos_reservas + num_recargas + num_cancelaciones)

@@ -3,7 +3,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 import urllib
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.dateparse import parse_datetime
 from urllib.parse import urlencode
 from matplotlib import pyplot
@@ -12,7 +12,7 @@ from collections import OrderedDict
 from django.db import transaction
 from django.db.utils import IntegrityError
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from estacionamientos.controller import (
     HorarioEstacionamiento,
@@ -22,7 +22,10 @@ from estacionamientos.controller import (
     tasa_reservaciones,
     calcular_porcentaje_de_tasa,
     consultar_ingresos,
-    billetera_autenticar)
+    billetera_autenticar,
+    pago_autenticar,
+    asigna_id_unico
+)
 
 from estacionamientos.forms import (
     EstacionamientoExtendedForm,
@@ -33,12 +36,15 @@ from estacionamientos.forms import (
     RifForm,
     CedulaForm,
     BilleteraForm,
-    BilleteraPagoForm
+    BilleteraPagoForm,
+    authBilleteraForm,
+    CancelaReservaForm
 )
 from estacionamientos.models import (
     Propietario,
     Estacionamiento,
     BilleteraElectronica,
+    Recargas,
     Reserva,
     Pago,
     TarifaHora,
@@ -46,8 +52,7 @@ from estacionamientos.models import (
     TarifaHorayFraccion,
     TarifaFinDeSemana,
     TarifaHoraPico
-)
-from estacionamientos.forms import authBilleteraForm
+, Cancelaciones)
 
 # Vista para procesar los propietarios
 def propietario_all(request):
@@ -450,6 +455,7 @@ def pago_reserva_aux(request, form, monto, estacionamiento):
     # Se guarda la reserva en la base de datos
     reservaFinal.save()
     pago = Pago(
+        id = asigna_id_unico(),
         fechaTransaccion = datetime.now(),
         cedula           = form.cleaned_data['cedula'],
         cedulaTipo       = form.cleaned_data['cedulaTipo'],
@@ -481,7 +487,7 @@ def estacionamiento_pago(request,_id):
                 
                 if (billeteraE == None):
                     return render(
-                        request, 'template-mensaje.html',
+                        request, 'mensaje.html',
                         {'color' : 'red'
                         , 'mensaje' : 'Autenticacion Denegada'
                         }
@@ -490,7 +496,7 @@ def estacionamiento_pago(request,_id):
                 else:
                     if(not billeteraE.validar_consumo(monto)):
                         return render(
-                            request, 'template-mensaje.html',
+                            request, 'mensaje.html',
                             {'color' : 'red'
                             , 'mensaje' : 'Saldo Insuficiente'
                             }
@@ -577,7 +583,7 @@ def estacionamiento_consulta_reserva(request):
 
             cedula        = form.cleaned_data['cedula']
             facturas      = Pago.objects.filter(cedula = cedula)
-            facturas      = facturas.exclude(reserva = None)
+            facturas      = facturas.exclude(cancelado = True)
             listaFacturas = []
 
             listaFacturas = sorted(
@@ -741,19 +747,14 @@ def billetera_all(request):
                     with transaction.atomic():    
                         obj.save()
                         return render(
-                            request, 'template-mensaje.html',
+                            request, 'datos-billetera.html',
                             {'color' : 'green'
                              ,'billetera': obj
                              , 'mensaje' : 'Billetera Creada Satisfactoriamente'
                              }
                         )
                 except (IntegrityError):
-                    return render(
-                        request, 'template-mensaje.html',
-                        {'color' : 'red'
-                         , 'mensaje' : 'Ya posee una billetera asociada'
-                         }
-                    )
+                    pass
                 
 
     return render(
@@ -777,7 +778,7 @@ def billetera_datos(request):
         # el constructor del modelo
 
         if formAuth.is_valid():
-            billetera_autenticada = billetera_autenticar(formAuth.cleaned_data['ID'], formAuth.cleaned_data['Pin'])
+            billetera_autenticada = billetera_autenticar(int(formAuth.cleaned_data['ID']), formAuth.cleaned_data['Pin'])
             if(billetera_autenticada != None):
                 return render(
                     request,
@@ -826,7 +827,7 @@ def billetera_recarga(request, _id):
             if (form.cleaned_data["monto"] <= Decimal(0.00)):
                 return render(
                     request,
-                    'template-mensaje.html',
+                    'mensaje.html',
                     {'color' : 'red'
                     , 'mensaje' : 'Monto debe ser mayor que 0.00'
                     }
@@ -835,14 +836,15 @@ def billetera_recarga(request, _id):
             elif (not billeteraE.validar_recarga(form.cleaned_data["monto"])):
                 return render(
                     request,
-                    'template-mensaje.html',
+                    'mensaje.html',
                     {'color' : 'red'
                     , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
                     }
                 )
                 
             else:
-                pago = Pago(
+                recarga = Recargas(
+                        id = asigna_id_unico(),
                         cedulaTipo = form.cleaned_data['cedulaTipo'],
                         cedula = form.cleaned_data['cedula'],
                         tarjetaTipo = form.cleaned_data['tarjetaTipo'],
@@ -851,13 +853,13 @@ def billetera_recarga(request, _id):
                         billetera = billeteraE   
                     )
                 
-                pago.save()
+                recarga.save()
                 billeteraE.recargar_saldo(form.cleaned_data['monto'])
                 return render(
                     request, 
                     'recarga-billetera.html',
                     { "id"      : _id
-                    , "pago"    : pago
+                    , "recarga"    : recarga
                     , "color"   : "green"
                     , "mensaje" : "Se realizo la recarga de la billetera satisfactoriamente"
                     }
@@ -870,3 +872,168 @@ def billetera_recarga(request, _id):
         { 'form': form
         }
     )
+    
+def validar_reserva(request):
+    form = CancelaReservaForm()
+    
+    if request.method == 'POST':
+        form = CancelaReservaForm(request.POST)
+        
+        
+        if form.is_valid():
+            pago = pago_autenticar(int(form.cleaned_data['ID']), form.cleaned_data['cedulaTipo'], form.cleaned_data['cedula'])
+            if (pago != None):
+                if (pago.cancelado):
+                    return render(
+                        request,
+                        'mensaje.html',
+                        { 'color': 'red'
+                        , 'mensaje' : 'Esta reservacion ya ha sido cancelada'
+                        }
+                    )
+                
+                elif (not pago.validar_cancelacion(datetime.now() + timedelta(seconds = 60))):
+                    return render(
+                        request,
+                        'mensaje.html',
+                        { 'color': 'red'
+                        , 'mensaje': 'Cancelacion denegada, las cancelaciones deben hacerse al menos un minuto antes de que empiece la reservacion' 
+                        }          
+                    )
+                    
+                elif (pago.monto <= 0):
+                    return render(
+                        request,
+                        'mensaje.html',
+                        { 'color': 'red'
+                        , 'mensaje': 'Cancelacion denegada, el monto de la cancelacion debe ser mayor a cero ' 
+                        }          
+                    )
+                    
+                else:
+                    direccion = "/estacionamientos/" + str(form.cleaned_data['ID']) + "/validar_billetera"
+                    return HttpResponseRedirect(direccion)
+            
+            else:
+                return render(
+                    request,
+                    'mensaje.html',
+                    { 'color': 'red'
+                    , 'mensaje' : 'ID no existe o CI no corresponde al registrado en el recibo de pago'
+                    }
+                )
+                
+    return render(
+        request,
+        'validar_reserva.html',
+         { "form" : form 
+          }
+    )
+    
+def validar_billetera(request, id_pago):
+    id_pago = int(id_pago)
+    
+    try:
+        pago = Pago.objects.get(pk = id_pago)
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    form = authBilleteraForm()
+    
+    if request.method == 'POST':
+        form = authBilleteraForm(request.POST)
+        if form.is_valid():
+            billetera = billetera_autenticar(int(form.cleaned_data['ID']), form.cleaned_data['Pin'])
+            if (billetera != None):
+                if(billetera.validar_recarga(pago.monto)):
+                    direccion = "/estacionamientos/" + str(pago.id) + "/" + str(billetera.id) + "/cancelar_reserva"
+                    return HttpResponseRedirect(direccion)
+                    
+                else:
+                    return render(
+                        request,
+                        'mensaje.html',
+                        { 'color' : 'red'
+                        , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
+                        , 'mensaje2' : '1) Presione volver e ingrese una billetera diferente'
+                        , 'mensaje3' : '2) Cree una nueva billetera'
+                        }
+                    )
+                    
+            else:
+                return render(
+                        request,
+                        'mensaje.html',
+                        { 'color' : 'red'
+                        , 'mensaje' : 'Autenticacion Denegada'
+                        }
+                    )
+                
+    return render(
+        request,
+        'validar_billetera.html',
+        {'form' : form
+        }
+    )         
+    
+def cancelar_reserva(request, id_pago, id_billetera):
+    try:
+        pago = Pago.objects.get(pk = id_pago)
+        billeteraE = BilleteraElectronica.objects.get(pk = id_billetera)
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    
+    if request.method == 'POST':
+        if (pago.validar_cancelacion(datetime.now()) and billeteraE.validar_recarga(pago.monto)):
+            cancelacion = Cancelaciones(
+                            id = asigna_id_unico(),
+                            pagoCancelado = pago,
+                            billetera = billeteraE,
+                            monto = pago.monto,
+                            fechaTransaccion = datetime.now()
+            )
+            cancelacion.save()
+            billeteraE.recargar_saldo(pago.monto)
+            pago.cancelar_reserva()
+            return render(
+                request, 
+                'cancelar_reserva.html',
+                { 'pago' : pago
+                , 'billetera' : billeteraE
+                , 'cancelacion' : cancelacion
+                , 'color' : 'green'
+                , 'mensaje2': 'Reservacion cancelada satisfactoriamente'
+                }
+            )
+            
+        else:
+            if (not pago.validar_cancelacion(datetime.now())):
+                return render(
+                        request,
+                        'mensaje.html',
+                        { 'color': 'red'
+                        , 'mensajeFinal': 'Cancelacion denegada, la reserva ya ha empezado' 
+                        }          
+                )
+                
+            else:
+                return render(
+                        request,
+                        'mensaje.html',
+                        { 'color': 'red'
+                        , 'mensajeFinal': 'Cancelacion denegada, la recarga no puede llevarse a cabo' 
+                        }          
+                )
+            
+    else:
+        return render(
+            request, 
+            'cancelar_reserva.html',
+            { 'pago' : pago
+            , 'billetera' : billeteraE
+            , 'color' : 'red'
+            , 'mensaje1': '¿Desea cancelar esta reservacion?'
+            }
+        )
+        

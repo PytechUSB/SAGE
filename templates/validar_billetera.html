@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}
+  SAGE - Ingresar Billetera
+{% endblock %}
+
+{% block menu %}{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-4">
+     <div class="panel panel-default">
+        <div class="panel-heading"> 
+          <div class="panel-title">
+           <i class="fa fa-check pull-left"></i>
+            <h4>
+              Validar Billetera
+            </h4>
+          </div>
+         </div>
+         <p></p>
+         <div class="col-md-4">
+        <form
+          method="post"
+          class="form form-vertical"
+        >
+          {% csrf_token %}
+          <div class="control-group">
+            <div class="controls">
+              <p>
+                {{ form.ID }}
+                <span
+                  class='error'
+                  id='{{form.ID.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.ID.errors }}
+              <p>
+                {{ form.Pin }}
+                <span
+                  class='error'
+                  id='{{form.Pin.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.Pin.errors }}
+                
+              </p>
+                 <div class="control-group" align="center">
+	              <input
+		            type="submit"
+		            value="Ingresar"
+		            class="btn btn-primary"
+		          >
+		          <input
+		            type="button"
+		            value="Volver"
+		            onClick="javascript:history.go(-1);" 
+		            class="btn btn-primary"
+		          >   
+          <p></p>
+          </div>
+          </div>
+        </form>
+      </div>
+    </div> 
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+
+		$('document').ready(function() {
+			
+			window.resizeTo(400,400);
+			
+		});
+		
+</script>
+
+{% include "validator.js.html" %}
+{% endblock %}
