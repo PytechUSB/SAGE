@@ -117,29 +117,3 @@ class ExtendedFormTestCase(TestCase):
                     }
         form = EstacionamientoExtendedForm(data = form_data)
         self.assertFalse(form.is_valid())
-
-###################################################################
-# ESTACIONAMIENTO_EXTENDED_FORM CON ESQUEMA PARA DIAS FERIADOS
-###################################################################
-
-    # caso borde
-    def test_estacionamiento_extended_esquema_dia_feriados_igual(self):
-        form_data = { 'puestos': 10,
-                      'horarioin': time(hour = 6,  minute = 0),
-                      'horarioout': time(hour = 19,  minute = 0),
-                      'tarifa': '12',
-                      'esquema':'TarifaHora',
-                      'esquemaFeriados':'TarifaHora'}
-        form = EstacionamientoExtendedForm(data = form_data)
-        self.assertTrue(form.is_valid())
-
-    # caso borde
-    def test_estacionamiento_extended_esquema_dia_feriados_distinto(self):
-        form_data = { 'puestos': 10,
-                      'horarioin': time(hour = 6,  minute = 0),
-                      'horarioout': time(hour = 19,  minute = 0),
-                      'tarifa': '12',
-                      'esquema':'TarifaHora',
-                      'esquemaFeriados':'TarifaMinuto'}
-        form = EstacionamientoExtendedForm(data = form_data)
-        self.assertTrue(form.is_valid())
