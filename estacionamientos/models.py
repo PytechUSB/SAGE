@@ -32,9 +32,16 @@ class Estacionamiento(models.Model):
 	propietario = models.ForeignKey(Propietario)
 
 	# Campos para referenciar al esquema de tarifa
-	content_type = models.ForeignKey(ContentType, null = True)
+	content_type = models.ForeignKey(ContentType, related_name = 'tarifa', null = True)
 	object_id    = models.PositiveIntegerField(null = True)
 	tarifa       = GenericForeignKey()
+	
+	# Campos para referenciar al esquema de tarifa para dias feriados
+	feriados     = models.TextField(null=True)
+	content_type2 = models.ForeignKey(ContentType, related_name = 'tarifaFeriados', null = True)
+	object_id2    = models.PositiveIntegerField(null = True)
+	tarifaFeriados  = GenericForeignKey(ct_field="content_type2", fk_field="object_id2")
+	
 	apertura     = models.TimeField(blank = True, null = True)
 	cierre       = models.TimeField(blank = True, null = True)
 	capacidad    = models.IntegerField(blank = True, null = True)
@@ -156,7 +163,7 @@ class EsquemaTarifario(models.Model):
 	tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
 	inicioEspecial = models.TimeField(blank = True, null = True)
 	finEspecial    = models.TimeField(blank = True, null = True)
-
+	
 	class Meta:
 		abstract = True
 	def __str__(self):

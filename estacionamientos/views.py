@@ -51,8 +51,8 @@ from estacionamientos.models import (
     TarifaMinuto,
     TarifaHorayFraccion,
     TarifaFinDeSemana,
-    TarifaHoraPico
-, Cancelaciones)
+    TarifaHoraPico, 
+    Cancelaciones)
 
 # Vista para procesar los propietarios
 def propietario_all(request):
@@ -70,7 +70,7 @@ def propietario_all(request):
 
         # Parte de la entrega era limitar la cantidad maxima de
         # estacionamientos a 5
-        if len(propietarios) >= 5 or 5-len(estacionamientos) <=0:
+        if len(propietarios) >= 5 or 5 - len(estacionamientos) <= 0:
             return render(
                 request, 'template-mensaje.html',
                 { 'color'   : 'red'
@@ -82,10 +82,10 @@ def propietario_all(request):
         # el constructor del modelo
         if form.is_valid():
             obj = Propietario(
-                nombres     = form.cleaned_data['nombres'],
-                apellidos   = form.cleaned_data['apellidos'],
-                cedula      = form.cleaned_data['cedula'],
-                telefono1   = form.cleaned_data['telefono_1']
+                nombres=form.cleaned_data['nombres'],
+                apellidos=form.cleaned_data['apellidos'],
+                cedula=form.cleaned_data['cedula'],
+                telefono1=form.cleaned_data['telefono_1']
             )     
             try:
                 obj.save()
@@ -114,7 +114,7 @@ def propietario_edit(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
     try:
-        propietario = Propietario.objects.get(id = _id)
+        propietario = Propietario.objects.get(id=_id)
     except ObjectDoesNotExist:
         raise Http404
 
@@ -122,10 +122,10 @@ def propietario_edit(request, _id):
         form_data = {
             'nombres' : propietario.nombres,
             'apellidos' : propietario.apellidos,
-            'cedula' : propietario.cedula,   
+            'cedula' : propietario.cedula,
             'telefono1' : propietario.telefono1 
         }
-        form = PropietarioForm(data = form_data)
+        form = PropietarioForm(data=form_data)
 
     elif request.method == 'POST':
         # Leemos el formulario
@@ -134,10 +134,10 @@ def propietario_edit(request, _id):
         if form.is_valid():
             try:
                 Propietario.objects.filter(id=_id).update(
-                nombres     = form.cleaned_data['nombres'],
-                apellidos   = form.cleaned_data['apellidos'],
-                cedula      = form.cleaned_data['cedula'],
-                telefono1   = form.cleaned_data['telefono_1']
+                nombres=form.cleaned_data['nombres'],
+                apellidos=form.cleaned_data['apellidos'],
+                cedula=form.cleaned_data['cedula'],
+                telefono1=form.cleaned_data['telefono_1']
             )
             except:
                 return render(
@@ -147,7 +147,7 @@ def propietario_edit(request, _id):
                     }
                 ) 
     
-    propietario = Propietario.objects.get(id = _id)
+    propietario = Propietario.objects.get(id=_id)
     return render(
         request,
         'Propietario/detalle-propietario.html',
@@ -185,15 +185,15 @@ def estacionamientos_all(request):
         # el constructor del modelo
         if form.is_valid():
             obj = Estacionamiento(
-                nombre      = form.cleaned_data['nombre'],
-                direccion   = form.cleaned_data['direccion'],
-                rif         = form.cleaned_data['rif'],
-                telefono1   = form.cleaned_data['telefono_1'],
-                telefono2   = form.cleaned_data['telefono_2'],
-                telefono3   = form.cleaned_data['telefono_3'],
-                email1      = form.cleaned_data['email_1'],
-                email2      = form.cleaned_data['email_2'],
-                propietario = form.cleaned_data['propietario']
+                nombre=form.cleaned_data['nombre'],
+                direccion=form.cleaned_data['direccion'],
+                rif=form.cleaned_data['rif'],
+                telefono1=form.cleaned_data['telefono_1'],
+                telefono2=form.cleaned_data['telefono_2'],
+                telefono3=form.cleaned_data['telefono_3'],
+                email1=form.cleaned_data['email_1'],
+                email2=form.cleaned_data['email_2'],
+                propietario=form.cleaned_data['propietario']
             )
             obj.save()
             # Recargamos los estacionamientos ya que acabamos de agregar
@@ -213,13 +213,13 @@ def estacionamiento_detail(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
     try:
-        estacionamiento = Estacionamiento.objects.get(id = _id)
+        estacionamiento = Estacionamiento.objects.get(id=_id)
     except ObjectDoesNotExist:
         raise Http404
-
+    
     if request.method == 'GET':
+        
         if estacionamiento.tarifa:
-            
             form_data = {
                 'horarioin' : estacionamiento.apertura,
                 'horarioout' : estacionamiento.cierre,
@@ -228,9 +228,18 @@ def estacionamiento_detail(request, _id):
                 'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
                 'finTarifa2' : estacionamiento.tarifa.finEspecial,
                 'puestos' : estacionamiento.capacidad,
-                'esquema' : estacionamiento.tarifa.__class__.__name__
+                'esquema' : estacionamiento.tarifa.__class__.__name__,
+                'feriados' : estacionamiento.feriados
             }
-            form = EstacionamientoExtendedForm(data = form_data)
+            if estacionamiento.tarifaFeriados:
+                form_data.update({
+                    'tarifaFeriados' : estacionamiento.tarifaFeriados.tarifa,
+                    'tarifaFeriados2' : estacionamiento.tarifaFeriados.tarifa2,
+                    'inicioTarifaFeriados2' : estacionamiento.tarifaFeriados.inicioEspecial,
+                    'finTarifaFeriados2' : estacionamiento.tarifaFeriados.finEspecial,
+                    'esquemaFeriados' : estacionamiento.tarifaFeriados.__class__.__name__
+                })
+            form = EstacionamientoExtendedForm(data=form_data)
         else:
             form = EstacionamientoExtendedForm()
 
@@ -239,22 +248,20 @@ def estacionamiento_detail(request, _id):
         form = EstacionamientoExtendedForm(request.POST)
         # Si el formulario
         if form.is_valid():
-            horaIn        = form.cleaned_data['horarioin']
-            horaOut       = form.cleaned_data['horarioout']
-            tarifa        = form.cleaned_data['tarifa']
-            tipo          = form.cleaned_data['esquema']
+            horaIn = form.cleaned_data['horarioin']
+            horaOut = form.cleaned_data['horarioout']
+            tarifa = form.cleaned_data['tarifa']
+            tipo = form.cleaned_data['esquema']
             inicioTarifa2 = form.cleaned_data['inicioTarifa2']
-            finTarifa2    = form.cleaned_data['finTarifa2']
-            tarifa2       = form.cleaned_data['tarifa2']
-
-            esquemaTarifa = eval(tipo)(
-                tarifa         = tarifa,
-                tarifa2        = tarifa2,
-                inicioEspecial = inicioTarifa2,
-                finEspecial    = finTarifa2
-            )
-
-            esquemaTarifa.save()
+            finTarifa2 = form.cleaned_data['finTarifa2']
+            tarifa2 = form.cleaned_data['tarifa2']
+            feriados = form.cleaned_data['feriados']
+            tipo2 = form.cleaned_data['esquemaFeriados']
+            inicioTarifaFeriados = form.cleaned_data['inicioTarifaFeriados']
+            finTarifaFeriados = form.cleaned_data['finTarifaFeriados']
+            tarifaFeriados2 = form.cleaned_data['tarifaFeriados2']
+            tarifaFeriados = form.cleaned_data['tarifaFeriados']
+            
             # debería funcionar con excepciones, y el mensaje debe ser mostrado
             # en el mismo formulario
             if not HorarioEstacionamiento(horaIn, horaOut):
@@ -265,15 +272,36 @@ def estacionamiento_detail(request, _id):
                     , 'mensaje': 'El horario de apertura debe ser menor al horario de cierre'
                     }
                 )
+
+            esquemaTarifa = eval(tipo)(
+                tarifa=tarifa,
+                tarifa2=tarifa2,
+                inicioEspecial=inicioTarifa2,
+                finEspecial=finTarifa2
+            )
+            if (tarifaFeriados):
+                esquemaTarifaFeriados = eval(tipo2)(
+                    tarifa=tarifaFeriados,
+                    tarifa2=tarifaFeriados2,
+                    inicioEspecial=inicioTarifaFeriados,
+                    finEspecial=finTarifaFeriados
+                )
+                esquemaTarifaFeriados.save()
+                estacionamiento.tarifaFeriados = esquemaTarifaFeriados
+            else:
+                if (estacionamiento.tarifaFeriados):
+                    estacionamiento.tarifaFeriados.delete()
+            esquemaTarifa.save()
+            
             # debería funcionar con excepciones
-            estacionamiento.tarifa    = esquemaTarifa
-            estacionamiento.apertura  = horaIn
-            estacionamiento.cierre    = horaOut
+            estacionamiento.feriados = feriados
+            estacionamiento.tarifa = esquemaTarifa
+            estacionamiento.apertura = horaIn
+            estacionamiento.cierre = horaOut
             estacionamiento.capacidad = form.cleaned_data['puestos']
 
             estacionamiento.save()
-            form = EstacionamientoExtendedForm()
-
+            
     return render(
         request,
         'detalle-estacionamiento.html',
@@ -283,11 +311,11 @@ def estacionamiento_detail(request, _id):
     )
 
 def estacionamiento_edit(request, _id):
-    #estacionamientos = Estacionamiento.objects.all()
+    # estacionamientos = Estacionamiento.objects.all()
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
     try:
-        estacionamiento = Estacionamiento.objects.get(id = _id)
+        estacionamiento = Estacionamiento.objects.get(id=_id)
     except ObjectDoesNotExist:
         raise Http404
 
@@ -298,8 +326,8 @@ def estacionamiento_edit(request, _id):
 
             cedula = form.cleaned_data['cedula']
             try:
-                propietario=Propietario.objects.get(cedula=cedula)
-                Estacionamiento.objects.filter(id = _id).update(
+                propietario = Propietario.objects.get(cedula=cedula)
+                Estacionamiento.objects.filter(id=_id).update(
                     propietario=propietario
                     )
             except:
@@ -331,13 +359,13 @@ def estacionamiento_reserva(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
     try:
-        estacionamiento = Estacionamiento.objects.get(id = _id)
+        estacionamiento = Estacionamiento.objects.get(id=_id)
     except ObjectDoesNotExist:
         raise Http404
 
     # Verificamos que el estacionamiento este parametrizado
     if (estacionamiento.apertura is None):
-        return HttpResponse(status = 403) # Esta prohibido entrar aun
+        return HttpResponse(status=403)  # Esta prohibido entrar aun
 
     # Si se hace un GET renderizamos los estacionamientos con su formulario
     if request.method == 'GET':
@@ -373,33 +401,54 @@ def estacionamiento_reserva(request, _id):
 
             if marzullo(_id, inicioReserva, finalReserva):
                 reservaFinal = Reserva(
-                    estacionamiento = estacionamiento,
-                    inicioReserva   = inicioReserva,
-                    finalReserva    = finalReserva,
+                    estacionamiento=estacionamiento,
+                    inicioReserva=inicioReserva,
+                    finalReserva=finalReserva,
                 )
-
-                monto = Decimal(
-                    estacionamiento.tarifa.calcularPrecio(
-                        inicioReserva,finalReserva
+                print(inicioReserva)
+                
+                diaFeriado = False
+                feriados = estacionamiento.feriados.split(',')
+                dia = inicioReserva.date()
+                if(str(dia) in feriados):
+                    diaFeriado = True
+                    
+                if(estacionamiento.tarifaFeriados and diaFeriado):
+                    monto = Decimal(
+                        estacionamiento.tarifaFeriados.calcularPrecio(
+                            inicioReserva, finalReserva
+                        )
                     )
-                )
 
-                request.session['monto'] = float(
-                    estacionamiento.tarifa.calcularPrecio(
-                        inicioReserva,
-                        finalReserva
+                    request.session['monto'] = float(
+                        estacionamiento.tarifaFeriados.calcularPrecio(
+                            inicioReserva,
+                            finalReserva
+                        )
                     )
-                )
-                request.session['finalReservaHora']    = finalReserva.hour
-                request.session['finalReservaMinuto']  = finalReserva.minute
-                request.session['inicioReservaHora']   = inicioReserva.hour
+                else:
+                    monto = Decimal(
+                        estacionamiento.tarifa.calcularPrecio(
+                            inicioReserva, finalReserva
+                        )
+                    )
+                    request.session['monto'] = float(
+                        estacionamiento.tarifa.calcularPrecio(
+                            inicioReserva,
+                            finalReserva
+                        )
+                    )
+                    
+                request.session['finalReservaHora'] = finalReserva.hour
+                request.session['finalReservaMinuto'] = finalReserva.minute
+                request.session['inicioReservaHora'] = inicioReserva.hour
                 request.session['inicioReservaMinuto'] = inicioReserva.minute
-                request.session['anioinicial']         = inicioReserva.year
-                request.session['mesinicial']          = inicioReserva.month
-                request.session['diainicial']          = inicioReserva.day
-                request.session['aniofinal']           = finalReserva.year
-                request.session['mesfinal']            = finalReserva.month
-                request.session['diafinal']            = finalReserva.day
+                request.session['anioinicial'] = inicioReserva.year
+                request.session['mesinicial'] = inicioReserva.month
+                request.session['diainicial'] = inicioReserva.day
+                request.session['aniofinal'] = finalReserva.year
+                request.session['mesfinal'] = finalReserva.month
+                request.session['diafinal'] = finalReserva.day
                 return render(
                     request,
                     'confirmar.html',
@@ -427,7 +476,6 @@ def estacionamiento_reserva(request, _id):
         , 'estacionamiento': estacionamiento
         }
     )
-
 
 def pago_reserva_aux(request, form, monto, estacionamiento):
     inicioReserva = datetime(
@@ -1036,4 +1084,3 @@ def cancelar_reserva(request, id_pago, id_billetera):
             , 'mensaje1': '¿Desea cancelar esta reservacion?'
             }
         )
-        
