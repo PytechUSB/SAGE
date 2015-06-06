@@ -44,7 +44,15 @@ class Estacionamiento(models.Model):
 	
 	apertura     = models.TimeField(blank = True, null = True)
 	cierre       = models.TimeField(blank = True, null = True)
+	
+	#capacidad para vechiculos personales
 	capacidad    = models.IntegerField(blank = True, null = True)
+	#capacidad para motos
+	capacidad_M   = models.IntegerField(blank = True, null = True)
+	#capacidad para camiones de carga
+	capacidad_C   = models.IntegerField(blank = True, null = True)
+	#capacidad para vehiculos de discapacitados
+	capacidad_D   = models.IntegerField(blank = True, null = True)
 
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
