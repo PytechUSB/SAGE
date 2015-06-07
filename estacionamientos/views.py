@@ -218,6 +218,7 @@ def estacionamiento_detail(request, _id):
         raise Http404
     
     formPuestos = PuestosForm() 
+    form = EstacionamientoExtendedForm() 
     if request.method == 'GET':
         
         if estacionamiento.tarifa:
@@ -240,7 +241,16 @@ def estacionamiento_detail(request, _id):
                     'finTarifaFeriados2' : estacionamiento.tarifaFeriados.finEspecial,
                     'esquemaFeriados' : estacionamiento.tarifaFeriados.__class__.__name__
                 })
+            if estacionamiento.capacidad:
+                form_data_puestos={
+                    'camiones' : estacionamiento.tarifaFeriados.tarifa,
+                    'motos' : estacionamiento.tarifaFeriados.tarifa2,
+                    'discapacitados' : estacionamiento.tarifaFeriados.inicioEspecial
+                }
+                form_data.update(form_data_puestos)
+                
             form = EstacionamientoExtendedForm(data=form_data)
+            formPuestos = PuestosForm(data=form_data_puestos)
         else:
             form = EstacionamientoExtendedForm()
 
@@ -303,15 +313,12 @@ def estacionamiento_detail(request, _id):
 
             estacionamiento.save()
     elif request.method == 'POST' and 'botonPuestos' in request.POST:
-        form_data = {
-                'particulares' : 100,
-                'camiones' : 9,
-                'motos' : 5,
-                'discapacitados' : 10
-            }
-        formPuestos = PuestosForm(data=form_data)  
-        form = EstacionamientoExtendedForm()
-        return render(request)
+        formPuestos = PuestosForm(request.POST)
+        estacionamiento.capacidad_C=formPuestos.cleaned_data['camiones']
+        estacionamiento.capacidad_M=formPuestos.cleaned_data['motos']
+        estacionamiento.capacidad_D=formPuestos.cleaned_data['discapacitados']
+        estacionamiento.save()
+        
     return render(
         request,
         'detalle-estacionamiento.html',
