@@ -460,7 +460,7 @@ def estacionamiento_reserva(request, _id):
                         )
                     )
                 
-                
+                request.session['vehiculoTipo']    = vehiculoTipo
                 request.session['finalReservaHora']    = finalReserva.hour
                 request.session['finalReservaMinuto']  = finalReserva.minute
                 request.session['inicioReservaHora']   = inicioReserva.hour
@@ -520,6 +520,7 @@ def pago_reserva_aux(request, form, monto, estacionamiento):
         estacionamiento = estacionamiento,
         inicioReserva   = inicioReserva,
         finalReserva    = finalReserva,
+        vehiculoTipo    = request.session['vehiculoTipo'],
     )
 
     # Se guarda la reserva en la base de datos

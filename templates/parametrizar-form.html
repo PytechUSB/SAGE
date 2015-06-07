@@ -82,12 +82,10 @@
     </div></p>
 	{% endif %}
 </div>
-{% include "validator.js.html" with form=form%}
+
 {% include "validator.js.html" with form=formPuestos %}
+{% include "validator.js.html" with form=form%}
 <script type="text/javascript">
-  capacidad_C	 = document.getElementById('capacidad_C');
-  capacidad_D	= document.getElementById('capacidad_D');
-  capacidad_M	= document.getElementById('capacidad_M');
   esquema 		  = document.getElementById('id_esquema');
   esquemaFeriados = document.getElementById('id_esquemaFeriados');
   tarifa1 		  = document.getElementById('id_tarifa');
@@ -268,4 +266,5 @@
       }
     };
   </script>	
+  
 {% endblock %}
