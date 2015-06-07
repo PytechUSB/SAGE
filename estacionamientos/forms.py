@@ -447,6 +447,18 @@ class EstacionamientoExtendedForm(forms.Form):
 
 class ReservaForm(forms.Form):
     
+    vehiculoTipo = forms.ChoiceField(
+        required = True,
+        label    = 'tarjetaTipo',
+        choices  = (
+            ('Particular',  ''),
+            ('Moto', ''),
+            ('Camion', ''),
+            ('Dicapacitado', '')
+        ),
+        widget   = forms.RadioSelect()
+    )
+
     inicio = forms.SplitDateTimeField(
         required = True,
         label = 'Horario Inicio Reserva',
