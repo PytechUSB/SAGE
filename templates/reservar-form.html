@@ -10,18 +10,39 @@
   <div class="panel-body">
     <form action="./reserva" method="post" class="form form-vertical">
       {% csrf_token %}
+      <!--ELEGIR TIPO DE VEHICULO-->
+      <div class="control-group">
+        <div class="controls">
+          <b>Tipo de vehículo:</b><br><br>
+          <table width="94%" border="0" cellspacing="0">
+            <tr align="center"> 
+              <td><font size="4" color="black"><i class="fa fa-car"> </i></font></td>
+              <td><font size="4" color="black"><i class="fa fa-motorcycle"> </i></font></td>
+              <td><font size="4" color="gray"><i class="fa fa-truck"></i></font></td>
+              <td><font size="4" color="blue"><i class="fa fa-wheelchair"> </i></font></td>
+            </tr>
+            <tr align="center">
+              {% for choice in form.vehiculoTipo %}
+                <td> {{ choice }} </td>
+              {% endfor %}
+            </tr>
+          </table>
+        </div>
+      </div>
       {% for field in form %}
         <div class="control-group">
           <div class="controls">
+            {% if field != form.vehiculoTipo %}
               {{ field }}
               {{ field.errors }}
+            {% endif %}
           </div>
         </div>
         <br/>
       {% endfor %}
       <div class="control-group">
         <label></label>
-        <div class="controls">
+        <div class="controls" align="center">
           <button type="submit" class="btn btn-primary">
             Chequear Disponibilidad
           </button>
