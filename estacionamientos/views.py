@@ -395,8 +395,9 @@ def estacionamiento_reserva(request, _id):
         # Verificamos si es valido con los validadores del formulario
         if form.is_valid():
 
+            vehiculoTipo  = form.cleaned_data['vehiculoTipo']
             inicioReserva = form.cleaned_data['inicio']
-            finalReserva = form.cleaned_data['final']
+            finalReserva  = form.cleaned_data['final']
 
             # debería funcionar con excepciones, y el mensaje debe ser mostrado
             # en el mismo formulario
@@ -406,7 +407,7 @@ def estacionamiento_reserva(request, _id):
                 estacionamiento.apertura,
                 estacionamiento.cierre,
             )
-
+            print(vehiculoTipo)
             # Si no es valido devolvemos el request
             if not m_validado[0]:
                 return render(
@@ -419,9 +420,10 @@ def estacionamiento_reserva(request, _id):
 
             if marzullo(_id, inicioReserva, finalReserva):
                 reservaFinal = Reserva(
-                    estacionamiento=estacionamiento,
-                    inicioReserva=inicioReserva,
-                    finalReserva=finalReserva,
+                    estacionamiento = estacionamiento,
+                    inicioReserva   = inicioReserva,
+                    finalReserva    = finalReserva,
+                    vehiculoTipo    = vehiculoTipo,
                 )
                 print(inicioReserva)
                 
@@ -430,7 +432,8 @@ def estacionamiento_reserva(request, _id):
                 dia = inicioReserva.date()
                 if(str(dia) in feriados):
                     diaFeriado = True
-                    
+                
+                #monto de la tarifa en dia feriaro
                 if(estacionamiento.tarifaFeriados and diaFeriado):
                     monto = Decimal(
                         estacionamiento.tarifaFeriados.calcularPrecio(
@@ -444,6 +447,7 @@ def estacionamiento_reserva(request, _id):
                             finalReserva
                         )
                     )
+                 #monto de la tarifa en dia normal
                 else:
                     monto = Decimal(
                         estacionamiento.tarifa.calcularPrecio(

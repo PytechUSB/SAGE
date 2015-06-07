@@ -456,7 +456,8 @@ class ReservaForm(forms.Form):
             ('Camion', ''),
             ('Dicapacitado', '')
         ),
-        widget   = forms.RadioSelect()
+        initial = 'Particular',
+        widget  = forms.RadioSelect()
     )
 
     inicio = forms.SplitDateTimeField(
