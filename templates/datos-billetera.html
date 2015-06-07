@@ -25,7 +25,7 @@
     position:relative;
     padding:10px;
     width:900px;
-    min-height:250px;
+    min-height:50px;
     border-radius:4px;
     background-color:#FFFFFF;
     box-shadow: 0 2px 5px #666666;
@@ -60,7 +60,8 @@
         <div class="panel-heading"> 
           <div class="panel-title">
            <i class="fa fa-history pull-left"></i>
-           <h4>Historial de la Billetera Electronica</h4>
+           <a class="fa fa-times pull-right" id="id_close" href="#"></a>
+           <h4>Historial de la Billetera Electronica</h4>      
            </div>
            </div>
            </div>
@@ -72,17 +73,6 @@
            <b> Monto transaccion: </b>{{transaccion.monto}}
            <p></p>
            {% endfor %}
-           
-
-           <div class="control-group" align="center">
-           <input
-	              type="button"
-	              value="Cerrar" 
-	              id="id_close"
-	              class="btn btn-primary"
-                 >
-                 <p></p>
-                 </div>
         </div>
     </div>
 </div>
