@@ -55,7 +55,7 @@ class Estacionamiento(models.Model):
 	capacidad_D   = models.IntegerField(blank = True, null = True)
 
 	#retorna la capacidd del estacionamiento segun el tipo de vehiculo
-	def capacidadTipoVehiculo(self, tipoDeVehiculo):
+	def obtenerCapacidad(self, tipoDeVehiculo):
 		if tipoDeVehiculo == "Particular":
 			capacidad = self.capacidad
 		elif tipoDeVehiculo == "Moto":

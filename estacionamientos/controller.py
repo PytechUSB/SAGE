@@ -38,7 +38,7 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre):
 def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
 	ocupacion = []
-	capacidad = e.capacidadTipoVehiculo(tipoDeVehiculo)
+	capacidad = e.obtenerCapacidad(tipoDeVehiculo)
 	
 	for reserva in e.reserva_set.all():
 		if reserva.vehiculoTipo == tipoDeVehiculo:
