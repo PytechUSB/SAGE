@@ -243,9 +243,9 @@ def estacionamiento_detail(request, _id):
                 })
             if estacionamiento.capacidad:
                 form_data_puestos={
-                    'camiones' : estacionamiento.tarifaFeriados.tarifa,
-                    'motos'    : estacionamiento.tarifaFeriados.tarifa2,
-                    'discapacitados' : estacionamiento.tarifaFeriados.inicioEspecial
+                    'camiones' : estacionamiento.capacidad_C,
+                    'motos'    : estacionamiento.capacidad_M,
+                    'discapacitados' : estacionamiento.capacidad_D
                 }
                 form_data.update(form_data_puestos)
                 
