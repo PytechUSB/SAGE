@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import urllib
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.dateparse import parse_datetime
@@ -219,42 +219,38 @@ def estacionamiento_detail(request, _id):
     
     formPuestos = PuestosForm() 
     form = EstacionamientoExtendedForm() 
-    if request.method == 'GET':
-        
-        if estacionamiento.tarifa:
-            form_data = {
-                'horarioin' : estacionamiento.apertura,
-                'horarioout' : estacionamiento.cierre,
-                'tarifa' : estacionamiento.tarifa.tarifa,
-                'tarifa2' : estacionamiento.tarifa.tarifa2,
-                'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
-                'finTarifa2' : estacionamiento.tarifa.finEspecial,
-                'puestos' : estacionamiento.capacidad,
-                'esquema' : estacionamiento.tarifa.__class__.__name__,
-                'feriados' : estacionamiento.feriados
+    if estacionamiento.tarifa:
+        form_data = {
+            'horarioin' : estacionamiento.apertura,
+            'horarioout' : estacionamiento.cierre,
+            'tarifa' : estacionamiento.tarifa.tarifa,
+            'tarifa2' : estacionamiento.tarifa.tarifa2,
+            'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
+            'finTarifa2' : estacionamiento.tarifa.finEspecial,
+            'puestos' : estacionamiento.capacidad,
+            'esquema' : estacionamiento.tarifa.__class__.__name__,
+            'feriados' : estacionamiento.feriados
+        }
+        if estacionamiento.tarifaFeriados:
+            form_data.update({
+                'tarifaFeriados' : estacionamiento.tarifaFeriados.tarifa,
+                'tarifaFeriados2' : estacionamiento.tarifaFeriados.tarifa2,
+                'inicioTarifaFeriados2' : estacionamiento.tarifaFeriados.inicioEspecial,
+                'finTarifaFeriados2' : estacionamiento.tarifaFeriados.finEspecial,
+                'esquemaFeriados' : estacionamiento.tarifaFeriados.__class__.__name__
+            })
+        if estacionamiento.capacidad:
+            form_data_puestos={
+                'camiones' : estacionamiento.capacidad_C,
+                'motos' : estacionamiento.capacidad_M,
+                'discapacitados' : estacionamiento.capacidad_D
             }
-            if estacionamiento.tarifaFeriados:
-                form_data.update({
-                    'tarifaFeriados' : estacionamiento.tarifaFeriados.tarifa,
-                    'tarifaFeriados2' : estacionamiento.tarifaFeriados.tarifa2,
-                    'inicioTarifaFeriados2' : estacionamiento.tarifaFeriados.inicioEspecial,
-                    'finTarifaFeriados2' : estacionamiento.tarifaFeriados.finEspecial,
-                    'esquemaFeriados' : estacionamiento.tarifaFeriados.__class__.__name__
-                })
-            if estacionamiento.capacidad:
-                form_data_puestos={
-                    'camiones' : estacionamiento.tarifaFeriados.tarifa,
-                    'motos' : estacionamiento.tarifaFeriados.tarifa2,
-                    'discapacitados' : estacionamiento.tarifaFeriados.inicioEspecial
-                }
-                form_data.update(form_data_puestos)
-                
-            form = EstacionamientoExtendedForm(data=form_data)
-            formPuestos = PuestosForm(data=form_data_puestos)
-        else:
-            form = EstacionamientoExtendedForm()
+            form_data.update(form_data_puestos)
+            
+        form = EstacionamientoExtendedForm(data=form_data)
+        formPuestos = PuestosForm(data=form_data_puestos)
 
-    elif request.method == 'POST' and 'botonSubmit' in request.POST:
+    if request.method == 'POST' and 'botonSubmit' in request.POST:
         # Leemos el formulario
         form = EstacionamientoExtendedForm(request.POST)
         # Si el formulario
@@ -313,12 +309,19 @@ def estacionamiento_detail(request, _id):
 
             estacionamiento.save()
     elif request.method == 'POST' and 'botonPuestos' in request.POST:
-        formPuestos = PuestosForm(request.POST)
-        estacionamiento.capacidad_C=formPuestos.cleaned_data['camiones']
-        estacionamiento.capacidad_M=formPuestos.cleaned_data['motos']
-        estacionamiento.capacidad_D=formPuestos.cleaned_data['discapacitados']
-        estacionamiento.save()
-        
+        form_data_puestos={
+                'camiones' : request.POST['camiones'],
+                'motos' : request.POST['motos'],
+                'discapacitados' : request.POST['discapacitados']
+            }
+        formPuestos=PuestosForm(data=form_data_puestos)
+        if formPuestos.is_valid():
+            estacionamiento.capacidad_C = request.POST['camiones']
+            estacionamiento.capacidad_M = request.POST['motos']
+            estacionamiento.capacidad_D = request.POST['discapacitados']
+            estacionamiento.save()
+            
+    estacionamiento = Estacionamiento.objects.get(id=_id)    
     return render(
         request,
         'detalle-estacionamiento.html',
