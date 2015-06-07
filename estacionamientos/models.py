@@ -54,6 +54,19 @@ class Estacionamiento(models.Model):
 	#capacidad para vehiculos de discapacitados
 	capacidad_D   = models.IntegerField(blank = True, null = True)
 
+	#retorna la capacidd del estacionamiento segun el tipo de vehiculo
+	def capacidadTipoVehiculo(self, tipoDeVehiculo):
+		if tipoDeVehiculo == "Particular":
+			capacidad = self.capacidad
+		elif tipoDeVehiculo == "Moto":
+			capacidad = self.capacidad_M
+		elif tipoDeVehiculo == "Camion":
+			capacidad = self.capacidad_C
+		elif tipoDeVehiculo == "Dicapacitado":
+			capacidad = self.capacidad_D
+			
+		return capacidad
+
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
 
@@ -105,6 +118,7 @@ class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()
 	finalReserva    = models.DateTimeField()
+	vehiculoTipo   	= models.CharField(max_length = 15, default = "Particular")
 
 	def __str__(self):
 		return self.estacionamiento.nombre+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
