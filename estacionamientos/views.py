@@ -418,7 +418,7 @@ def estacionamiento_reserva(request, _id):
                     }
                 )
 
-            if marzullo(_id, inicioReserva, finalReserva):
+            if marzullo(_id, inicioReserva, finalReserva, vehiculoTipo):
                 reservaFinal = Reserva(
                     estacionamiento = estacionamiento,
                     inicioReserva   = inicioReserva,
@@ -444,7 +444,7 @@ def estacionamiento_reserva(request, _id):
                             finalReserva
                         )
                     )
-                 #monto de la tarifa en dia normal
+                #monto de la tarifa en dia normal
                 else:
                     monto = Decimal(
                         estacionamiento.tarifa.calcularPrecio(
