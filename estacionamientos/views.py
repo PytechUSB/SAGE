@@ -39,7 +39,7 @@ from estacionamientos.forms import (
     BilleteraPagoForm,
     authBilleteraForm,
     CancelaReservaForm
-)
+, PuestosForm)
 from estacionamientos.models import (
     Propietario,
     Estacionamiento,
@@ -301,11 +301,12 @@ def estacionamiento_detail(request, _id):
             estacionamiento.capacidad = form.cleaned_data['puestos']
 
             estacionamiento.save()
-            
+    formPuestos = PuestosForm()   
     return render(
         request,
         'detalle-estacionamiento.html',
         { 'form': form
+        , 'formPuestos': formPuestos
         , 'estacionamiento': estacionamiento
         }
     )
@@ -438,7 +439,8 @@ def estacionamiento_reserva(request, _id):
                             finalReserva
                         )
                     )
-                    
+                
+                
                 request.session['finalReservaHora'] = finalReserva.hour
                 request.session['finalReservaMinuto'] = finalReserva.minute
                 request.session['inicioReservaHora'] = inicioReserva.hour

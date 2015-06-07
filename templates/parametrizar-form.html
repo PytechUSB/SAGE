@@ -10,8 +10,37 @@
     </div>
   </div>
   <div class="panel-body">
+	<div id="dialogpuestos" title="Gestionar puestos">
+      <table width="250" border="0" cellspacing="0">
+          <tr><td><font size="10" color="black"><i class="fa fa-car"> </i></font></td>
+          	<td>{{ formPuestos.particulares }}
+            <span class='error' id='{{formPuestos.particulares.name}}_error' aria-live="polite">
+              {{ formPuestos.particulares.errors }}
+            </span></td>
+          </tr>
+          <tr><td><font size="10" color="gray"><i class="fa fa-truck"> </i></font></td>
+          	<td>{{ formPuestos.camiones }}
+            <span class='error' id='{{formPuestos.camiones.name}}_error' aria-live="polite">
+              {{ formPuestos.camiones.errors }}
+            </span></td>
+          </tr>
+          <tr><td><font size="10" color="black"><i class="fa fa-motorcycle"> </i></font></td>
+          	<td>{{ formPuestos.motos }}
+            <span class='error' id='{{formPuestos.motos.name}}_error' aria-live="polite">
+              {{ formPuestos.motos.errors }}
+            </span></td>
+          </tr>
+          <tr><td><font size="10" color="blue"><i class="fa fa-wheelchair"> </i></font></td>
+          	<td>{{ formPuestos.discapacitados }}
+            <span class='error' id='{{formPuestos.discapacitados.name}}_error' aria-live="polite">
+              {{ formPuestos.discapacitados.errors }}
+            </span></td>
+          </tr>
+      </table>	  
+	</div>
+	<p align="center"><button id="puestos">Gestionar puestos</button></p>
     <form action="." method="post" class="form form-vertical">
-      {% csrf_token %}
+      {% csrf_token %}     
       {% for field in form %}
         <div class="control-group">
           <div class="controls">
@@ -42,8 +71,13 @@
     </form>
   </div>
 </div>
-{% include "validator.js.html" %}
+{% include "validator.js.html" with form=form%}
+{% include "validator.js.html" with form=formPuestos %}
 <script type="text/javascript">
+  puestos 		  = document.getElementById('puestos');
+  puestos_C 	  = document.getElementById('puestos_C');
+  puestos_M  	  = document.getElementById('puestos_M');
+  puestos_D       = document.getElementById('puestos_D');
   esquema 		  = document.getElementById('id_esquema');
   esquemaFeriados = document.getElementById('id_esquemaFeriados');
   tarifa1 		  = document.getElementById('id_tarifa');
@@ -166,9 +200,27 @@
   }
 </script>
 
-<!--OPCION PARA AGREGAR UNA TARIFA PARA DIAS FERIADOS-->
 {% block scripts %}
-	<script type="text/javascript">
+  <script type="text/javascript">
+  $(function() {
+    $( "#dialogpuestos" ).dialog({
+      autoOpen: false,
+      resizable: false,
+      width : 300,
+      buttons: {
+        "Aceptar": function() {
+          $( "#dialogpuestos" ).dialog( "close" );
+        }
+      },
+    });
+ 
+    $( "#puestos" ).click(function() {
+      $( "#dialogpuestos" ).dialog( "open" );
+    });
+  });
+  </script>
+<!--OPCION PARA AGREGAR UNA TARIFA PARA DIAS FERIADOS-->
+  <script type="text/javascript">
     var show=false;
     var dates=feriados.value.split(",");
     function calendar() {

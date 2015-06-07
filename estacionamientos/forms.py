@@ -53,7 +53,7 @@ class EstacionamientoForm(forms.Form):
         validators = [name_validator],
         widget   = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Nombre del Estacionamiento'
+            , 'placeholder' : 'Nombre del Estacionamiento *'
             , 'pattern'     : name_validator.regex.pattern
             , 'message'     : name_validator.message
             }
@@ -66,7 +66,7 @@ class EstacionamientoForm(forms.Form):
         label    = "Direccion",
         widget   = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Dirección'
+            , 'placeholder' : 'Dirección *'
             , 'message'     : 'La entrada no puede quedar vacía.'
             }
         )
@@ -79,7 +79,7 @@ class EstacionamientoForm(forms.Form):
         validators = [rif_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'RIF: X-xxxxxxxxx'
+            , 'placeholder' : 'RIF: X-xxxxxxxxx *'
             , 'pattern'     : rif_validator.regex.pattern
             , 'message'     : rif_validator.message
             }
@@ -218,28 +218,86 @@ class PropietarioForm(forms.Form):
             }
         )
     )
-
-class EstacionamientoExtendedForm(forms.Form):
+class PuestosForm(forms.Form):
     
-    tarifa_validator = RegexValidator(
-        regex   = '^([0-9]+(\.[0-9]+)?)$',
-        message = 'Sólo debe contener dígitos.'
-    )
-    
-    puestos = forms.IntegerField(
+    particulares = forms.IntegerField(
         required  = True,
         min_value = 1,
         label     = 'Número de Puestos',
         widget    = forms.NumberInput(attrs=
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Número de Puestos'
+            , 'placeholder' : 'Para particulares'
             , 'min'         : "0"
             , 'pattern'     : '^[0-9]+'
-            , 'message'     : 'La entrada debe ser un número entero no negativo.'
+            , 'message'     : 'Debe ser un número entero no negativo.'
             }
         )
     )
-
+    
+    motos = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        label     = 'Número de Puestos',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Para motos'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'Debe ser un número entero no negativo.'
+            }
+        )
+    )
+    
+    camiones = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        label     = 'Número de Puestos',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Para camiones'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'Debe ser un número entero no negativo.'
+            }
+        )
+    )
+    
+    discapacitados = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        label     = 'Número de Puestos',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Para discapacitados'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'Debe ser un número entero no negativo.'
+            }
+        )
+    )
+class EstacionamientoExtendedForm(forms.Form):
+    
+    tarifa_validator = RegexValidator(
+        regex   = '^([0-9]+(\.[0-9]+)?)$',
+        message = 'Sólo debe contener dígitos.'
+    )    
+    
+    puestos = forms.IntegerField(
+        required = False,
+        widget   = forms.HiddenInput()
+    )
+    puestos_C = forms.IntegerField(
+        required = False,
+        widget   = forms.HiddenInput()
+    )
+    puestos_M = forms.IntegerField(
+        required = False,
+        widget   = forms.HiddenInput()
+    )
+    puestos_D = forms.IntegerField(
+        required = False,
+        widget   = forms.HiddenInput()
+    )
     horarioin = forms.TimeField(
         required = True,
         label    = 'Horario Apertura',
