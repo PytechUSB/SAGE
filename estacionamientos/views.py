@@ -25,7 +25,7 @@ from estacionamientos.controller import (
     billetera_autenticar,
     pago_autenticar,
     asigna_id_unico
-)
+, buscar_historial_billetera)
 
 from estacionamientos.forms import (
     EstacionamientoExtendedForm,
@@ -477,7 +477,7 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-def pago_reserva_aux(request, form, monto, estacionamiento):
+def pago_reserva_aux(request, form, monto, estacionamiento,id_billetera):
     inicioReserva = datetime(
         year   = request.session['anioinicial'],
         month  = request.session['mesinicial'],
@@ -510,6 +510,7 @@ def pago_reserva_aux(request, form, monto, estacionamiento):
         monto            = monto,
         tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
         reserva          = reservaFinal,
+        idBilletera      = id_billetera,
     )
 
     return pago
@@ -551,7 +552,7 @@ def estacionamiento_pago(request,_id):
                         ) 
                         
                     else:
-                        pago = pago_reserva_aux(request, form, monto, estacionamiento)
+                        pago = pago_reserva_aux(request, form, monto, estacionamiento,form.cleaned_data['ID'])
                         pago.save()
                         billeteraE.consumir_saldo(monto)
                         if (billeteraE.saldo == 0):
@@ -581,7 +582,7 @@ def estacionamiento_pago(request,_id):
             
             
             else:
-                pago = pago_reserva_aux(request, form, monto, estacionamiento)
+                pago = pago_reserva_aux(request, form, monto, estacionamiento,0)
                 pago.save()
                 return render(
                     request,
@@ -827,11 +828,13 @@ def billetera_datos(request):
 
         if formAuth.is_valid():
             billetera_autenticada = billetera_autenticar(int(formAuth.cleaned_data['ID']), formAuth.cleaned_data['Pin'])
+            historial = buscar_historial_billetera(int(formAuth.cleaned_data['ID']))
             if(billetera_autenticada != None):
                 return render(
                     request,
                     'datos-billetera.html', 
                     { 'billetera': billetera_autenticada
+                    , 'historial' : historial
                     , 'form': form
                     , 'formAuth': formAuth
                     }

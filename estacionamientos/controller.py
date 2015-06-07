@@ -141,3 +141,21 @@ def asigna_id_unico():
 	num_recargas = len(Recargas.objects.all())
 	num_cancelaciones = len(Cancelaciones.objects.all())
 	return (1 + num_pagos_reservas + num_recargas + num_cancelaciones)
+
+def buscar_historial_billetera(identificador):
+	historial = []
+	
+	lista_recargas = Recargas.objects.filter(billetera = identificador)
+	for rec in lista_recargas:
+		historial.append(rec)
+		
+	lista_cancelaciones = Cancelaciones.objects.filter(billetera = identificador)	
+	for can in lista_cancelaciones:
+		historial.append(can)
+	
+	lista_pagos = Pago.objects.filter(idBilletera = identificador)
+	for pag in lista_pagos:
+		historial.append(pag)
+			
+		
+	return historial
