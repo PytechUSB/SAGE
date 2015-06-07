@@ -156,6 +156,8 @@ def buscar_historial_billetera(identificador):
 	lista_pagos = Pago.objects.filter(idBilletera = identificador)
 	for pag in lista_pagos:
 		historial.append(pag)
-			
 		
-	return historial
+	def getKey(item):
+		return item.fechaTransaccion		
+		
+	return sorted(historial,key=getKey)
