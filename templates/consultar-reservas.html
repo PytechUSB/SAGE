@@ -20,6 +20,7 @@
               <th>Inicio</th>
               <th>Fin</th>
               <th>Estacionamiento</th>
+              <th>Vehículo</th>
               <th>Telefono</th>
             </tr>
           </thead>
@@ -30,6 +31,7 @@
                 <td>{{factura.reserva.inicioReserva}}</td>
                 <td>{{factura.reserva.finalReserva}}</td>
                 <td>{{factura.reserva.estacionamiento.nombre}}</td>
+                <td>{{factura.reserva.vehiculoTipo}}</td>
                 <td>{%firstof factura.reserva.estacionamiento.telefono1 factura.reserva.estacionamiento.telefono2 factura.reserva.estacionamiento.telefono3 "N/A"%}
                 </td>
               </tr>
