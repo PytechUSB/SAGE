@@ -449,14 +449,13 @@ class ReservaForm(forms.Form):
     
     vehiculoTipo = forms.ChoiceField(
         required = True,
-        label    = 'tarjetaTipo',
+        label    = 'Tipo de vehiculo',
         choices  = (
             ('Particular',  ''),
             ('Moto', ''),
             ('Camion', ''),
             ('Dicapacitado', '')
         ),
-        initial = 'Particular',
         widget  = forms.RadioSelect()
     )
 

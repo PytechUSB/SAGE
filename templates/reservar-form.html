@@ -41,20 +41,23 @@
               </div>
             {% endif %}
           {% endfor %} 
+          {{ form.vehiculoTipo.errors }}
         </div>
       </div>
       <!--ELEGIR FECHA Y HORA-->
-      {% for field in form %}
         <div class="control-group">
           <div class="controls">
-            {% if field != form.vehiculoTipo %}
-              {{ field }}
-              {{ field.errors }}
-            {% endif %}
+            <p>{{ form.inicio }}
+                <span class='error' id='{{form.inicio.name}}_error' aria-live="polite"></span>
+            </p>
+              {{ form.inicio.errors }}
+            <p>{{ form.final }}
+                <span class='error' id='{{form.final.name}}_error' aria-live="polite"></span>
+            </p>
+              {{ form.final.errors }}
           </div>
         </div>
-        <br/>
-      {% endfor %}
+        <br>
       <div class="control-group">
         <div class="controls" align="center">
           <button type="submit" class="btn btn-primary">
