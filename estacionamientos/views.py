@@ -217,6 +217,7 @@ def estacionamiento_detail(request, _id):
     except ObjectDoesNotExist:
         raise Http404
     
+    formPuestos = PuestosForm() 
     if request.method == 'GET':
         
         if estacionamiento.tarifa:
@@ -243,7 +244,7 @@ def estacionamiento_detail(request, _id):
         else:
             form = EstacionamientoExtendedForm()
 
-    elif request.method == 'POST':
+    elif request.method == 'POST' and 'botonSubmit' in request.POST:
         # Leemos el formulario
         form = EstacionamientoExtendedForm(request.POST)
         # Si el formulario
@@ -301,7 +302,16 @@ def estacionamiento_detail(request, _id):
             estacionamiento.capacidad = form.cleaned_data['puestos']
 
             estacionamiento.save()
-    formPuestos = PuestosForm()   
+    elif request.method == 'POST' and 'botonPuestos' in request.POST:
+        form_data = {
+                'particulares' : 100,
+                'camiones' : 9,
+                'motos' : 5,
+                'discapacitados' : 10
+            }
+        formPuestos = PuestosForm(data=form_data)  
+        form = EstacionamientoExtendedForm()
+        return render(request)
     return render(
         request,
         'detalle-estacionamiento.html',

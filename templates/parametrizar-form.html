@@ -11,13 +11,9 @@
   </div>
   <div class="panel-body">
 	<div id="dialogpuestos" title="Gestionar puestos">
+      <form action="" method="POST" class="form form-vertical">
+      {% csrf_token %} 
       <table width="250" border="0" cellspacing="0">
-          <tr><td><font size="10" color="black"><i class="fa fa-car"> </i></font></td>
-          	<td>{{ formPuestos.particulares }}
-            <span class='error' id='{{formPuestos.particulares.name}}_error' aria-live="polite">
-              {{ formPuestos.particulares.errors }}
-            </span></td>
-          </tr>
           <tr><td><font size="10" color="gray"><i class="fa fa-truck"> </i></font></td>
           	<td>{{ formPuestos.camiones }}
             <span class='error' id='{{formPuestos.camiones.name}}_error' aria-live="polite">
@@ -36,9 +32,11 @@
               {{ formPuestos.discapacitados.errors }}
             </span></td>
           </tr>
-      </table>	  
+      </table>	
+	  <p align="center"><button type="submit" class="btn btn-primary" name="botonPuestos">Aceptar</button></p>
+      </form>  
 	</div>
-	<p align="center"><button id="puestos">Gestionar puestos</button></p>
+	
     <form action="." method="post" class="form form-vertical">
       {% csrf_token %}     
       {% for field in form %}
@@ -63,12 +61,18 @@
       <input type="checkbox" value="No" id="check_feriados" onchange="formFeriados(this)">&nbsp;Tarifa días feriados<br>
         <label></label>
         <div class="controls" align ="center">
-          <button type="submit" class="btn btn-primary" onclick="getDates()">
+          <button type="submit" class="btn btn-primary" onclick="getDates()" name="botonSubmit">
             Parametrizar Estacionamiento
           </button>
         </div>
       </div>
     </form>
+    <p>
+	{% if estacionamiento.capacidad %}
+    <div class="controls" align ="center">
+    	<p><button id="puestos">Gestionar puestos</button></p>
+    </div></p>
+	{% endif %}
   </div>
 </div>
 {% include "validator.js.html" with form=form%}
@@ -207,11 +211,6 @@
       autoOpen: false,
       resizable: false,
       width : 300,
-      buttons: {
-        "Aceptar": function() {
-          $( "#dialogpuestos" ).dialog( "close" );
-        }
-      },
     });
  
     $( "#puestos" ).click(function() {
