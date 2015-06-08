@@ -14,6 +14,7 @@ class Propietario(models.Model):
 	apellidos   = models.CharField(max_length = 30)
 	cedula      = models.CharField(max_length = 12, unique=True)
 	telefono1   = models.CharField(blank = True, null = True, max_length = 30)
+	cedulaTipo  = models.CharField(max_length = 1)
 
 	def __str__(self):
 		return self.nombres+' '+self.apellidos
