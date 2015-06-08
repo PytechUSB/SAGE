@@ -110,7 +110,6 @@ class ConfiguracionSMS(models.Model):
 		return self.estacionamiento.nombre+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
 
 class Pago(models.Model):
-	tipo             = "Pago"
 	id				 = models.IntegerField(primary_key = True)
 	fechaTransaccion = models.DateTimeField()
 	cedulaTipo       = models.CharField(max_length = 1)
@@ -120,6 +119,8 @@ class Pago(models.Model):
 	reserva          = models.ForeignKey(Reserva)
 	cancelado 		 = models.BooleanField(default = False)
 	idBilletera      = models.CharField(max_length = 2)
+	nombreUsuario    = models.CharField(max_length = 15)
+	apellidoUsuario  = models.CharField(max_length = 15)
 	
 	def __str__(self):
 		return str(self.id)+" "+str(self.reserva.estacionamiento.nombre)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
@@ -135,9 +136,11 @@ class Pago(models.Model):
 			return True
 		
 		return False
+	
+	def obtener_string(self):
+		return "Reservacion"
 
 class Recargas(models.Model):
-	tipo             = "Recarga"
 	id				 = models.IntegerField(primary_key = True)
 	fechaTransaccion = models.DateTimeField()
 	cedulaTipo       = models.CharField(max_length = 1)
@@ -145,12 +148,25 @@ class Recargas(models.Model):
 	tarjetaTipo      = models.CharField(max_length = 6)
 	monto            = models.DecimalField(decimal_places = 2, max_digits = 256)
 	billetera 		 = models.ForeignKey(BilleteraElectronica)
+	numTarjeta       = models.CharField(max_length = 16)
 	
 	def __str__(self):
 		return str(self.id)+" "+str(self.billetera.id)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
 	
+	def obtener_string(self):
+		return "Recarga"
+	
+	def ultimos_numeros(self):
+		arreglo = list(self.numTarjeta)
+		resultado = ""
+		resultado += str(arreglo[-4])
+		resultado += str(arreglo[-3])
+		resultado += str(arreglo[-2])
+		resultado += str(arreglo[-1])
+		return resultado
+
+	
 class Cancelaciones(models.Model):
-	tipo             = "Cancelacion"
 	id 				 = models.IntegerField(primary_key = True)
 	pagoCancelado	 = models.ForeignKey(Pago)
 	billetera		 = models.ForeignKey(BilleteraElectronica)
@@ -160,6 +176,9 @@ class Cancelaciones(models.Model):
 	def __str__(self):
 		return str(self.id)+" "+str(self.pagoCnacelado.id) + " " + str(self.fechaTransaccion)
 
+	def obtener_string(self):
+		return "Cancelacion"
+	
 class EsquemaTarifario(models.Model):
 
 	# No se cuantos digitos deberiamos poner

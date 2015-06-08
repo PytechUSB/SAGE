@@ -477,7 +477,7 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-def pago_reserva_aux(request, form, monto, estacionamiento,id_billetera):
+def pago_reserva_aux(request, form, monto, estacionamiento,id_billetera,nombre,apellido):
     inicioReserva = datetime(
         year   = request.session['anioinicial'],
         month  = request.session['mesinicial'],
@@ -511,6 +511,8 @@ def pago_reserva_aux(request, form, monto, estacionamiento,id_billetera):
         tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
         reserva          = reservaFinal,
         idBilletera      = id_billetera,
+        nombreUsuario    = nombre,
+        apellidoUsuario  = apellido
     )
 
     return pago
@@ -552,7 +554,7 @@ def estacionamiento_pago(request,_id):
                         ) 
                         
                     else:
-                        pago = pago_reserva_aux(request, form, monto, estacionamiento,form.cleaned_data['ID'])
+                        pago = pago_reserva_aux(request, form, monto, estacionamiento,form.cleaned_data['ID'],form.cleaned_data['nombre'],form.cleaned_data['apellido'])
                         pago.save()
                         billeteraE.consumir_saldo(monto)
                         if (billeteraE.saldo == 0):
@@ -582,7 +584,7 @@ def estacionamiento_pago(request,_id):
             
             
             else:
-                pago = pago_reserva_aux(request, form, monto, estacionamiento,0)
+                pago = pago_reserva_aux(request, form, monto, estacionamiento,0,form.cleaned_data['nombre'],form.cleaned_data['apellido'])
                 pago.save()
                 return render(
                     request,
@@ -901,7 +903,8 @@ def billetera_recarga(request, _id):
                         tarjetaTipo = form.cleaned_data['tarjetaTipo'],
                         monto = form.cleaned_data['monto'],
                         fechaTransaccion = datetime.now(),
-                        billetera = billeteraE   
+                        billetera = billeteraE,
+                        numTarjeta  = form.cleaned_data['tarjeta']
                     )
                 
                 recarga.save()

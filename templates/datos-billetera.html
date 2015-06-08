@@ -24,7 +24,7 @@
     margin-top:120px;
     position:relative;
     padding:10px;
-    width:900px;
+    width:1000px;
     min-height:50px;
     border-radius:4px;
     background-color:#FFFFFF;
@@ -61,18 +61,54 @@
           <div class="panel-title">
            <i class="fa fa-history pull-left"></i>
            <a class="fa fa-times pull-right" id="id_close" href="#"></a>
-           <h4>Historial de la Billetera Electronica</h4>      
+           <h4><b>Historial de la Billetera Electronica de {{billetera.nombre}} {{billetera.apellido}}</b></h4>      
            </div>
            </div>
            </div>
-  
+           <table border="1" style="width:100%">
+           <tr>
+           <td align="center"><b> Fecha de transaccion </b></td> 
+           <td align="center"><b> Descripcion de transaccion </b></td>
+           <td align="center"><b> Id transaccion </b></td>
+           <td align="center"><b> Debito </b></td>
+           <td align="center"><b> Credito </b></td>
+           </tr>
+           
+           
            {% for transaccion in historial %}
-           <b> Fecha de transaccion: </b> {{transaccion.fechaTransaccion}} 
-           <b> Tipo de transaccion: </b> {{transaccion.tipo}}
-           <b> Id transaccion: </b>{{transaccion.id}}
-           <b> Monto transaccion: </b>{{transaccion.monto}}
-           <p></p>
+           {% if transaccion.obtener_string == "Reservacion"  %}
+           <tr>
+            <td align="center">{{transaccion.fechaTransaccion}}</td> 
+            <td align="center">{{transaccion.obtener_string}} | A nombre de: {{transaccion.nombreUsuario}} {{transaccion.apellidoUsuario}} </td>
+            <td align="center">{{transaccion.id}}</td>
+            <td></td>
+            <td align="center">-{{transaccion.monto}}</td>
+            </tr>
+            {% endif %}
+           {% if transaccion.obtener_string == "Cancelacion"  %}
+           <tr>
+            <td align="center">{{transaccion.fechaTransaccion}}</td> 
+            <td align="center">{{transaccion.obtener_string}} | Reserva a nombre de: {{transaccion.pagoCancelado.nombreUsuario}} {{transaccion.pagoCancelado.apellidoUsuario}}</td>
+            <td align="center">{{transaccion.id}}</td>
+            <td align="center">+{{transaccion.monto}}</td>
+            <td></td>
+            </tr>
+            {% endif %}
+            {% if transaccion.obtener_string == "Recarga"  %}
+            <tr>
+            <td align="center">{{transaccion.fechaTransaccion}}</td> 
+            <td align="center">{{transaccion.obtener_string}} | Tipo Tarjeta: {{transaccion.tarjetaTipo}} | Cuatro ultimos digitos: ...{{transaccion.ultimos_numeros}} </td>
+            <td align="center">{{transaccion.id}}</td>
+            <td align="center">+{{transaccion.monto}}</td>
+            <td></td>
+            </tr>
+            {% endif %}
            {% endfor %}
+           <tr>
+           <td colspan="3"></td>
+           <td align="center" colspan="2">Saldo Actual: {{billetera.saldo|floatformat:2|intcomma}}</td>
+           </tr>
+           </table>
         </div>
     </div>
 </div>
