@@ -227,10 +227,15 @@ def estacionamiento_detail(request, _id):
             'tarifa2' : estacionamiento.tarifa.tarifa2,
             'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
             'finTarifa2' : estacionamiento.tarifa.finEspecial,
-            'puestos' : estacionamiento.capacidad,
             'esquema' : estacionamiento.tarifa.__class__.__name__,
             'feriados' : estacionamiento.feriados
         }
+        form_data_puestos={
+                'puestos' : estacionamiento.capacidad,
+                'camiones' : estacionamiento.capacidad_C,
+                'motos' : estacionamiento.capacidad_M,
+                'discapacitados' : estacionamiento.capacidad_D
+                }
         if estacionamiento.tarifaFeriados:
             form_data.update({
                 'tarifaFeriados' : estacionamiento.tarifaFeriados.tarifa,
@@ -239,12 +244,7 @@ def estacionamiento_detail(request, _id):
                 'finTarifaFeriados2' : estacionamiento.tarifaFeriados.finEspecial,
                 'esquemaFeriados' : estacionamiento.tarifaFeriados.__class__.__name__
             })
-        if estacionamiento.capacidad:
-            form_data_puestos={
-                'camiones' : estacionamiento.capacidad_C,
-                'motos' : estacionamiento.capacidad_M,
-                'discapacitados' : estacionamiento.capacidad_D
-                }
+            
             
         form = EstacionamientoExtendedForm(data=form_data)
         formPuestos = PuestosForm(data=form_data_puestos)
@@ -304,17 +304,18 @@ def estacionamiento_detail(request, _id):
             estacionamiento.tarifa   = esquemaTarifa
             estacionamiento.apertura = horaIn
             estacionamiento.cierre   = horaOut
-            estacionamiento.capacidad = form.cleaned_data['puestos']
 
             estacionamiento.save()
     elif request.method == 'POST' and 'botonPuestos' in request.POST:
         form_data_puestos={
+                'particulares' : request.POST['particulares'],
                 'camiones' : request.POST['camiones'],
                 'motos' : request.POST['motos'],
                 'discapacitados' : request.POST['discapacitados']
             }
         formPuestos=PuestosForm(data=form_data_puestos)
         if formPuestos.is_valid():
+            estacionamiento.capacidad = request.POST['particulares']
             estacionamiento.capacidad_C = request.POST['camiones']
             estacionamiento.capacidad_M = request.POST['motos']
             estacionamiento.capacidad_D = request.POST['discapacitados']

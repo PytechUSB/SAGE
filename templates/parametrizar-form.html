@@ -10,42 +10,7 @@
     </div>
   </div>
   <div class="panel-body">
-	<div id="dialogpuestos" title="Gestionar puestos">
-      <form action="." method="POST" class="form form-vertical">
-      {% csrf_token %} 
-      <div class="control-group" align ="center">
-	      <div class="controls">
-	      <table width="250" border="0" cellspacing="0">
-	          <tr><td><font size="10" color="gray"><i class="fa fa-truck"> </i></font></td>
-	          	<td>{{ formPuestos.camiones }}
-	            <span class='error' id='{{formPuestos.camiones.name}}_error' aria-live="polite">
-	              {{ formPuestos.camiones.errors }}
-	            </span></td>
-	          </tr>
-	          <tr><td><font size="10" color="black"><i class="fa fa-motorcycle"> </i></font></td>
-	          	<td>{{ formPuestos.motos }}
-	            <span class='error' id='{{formPuestos.motos.name}}_error' aria-live="polite">
-	              {{ formPuestos.motos.errors }}
-	            </span></td>
-	          </tr>
-	          <tr><td><font size="10" color="blue"><i class="fa fa-wheelchair"> </i></font></td>
-	          	<td>{{ formPuestos.discapacitados }}
-	            <span class='error' id='{{formPuestos.discapacitados.name}}_error' aria-live="polite">
-	              {{ formPuestos.discapacitados.errors }}
-	            </span></td>
-	          </tr>
-	      </table>
-	      </div>
-	  </div>
-	  <div class="controls" align ="center">
-          <button type="submit" class="btn btn-primary" name="botonPuestos">
-            Aceptar
-          </button>
-        </div>	
-      </form>  
-	</div>
-	
-    <form action="." method="post" class="form form-vertical">
+	  <form action="." method="post" class="form form-vertical">
       {% csrf_token %}     
       {% for field in form %}
         <div class="control-group">
@@ -59,32 +24,27 @@
         </div>
       {% endfor %}
       <div class="control-group" align ="center">
-      <!-- Calendario -->
-      <div id="calendar_feriados" style="display: none">
-        <i class="fa fa-calendar" id="calendar" onclick="calendar()"></i> &nbsp;
-        <span role="text" id="multi_date_picker"></span>
-      </div>
-      <br>
-      <!--Checkbox para tarifa en dias feriados-->
-      <input type="checkbox" value="No" id="check_feriados" onchange="formFeriados(this)">&nbsp;Tarifa días feriados<br>
-        <label></label>
-        <div class="controls" align ="center">
-          <button type="submit" class="btn btn-primary" onclick="getDates()" name="botonSubmit">
+		<!-- Calendario -->
+		<div id="calendar_feriados" style="display: none">
+			<i class="fa fa-calendar" id="calendar" onclick="calendar()"></i> &nbsp;
+			<span role="text" id="multi_date_picker"></span>
+		</div>
+		<br>
+		<!--Checkbox para tarifa en dias feriados-->
+		<input type="checkbox" value="No" id="check_feriados" onchange="formFeriados(this)">&nbsp;Tarifa días feriados<br>
+		<label></label>
+      	<div class="controls" align ="center">
+        	<button type="submit" class="btn btn-primary" onclick="getDates()" name="botonSubmit">
             Parametrizar Estacionamiento
-          </button>
+         	</button>
         </div>
       </div>
     </form>
     <p>
-	{% if estacionamiento.capacidad %}
-    <div class="controls" align ="center">
-    	<p><button id="puestos">Gestionar puestos</button></p>
-    </div></p>
-	{% endif %}
+  </div>
 </div>
 
-{% include "validator.js.html" with form=formPuestos %}
-{% include "validator.js.html" with form=form%}
+{% include "validator.js.html" %}
 <script type="text/javascript">
   esquema 		  = document.getElementById('id_esquema');
   esquemaFeriados = document.getElementById('id_esquemaFeriados');
@@ -209,19 +169,6 @@
 </script>
 
 {% block scripts %}
-  <script type="text/javascript">
-  $(function() {
-    $( "#dialogpuestos" ).dialog({
-      autoOpen: false,
-      resizable: false,
-      width : 300
-    });
- 
-    $( "#puestos" ).click(function() {
-      $( "#dialogpuestos" ).dialog( "open" );
-    });
-  });
-  </script>
 <!--OPCION PARA AGREGAR UNA TARIFA PARA DIAS FERIADOS-->
   <script type="text/javascript">
     var show=false;

@@ -66,7 +66,7 @@ class Estacionamiento(models.Model):
 			capacidad = self.capacidad_D
 			
 		return capacidad
-
+	
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
 

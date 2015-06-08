@@ -219,6 +219,20 @@ class PropietarioForm(forms.Form):
         )
     )
 class PuestosForm(forms.Form):
+    
+    particulares = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        label     = 'Número de puestos particulares',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Para particulares'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'Debe ser un número entero no negativo.'
+            }
+        )
+    )
         
     motos = forms.IntegerField(
         required  = True,
@@ -250,6 +264,7 @@ class PuestosForm(forms.Form):
     
     discapacitados = forms.IntegerField(
         required  = True,
+    
         min_value = 0,
         label     = 'Número de Puestos',
         widget    = forms.NumberInput(attrs=
@@ -269,17 +284,8 @@ class EstacionamientoExtendedForm(forms.Form):
     )    
     
     puestos = forms.IntegerField(
-        required  = True,
-        min_value = 1,
-        label     = 'Número de puestos particulares',
-        widget    = forms.NumberInput(attrs=
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Número de puestos particulares'
-            , 'min'         : "0"
-            , 'pattern'     : '^[0-9]+'
-            , 'message'     : 'Debe ser un número entero no negativo.'
-            }
-        )
+        required = False,
+        widget   = forms.HiddenInput()
     )
     puestos_C = forms.IntegerField(
         required = False,
@@ -293,6 +299,7 @@ class EstacionamientoExtendedForm(forms.Form):
         required = False,
         widget   = forms.HiddenInput()
     )
+    
     horarioin = forms.TimeField(
         required = True,
         label    = 'Horario Apertura',
