@@ -27,12 +27,23 @@ class ReservaFormTestCase(TestCase):
         form = ReservaForm(data = form_data)
         self.assertFalse(form.is_valid())
 
+    # caso borde
+    def test_EstacionamientoReserva_DosCampo(self):
+        form_data = {'inicio_1': time(hour=6, minute=0),
+                     'final_1' : time(hour=15, minute=0),
+                     'final_0' : date(year=2015, month=2, day=27),
+                     'inicio_0': date(year=2015, month=2, day=27)
+        }
+        form = ReservaForm(data = form_data)
+        self.assertFalse(form.is_valid())
+
     # TDD
     def test_EstacionamientoReserva_TodosCamposBien(self):
         form_data = {'inicio_1': time(hour=6, minute=0),
                      'final_1' : time(hour=15, minute=0),
                      'final_0' : date(year=2015, month=2, day=27),
-                     'inicio_0': date(year=2015, month=2, day=27)
+                     'inicio_0': date(year=2015, month=2, day=27),
+                     'vehiculoTipo' : 'Moto'
                     }
         form = ReservaForm(data = form_data)
         self.assertTrue(form.is_valid())
@@ -42,7 +53,8 @@ class ReservaFormTestCase(TestCase):
         form_data = {'inicio_1': 'teruel',
                      'final_1': time(hour = 15, minute = 0),
                      'final_0': date(year=2015,month=2,day=27),
-                     'inicio_0': date(year=2015,month=2,day=27)
+                     'inicio_0': date(year=2015,month=2,day=27),
+                     'vehiculoTipo' : 'Moto'
         }
         form = ReservaForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -52,7 +64,8 @@ class ReservaFormTestCase(TestCase):
         form_data = {'inicio_1': time(hour = 6, minute = 0),
                      'final_1': 'Reinoza',
                      'final_0': date(year=2015,month=2,day=27),
-                     'inicio_0': date(year=2015,month=2,day=27)
+                     'inicio_0': date(year=2015,month=2,day=27),
+                     'vehiculoTipo' : 'Moto'
         }
         form = ReservaForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -62,7 +75,8 @@ class ReservaFormTestCase(TestCase):
         form_data = {'inicio_1': None,
                      'final_1': time(hour = 15, minute = 0),
                      'final_0': date(year=2015,month=2,day=27),
-                     'inicio_0': date(year=2015,month=2,day=27)
+                     'inicio_0': date(year=2015,month=2,day=27),
+                     'vehiculoTipo' : 'Moto'
         }
         form = ReservaForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -72,7 +86,19 @@ class ReservaFormTestCase(TestCase):
         form_data = {'inicio_1': time(hour = 6, minute = 0),
                      'final_1': time(hour = 15, minute = 0),
                      'final_0': None,
-                     'inicio_0': date(year=2015,month=2,day=27)
+                     'inicio_0': date(year=2015,month=2,day=27),
+                     'vehiculoTipo' : 'Moto'
+        }
+        form = ReservaForm(data = form_data)
+        self.assertFalse(form.is_valid())
+
+    # malicia
+    def test_EstacionamientoReserva_vehiculoTipolNone(self):
+        form_data = {'inicio_1': time(hour = 6, minute = 0),
+                     'final_1': time(hour = 15, minute = 0),
+                     'final_0': None,
+                     'inicio_0': date(year=2015,month=2,day=27),
+                     'vehiculoTipo' : None
         }
         form = ReservaForm(data = form_data)
         self.assertFalse(form.is_valid())

@@ -40,7 +40,7 @@ class ExtendedFormTestCase(TestCase):
         form_data = { 'horarioin': time(hour = 6,  minute = 0),
                       'horarioout': time(hour = 19,  minute = 0),
                       'tarifa': '12',
-                      'esquema':'TarifaMinuto'
+                      'esquema':'TarifaHora'
                     }
         form = EstacionamientoExtendedForm(data = form_data)
         self.assertTrue(form.is_valid())
