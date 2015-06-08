@@ -309,8 +309,8 @@ def estacionamiento_detail(request, _id):
     elif request.method == 'POST' and 'botonPuestos' in request.POST:
         form_data_puestos={
                 'particulares' : request.POST['particulares'],
-                'camiones' : request.POST['camiones'],
-                'motos' : request.POST['motos'],
+                'camiones'     : request.POST['camiones'],
+                'motos'        : request.POST['motos'],
                 'discapacitados' : request.POST['discapacitados']
             }
         formPuestos=PuestosForm(data=form_data_puestos)
