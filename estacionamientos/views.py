@@ -217,8 +217,15 @@ def estacionamiento_detail(request, _id):
     except ObjectDoesNotExist:
         raise Http404
     
-    formPuestos = PuestosForm() 
     form = EstacionamientoExtendedForm() 
+    form_data_puestos={
+            'particulares'  : estacionamiento.capacidad,
+            'camiones'      : estacionamiento.capacidad_C,
+            'motos'         : estacionamiento.capacidad_M,
+            'discapacitados': estacionamiento.capacidad_D
+            }
+    formPuestos = PuestosForm(data=form_data_puestos)
+    
     if estacionamiento.tarifa:
         form_data = {
             'horarioin'  : estacionamiento.apertura,
@@ -230,12 +237,6 @@ def estacionamiento_detail(request, _id):
             'esquema'    : estacionamiento.tarifa.__class__.__name__,
             'feriados'   : estacionamiento.feriados
         }
-        form_data_puestos={
-                'particulares'  : estacionamiento.capacidad,
-                'camiones'      : estacionamiento.capacidad_C,
-                'motos'         : estacionamiento.capacidad_M,
-                'discapacitados': estacionamiento.capacidad_D
-                }
         if estacionamiento.tarifaFeriados:
             form_data.update({
                 'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa,
@@ -247,7 +248,6 @@ def estacionamiento_detail(request, _id):
             
             
         form = EstacionamientoExtendedForm(data=form_data)
-        formPuestos = PuestosForm(data=form_data_puestos)
 
     if request.method == 'POST' and 'botonSubmit' in request.POST:
         # Leemos el formulario

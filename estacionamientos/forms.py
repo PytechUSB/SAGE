@@ -223,6 +223,7 @@ class PuestosForm(forms.Form):
     particulares = forms.IntegerField(
         required  = True,
         min_value = 0,
+        initial = 0,
         label     = 'Número de puestos particulares',
         widget    = forms.NumberInput(attrs=
             { 'class'       : 'form-control'
@@ -237,6 +238,7 @@ class PuestosForm(forms.Form):
     motos = forms.IntegerField(
         required  = True,
         min_value = 0,
+        initial = 0,
         label     = 'Número de Puestos',
         widget    = forms.NumberInput(attrs=
             { 'class'       : 'form-control'
@@ -251,6 +253,7 @@ class PuestosForm(forms.Form):
     camiones = forms.IntegerField(
         required  = True,
         min_value = 0,
+        initial = 0,
         label     = 'Número de Puestos',
         widget    = forms.NumberInput(attrs=
             { 'class'       : 'form-control'
@@ -264,7 +267,7 @@ class PuestosForm(forms.Form):
     
     discapacitados = forms.IntegerField(
         required  = True,
-    
+        initial = 0,    
         min_value = 0,
         label     = 'Número de Puestos',
         widget    = forms.NumberInput(attrs=
