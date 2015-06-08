@@ -182,6 +182,18 @@ class PropietarioForm(forms.Form):
         )
     )
     
+    cedulaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'cedulaTipo',
+        choices  = (
+            ('V', 'V'),
+            ('E', 'E')
+        ),
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
+        )
+    )
+    
     id_validator = RegexValidator(
         regex   = '^[0-9]+$',
         message = 'La cédula solo puede contener caracteres numéricos.'
@@ -639,8 +651,20 @@ class RifForm(forms.Form):
 
 class CedulaForm(forms.Form):
     
+    cedulaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'cedulaTipo',
+        choices  = (
+            ('V', 'V'),
+            ('E', 'E')
+        ),
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
+        )
+    )
+    
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '[0-9]+$',
         message = 'La cédula solo puede contener caracteres numéricos.'
     )
     

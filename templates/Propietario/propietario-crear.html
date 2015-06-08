@@ -12,16 +12,17 @@
           </div>
         </div>
         <div class="panel-body">
-          <form action="propietario-crear" method="post" class="form form-vertical">
+          <form action="propietario-crear" method="post" class="form ">
             {% csrf_token %}
             {% for field in form %}
               <div class="control-group">
-                <div class="controls">
-                  {{ field }}
-                  <span class='error' id='{{field.name}}_error' aria-live="polite">
-                    {{ field.errors }}
-                  </span>
-                  <p>
+                <div class="controls">               
+                 {{ field }}
+                 <span class='error' id='{{field.name}}_error' aria-live="polite">
+                   {{ field.errors }}
+                 </span>
+                 <p>
+                 
                 </div>
               </div>
             {% endfor %}
