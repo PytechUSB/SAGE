@@ -947,7 +947,7 @@ def billetera_recarga(request, _id):
         }
     )
     
-def validar_reserva(request):
+def validar_reserva(request, link = ''):
     form = CancelaReservaForm()
     
     if request.method == 'POST':
