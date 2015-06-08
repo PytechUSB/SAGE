@@ -38,8 +38,10 @@ from estacionamientos.forms import (
     BilleteraForm,
     BilleteraPagoForm,
     authBilleteraForm,
-    CancelaReservaForm
-, PuestosForm)
+    CancelaReservaForm,
+    MoverReservaForm,
+    PuestosForm)
+
 from estacionamientos.models import (
     Propietario,
     Estacionamiento,
@@ -430,7 +432,6 @@ def estacionamiento_reserva(request, _id):
                     finalReserva    = finalReserva,
                     vehiculoTipo    = vehiculoTipo,
                 )
-                print(inicioReserva)
                 
                 feriados = estacionamiento.feriados.split(',')
                 inicio   = inicioReserva.date()
@@ -985,7 +986,7 @@ def validar_reserva(request, link = ''):
                     )
                     
                 else:
-                    direccion = "/estacionamientos/" + str(form.cleaned_data['ID']) + "/validar_billetera"
+                    direccion = "/estacionamientos/" + str(form.cleaned_data['ID']) + "/" + link
                     return HttpResponseRedirect(direccion)
             
             else:
@@ -1051,6 +1052,8 @@ def validar_billetera(request, id_pago):
     )         
     
 def cancelar_reserva(request, id_pago, id_billetera):
+    id_pago = int(id_pago)
+    id_billetera = int(id_billetera)
     try:
         pago = Pago.objects.get(pk = id_pago)
         billeteraE = BilleteraElectronica.objects.get(pk = id_billetera)
@@ -1110,3 +1113,27 @@ def cancelar_reserva(request, id_pago, id_billetera):
             , 'mensaje1': '¿Desea cancelar esta reservacion?'
             }
         )
+
+def mover_reserva(request, id_pago):
+    id_pago = int(id_pago)
+    
+    try:
+        pago = Pago.objects.get(pk = id_pago)
+        
+    except:
+        raise Http404
+    
+    form = MoverReservaForm()
+    
+    if request.method == 'POST':
+        if form.is_valid():
+            pass
+        
+    else:
+        return render(
+            request,
+            'mover-reserva.html',
+            {'form' : form
+            }    
+        )
+    
