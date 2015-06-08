@@ -283,23 +283,6 @@ class EstacionamientoExtendedForm(forms.Form):
         message = 'Sólo debe contener dígitos.'
     )    
     
-    puestos = forms.IntegerField(
-        required = False,
-        widget   = forms.HiddenInput()
-    )
-    puestos_C = forms.IntegerField(
-        required = False,
-        widget   = forms.HiddenInput()
-    )
-    puestos_M = forms.IntegerField(
-        required = False,
-        widget   = forms.HiddenInput()
-    )
-    puestos_D = forms.IntegerField(
-        required = False,
-        widget   = forms.HiddenInput()
-    )
-    
     horarioin = forms.TimeField(
         required = True,
         label    = 'Horario Apertura',
