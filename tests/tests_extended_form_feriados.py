@@ -22,6 +22,17 @@ from estacionamientos.forms import EstacionamientoExtendedForm,PropietarioForm,E
 
 class ExtendedFormDiasFeriadosTestCase(TestCase):
 
+    # tdd 
+    def test_estacionamiento_extended_form_feriados(self):
+        form_data = { 'horarioin': time(hour = 6,  minute = 0),
+                      'horarioout': time(hour = 19,  minute = 0),
+                      'tarifa': '12',
+                      'esquema':'TarifaMinuto',
+                      'feriados' : '2015-05-01,2015-06-24'
+                    }
+        form = EstacionamientoExtendedForm(data = form_data)
+        self.assertTrue(form.is_valid())
+        
     # tdd
     def test_estacionamiento_extended_esquema_dia_feriados_igual(self):
         form_data = { 'puestos': 10,
