@@ -85,7 +85,8 @@ def propietario_all(request):
                 nombres   = form.cleaned_data['nombres'],
                 apellidos = form.cleaned_data['apellidos'],
                 cedula    = form.cleaned_data['cedula'],
-                telefono1 = form.cleaned_data['telefono_1']
+                telefono1 = form.cleaned_data['telefono_1'],
+                cedulaTipo= form.cleaned_data['cedulaTipo']
             )     
             try:
                 obj.save()
@@ -123,7 +124,8 @@ def propietario_edit(request, _id):
             'nombres'   : propietario.nombres,
             'apellidos' : propietario.apellidos,
             'cedula'    : propietario.cedula,
-            'telefono1' : propietario.telefono1 
+            'telefono1' : propietario.telefono1, 
+            'cedulaTipo': propietario.cedulaTipo
         }
         form = PropietarioForm(data=form_data)
 
@@ -137,7 +139,8 @@ def propietario_edit(request, _id):
                 nombres     = form.cleaned_data['nombres'],
                 apellidos   = form.cleaned_data['apellidos'],
                 cedula      = form.cleaned_data['cedula'],
-                telefono1   = form.cleaned_data['telefono_1']
+                telefono1   = form.cleaned_data['telefono_1'],
+                cedulaTipo  =form.cleaned_data['cedulaTipo']
             )
             except:
                 return render(

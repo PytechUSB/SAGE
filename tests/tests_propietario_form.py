@@ -11,12 +11,24 @@ from estacionamientos.forms import PropietarioForm
 
 class PropietarioAllFormTestCase(TestCase):
     
+    
+    def test_Propietario_normal(self):
+        form_data = {
+            'nombres': 'Ñarry',
+            'apellidos': 'Perez',
+            'cedula': '24981045',
+            'cedulaTipo': 'V'
+        }
+        form = PropietarioForm(data = form_data)
+        self.assertTrue(form.is_valid())
+    
     # caso borde
     def test_Propietario_nombres_vacio(self):
         form_data = {
             'nombres': '',
             'apellidos': 'Perez',
-            'cedula': '24981045'
+            'cedula': '24981045',
+            'cedulaTipo': 'V'
         }
         form = PropietarioForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -26,7 +38,8 @@ class PropietarioAllFormTestCase(TestCase):
         form_data = {
             'nombres': 'Carlos',
             'apellidos': '',
-            'cedula': '24981045'
+            'cedula': '24981045',
+            'cedulaTipo': 'V'
         }
         form = PropietarioForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -36,7 +49,19 @@ class PropietarioAllFormTestCase(TestCase):
         form_data = {
             'nombres': 'Carlos',
             'apellidos': 'Perez',
-            'cedula': ''
+            'cedula': '',
+            'cedulaTipo': 'V'
+        }
+        form = PropietarioForm(data = form_data)
+        self.assertFalse(form.is_valid())
+        
+    # caso borde
+    def test_Propietario_cedulaTipo_vacio(self):
+        form_data = {
+            'nombres': 'Carlos',
+            'apellidos': 'Perez',
+            'cedula': '18',
+            'cedulaTipo': ''
         }
         form = PropietarioForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -46,7 +71,8 @@ class PropietarioAllFormTestCase(TestCase):
         form_data = {
             'nombres': '12345',
             'apellidos': 'Perez',
-            'cedula': '24981045'
+            'cedula': '24981045',
+            'cedulaTipo': 'V'
         }
         form = PropietarioForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -56,7 +82,8 @@ class PropietarioAllFormTestCase(TestCase):
         form_data = {
             'nombres': '12345',
             'apellidos': 'Perez',
-            'cedula': '2A-981045'
+            'cedula': '2A-981045',
+            'cedulaTipo': 'E'
         }
         form = PropietarioForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -66,7 +93,8 @@ class PropietarioAllFormTestCase(TestCase):
         form_data = {
             'nombres': '#€%! Albeto',
             'apellidos': 'Perez',
-            'cedula': '24981045'
+            'cedula': '24981045',
+            'cedulaTipo': 'V'
         }
         form = PropietarioForm(data = form_data)
         self.assertFalse(form.is_valid())
