@@ -16,15 +16,30 @@
       {% if form %}
         <form method="post" class="form form-vertical">
           {% csrf_token %}
-          {% for field in form %}
-            <div class="control-group">
-              <div class="controls">
-                {{ field }}
-                <span class='error' id='{{field.name}}_error' aria-live=" polite">{{ field.errors }}</span>
-                <br>
-              </div>
+          {% csrf_token %}
+        <div class="control-group">
+            <div class="controls">
+               <p>
+                  <table><tbody><tr>
+                    <td>
+                      {{ form.cedulaTipo }}
+                    </td>
+                    <td>
+                      {{ form.cedula }}
+                    </td>
+                  </tr></tbody></table>
+                  <span
+                    class='error'
+                    id='{{form.cedula.name}}_error'
+                    aria-live="polite"
+                  ></span>
+                  {{ form.cedula.errors }}
+                </p>
+                
             </div>
-          {% endfor %}
+        </div>
+            
+      	<br>
           <br>
           <div class="control-group" align="center">
             <input type="submit" value="Cambiar" class="btn btn-primary">
