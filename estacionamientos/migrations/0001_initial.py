@@ -15,10 +15,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BilleteraElectronica',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
                 ('nombre', models.CharField(max_length=30, help_text='Nombre Propio')),
                 ('apellido', models.CharField(max_length=30)),
-                ('saldo', models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0'))),
+                ('saldo', models.DecimalField(max_digits=10, default=Decimal('0'), decimal_places=2)),
                 ('cedula', models.CharField(max_length=12)),
                 ('cedulaTipo', models.CharField(max_length=1)),
                 ('PIN', models.CharField(max_length=8)),
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Cancelaciones',
             fields=[
-                ('id', models.IntegerField(primary_key=True, serialize=False)),
+                ('id', models.IntegerField(serialize=False, primary_key=True)),
                 ('monto', models.DecimalField(max_digits=256, decimal_places=2)),
                 ('fechaTransaccion', models.DateTimeField()),
                 ('billetera', models.ForeignKey(to='estacionamientos.BilleteraElectronica')),
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ConfiguracionSMS',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
                 ('inicioReserva', models.DateTimeField()),
                 ('finalReserva', models.DateTimeField()),
             ],
@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Estacionamiento',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
                 ('nombre', models.CharField(max_length=50)),
                 ('direccion', models.TextField(max_length=120)),
                 ('rif', models.CharField(max_length=12)),
@@ -87,7 +87,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Pago',
             fields=[
-                ('id', models.IntegerField(primary_key=True, serialize=False)),
+                ('id', models.IntegerField(serialize=False, primary_key=True)),
                 ('fechaTransaccion', models.DateTimeField()),
                 ('cedulaTipo', models.CharField(max_length=1)),
                 ('cedula', models.CharField(max_length=10)),
@@ -108,11 +108,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Propietario',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
                 ('nombres', models.CharField(max_length=30)),
                 ('apellidos', models.CharField(max_length=30)),
                 ('cedula', models.CharField(max_length=12, unique=True)),
                 ('telefono1', models.CharField(max_length=30, blank=True, null=True)),
+                ('cedulaTipo', models.CharField(max_length=1)),
             ],
             options={
             },
@@ -127,7 +128,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Recargas',
             fields=[
-                ('id', models.IntegerField(primary_key=True, serialize=False)),
+                ('id', models.IntegerField(serialize=False, primary_key=True)),
                 ('fechaTransaccion', models.DateTimeField()),
                 ('cedulaTipo', models.CharField(max_length=1)),
                 ('cedula', models.CharField(max_length=10)),
@@ -142,7 +143,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Reserva',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
                 ('inicioReserva', models.DateTimeField()),
                 ('finalReserva', models.DateTimeField()),
                 ('vehiculoTipo', models.CharField(max_length=15)),
@@ -161,7 +162,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TarifaFinDeSemana',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
                 ('tarifa', models.DecimalField(max_digits=20, decimal_places=2)),
                 ('tarifa2', models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)),
                 ('inicioEspecial', models.TimeField(blank=True, null=True)),
@@ -175,7 +176,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TarifaHora',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
                 ('tarifa', models.DecimalField(max_digits=20, decimal_places=2)),
                 ('tarifa2', models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)),
                 ('inicioEspecial', models.TimeField(blank=True, null=True)),
@@ -189,7 +190,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TarifaHoraPico',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
                 ('tarifa', models.DecimalField(max_digits=20, decimal_places=2)),
                 ('tarifa2', models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)),
                 ('inicioEspecial', models.TimeField(blank=True, null=True)),
@@ -203,7 +204,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TarifaHorayFraccion',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
                 ('tarifa', models.DecimalField(max_digits=20, decimal_places=2)),
                 ('tarifa2', models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)),
                 ('inicioEspecial', models.TimeField(blank=True, null=True)),
@@ -217,7 +218,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TarifaMinuto',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, verbose_name='ID', primary_key=True)),
                 ('tarifa', models.DecimalField(max_digits=20, decimal_places=2)),
                 ('tarifa2', models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)),
                 ('inicioEspecial', models.TimeField(blank=True, null=True)),
