@@ -436,37 +436,27 @@ def estacionamiento_reserva(request, _id):
                 feriados = estacionamiento.feriados.split(',')
 
                 #si la reservacion es de un dia,se verifica si es un dia feriado o normal.
-                #Si la reserva dura mas de un dia se llama a la funcion
+                #Si la reserva dura mas de un dia se llama a la funcion hitenmarzurulli
                 #para calcular el monto a pagar tomando en cuenta el cruce de los esquemas
                 #tarifarios
-                if(finalReserva - inicioReserva > timedelta(days=1)):
+                if(inicioReserva.date() != finalReserva.date()):
                     hitenmarzurulli(estacionamiento.id, inicioReserva, finalReserva)
                 else:
                     #monto de la tarifa en dia feriaro
                     if(estacionamiento.tarifaFeriados and (str(inicioReserva.date()) in feriados)):
                         monto = Decimal(
-                            estacionamiento.tarifaFeriados.calcularPrecio(
-                                inicioReserva, finalReserva
-                            )
+                            estacionamiento.tarifaFeriados.calcularPrecio(inicioReserva, finalReserva)
                         )
                         request.session['monto'] = float(
-                            estacionamiento.tarifaFeriados.calcularPrecio(
-                                inicioReserva,
-                                finalReserva
-                            )
+                            estacionamiento.tarifaFeriados.calcularPrecio(inicioReserva,finalReserva)
                         )
                     #monto de la tarifa en dia normal
                     else:
                         monto = Decimal(
-                            estacionamiento.tarifa.calcularPrecio(
-                                inicioReserva, finalReserva
-                            )
+                            estacionamiento.tarifa.calcularPrecio(inicioReserva, finalReserva)
                         )
                         request.session['monto'] = float(
-                            estacionamiento.tarifa.calcularPrecio(
-                                inicioReserva,
-                                finalReserva
-                            )
+                            estacionamiento.tarifa.calcularPrecio(inicioReserva,finalReserva)
                         )
                 
                 request.session['vehiculoTipo']        = vehiculoTipo
