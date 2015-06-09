@@ -19,6 +19,7 @@ from estacionamientos.controller import (
     validarHorarioReserva,
     marzullo,
     hitenmarzurulli,
+    cruceEsquema,
     get_client_ip,
     tasa_reservaciones,
     calcular_porcentaje_de_tasa,
@@ -440,7 +441,11 @@ def estacionamiento_reserva(request, _id):
                 #para calcular el monto a pagar tomando en cuenta el cruce de los esquemas
                 #tarifarios
                 if(inicioReserva.date() != finalReserva.date()):
-                    hitenmarzurulli(estacionamiento.id, inicioReserva, finalReserva)
+                    #hitenmarzurulli(estacionamiento.id, inicioReserva, finalReserva)
+                    monto = cruceEsquema(estacionamiento.id, inicioReserva, finalReserva)
+                    request.session['monto'] = float(monto)
+                    monto = Decimal(monto)
+                    print(monto)
                 else:
                     #monto de la tarifa en dia feriaro
                     if(estacionamiento.tarifaFeriados and (str(inicioReserva.date()) in feriados)):

@@ -35,6 +35,24 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre):
 			return (False, 'No puede haber reservas entre dos dias distintos')
 		return (True,'')
 
+def cruceEsquema(idEstacionamiento, hIn, hOut):
+	e = Estacionamiento.objects.get(id = idEstacionamiento)
+	monto  = 0
+	inicio = hIn
+	final  = datetime.combine(inicio.date() + timedelta(days=1), time(0,0))
+	while inicio<hOut:
+		if(e.tarifaFeriados and (str(inicio.date()) in e.feriados)):
+			monto+=e.tarifaFeriados.calcularPrecio(inicio,final)
+		else:
+			monto+=e.tarifa.calcularPrecio(inicio,final)
+			
+		inicio=final
+		if(final.date() == hOut.date()):
+			final = hOut
+		else:
+			final += timedelta(days=1)
+	return monto
+
 def hitenmarzurulli(idEstacionamiento, hIn, hOut):
 	""" Siempre se llamara en reservas entre días"""
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
