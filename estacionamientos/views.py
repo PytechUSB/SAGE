@@ -18,6 +18,7 @@ from estacionamientos.controller import (
     HorarioEstacionamiento,
     validarHorarioReserva,
     marzullo,
+    hitenmarzurulli,
     get_client_ip,
     tasa_reservaciones,
     calcular_porcentaje_de_tasa,
@@ -434,8 +435,12 @@ def estacionamiento_reserva(request, _id):
                 
                 feriados = estacionamiento.feriados.split(',')
 
+                #si la reservacion es de un dia,se verifica si es un dia feriado o normal.
+                #Si la reserva dura mas de un dia se llama a la funcion
+                #para calcular el monto a pagar tomando en cuenta el cruce de los esquemas
+                #tarifarios
                 if(finalReserva - inicioReserva > timedelta(days=1)):
-                    pass #hitenmarzurulli(inicioReserva, finalReserva, feriados)
+                    hitenmarzurulli(estacionamiento.id, inicioReserva, finalReserva)
                 else:
                     #monto de la tarifa en dia feriaro
                     if(estacionamiento.tarifaFeriados and (str(inicioReserva.date()) in feriados)):
