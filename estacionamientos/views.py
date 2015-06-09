@@ -433,36 +433,10 @@ def estacionamiento_reserva(request, _id):
                     vehiculoTipo    = vehiculoTipo,
                 )
                 print(inicioReserva)
-                
-                feriados = estacionamiento.feriados.split(',')
 
-                #si la reservacion es de un dia,se verifica si es un dia feriado o normal.
-                #Si la reserva dura mas de un dia se llama a la funcion hitenmarzurulli
-                #para calcular el monto a pagar tomando en cuenta el cruce de los esquemas
-                #tarifarios
-                if(inicioReserva.date() != finalReserva.date()):
-                    #hitenmarzurulli(estacionamiento.id, inicioReserva, finalReserva)
-                    monto = cruceEsquema(estacionamiento.id, inicioReserva, finalReserva)
-                    request.session['monto'] = float(monto)
-                    monto = Decimal(monto)
-                    print(monto)
-                else:
-                    #monto de la tarifa en dia feriaro
-                    if(estacionamiento.tarifaFeriados and (str(inicioReserva.date()) in feriados)):
-                        monto = Decimal(
-                            estacionamiento.tarifaFeriados.calcularPrecio(inicioReserva, finalReserva)
-                        )
-                        request.session['monto'] = float(
-                            estacionamiento.tarifaFeriados.calcularPrecio(inicioReserva,finalReserva)
-                        )
-                    #monto de la tarifa en dia normal
-                    else:
-                        monto = Decimal(
-                            estacionamiento.tarifa.calcularPrecio(inicioReserva, finalReserva)
-                        )
-                        request.session['monto'] = float(
-                            estacionamiento.tarifa.calcularPrecio(inicioReserva,finalReserva)
-                        )
+                monto = cruceEsquema(estacionamiento.id, inicioReserva, finalReserva)
+                monto = Decimal(monto)
+                request.session['monto'] = float(monto)
                 
                 request.session['vehiculoTipo']        = vehiculoTipo
                 request.session['finalReservaHora']    = finalReserva.hour

@@ -39,13 +39,18 @@ def cruceEsquema(idEstacionamiento, hIn, hOut):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
 	monto  = 0
 	inicio = hIn
-	final  = datetime.combine(inicio.date() + timedelta(days=1), time(0,0))
+	#revisa si la hora de inicio y finalizacion corresponden al mismo dia
+	if(inicio.date() == hOut.date()):
+		final = hOut
+	else:
+		final  = datetime.combine(inicio.date() + timedelta(days=1), time(0,0))
+	#calcula el monto segun el esquema y el dia
 	while inicio<hOut:
 		if(e.tarifaFeriados and (str(inicio.date()) in e.feriados)):
 			monto+=e.tarifaFeriados.calcularPrecio(inicio,final)
 		else:
 			monto+=e.tarifa.calcularPrecio(inicio,final)
-			
+
 		inicio=final
 		if(final.date() == hOut.date()):
 			final = hOut
