@@ -503,7 +503,7 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-def pago_reserva_aux(request, form, monto, estacionamiento):
+def pago_reserva_aux(request, form, monto, estacionamiento, idFacturaReservaMovida = None):
     inicioReserva = datetime(
         year   = request.session['anioinicial'],
         month  = request.session['mesinicial'],
@@ -520,6 +520,7 @@ def pago_reserva_aux(request, form, monto, estacionamiento):
         minute = request.session['finalReservaMinuto']
     )
 
+    
     reservaFinal = Reserva(
         estacionamiento = estacionamiento,
         inicioReserva   = inicioReserva,
@@ -529,15 +530,28 @@ def pago_reserva_aux(request, form, monto, estacionamiento):
 
     # Se guarda la reserva en la base de datos
     reservaFinal.save()
-    pago = Pago(
-        id = asigna_id_unico(),
-        fechaTransaccion = datetime.now(),
-        cedula           = form.cleaned_data['cedula'],
-        cedulaTipo       = form.cleaned_data['cedulaTipo'],
-        monto            = monto,
-        tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
-        reserva          = reservaFinal,
-    )
+    if (idFacturaReservaMovida == None):
+        pago = Pago(
+            id = asigna_id_unico(),
+            fechaTransaccion = datetime.now(),
+            cedula           = form.cleaned_data['cedula'],
+            cedulaTipo       = form.cleaned_data['cedulaTipo'],
+            monto            = monto,
+            tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
+            reserva          = reservaFinal,
+        )
+        
+    else:
+        pago = Pago(
+            id = asigna_id_unico(),
+            fechaTransaccion = datetime.now(),
+            cedula           = form.cleaned_data['cedula'],
+            cedulaTipo       = form.cleaned_data['cedulaTipo'],
+            monto            = monto,
+            tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
+            reserva          = reservaFinal,
+            idFacturaMovida  = Pago.objects.get(pk = idFacturaReservaMovida)
+        )
 
     return pago
 
@@ -1126,14 +1140,194 @@ def mover_reserva(request, id_pago):
     form = MoverReservaForm()
     
     if request.method == 'POST':
+        form = MoverReservaForm(request.POST)
         if form.is_valid():
-            pass
-        
-    else:
-        return render(
-            request,
-            'mover-reserva.html',
-            {'form' : form
-            }    
-        )
+            estacionamiento = pago.reserva.estacionamiento
+            reserva = pago.reserva 
+            variacionTiempo = reserva.finalReserva - reserva.inicioReserva
+            inicioReserva = form['inicio']
+            finalReserva = inicioReserva + variacionTiempo
+            vehiculoTipo = reserva.vehiculoTipo
+            horarioValidado = validarHorarioReserva(
+                inicioReserva, 
+                finalReserva, 
+                estacionamiento.apertura, 
+                estacionamiento.cierre
+            )
+            
+            if not horarioValidado[0]:
+                return render(
+                    request,          
+                    'mensaje.html',
+                    { 'color' : 'red'
+                    , 'mensaje' : horarioValidado[1]  
+                    }
+                )
+            
+            if marzullo(estacionamiento.id, inicioReserva, finalReserva, vehiculoTipo, reserva.id):
+                reservaFinal = Reserva(
+                    estacionamiento = estacionamiento,
+                    inicioReserva   = inicioReserva,
+                    finalReserva    = finalReserva,
+                    vehiculoTipo    = vehiculoTipo,
+                )
+                
+                feriados = estacionamiento.feriados.split(',')
+                inicio   = inicioReserva.date()
+                
+                #monto de la tarifa en dia feriaro
+                if(estacionamiento.tarifaFeriados and (str(inicio) in feriados)):
+                    monto = Decimal(
+                        estacionamiento.tarifaFeriados.calcularPrecio(
+                            inicioReserva, finalReserva
+                        )
+                    )
+
+                #monto de la tarifa en dia normal
+                else:
+                    monto = Decimal(
+                        estacionamiento.tarifa.calcularPrecio(
+                            inicioReserva, finalReserva
+                        )
+                    )
+                
+                monto = Decimal(monto - pago.monto)
+                
+                request.session['monto'] = monto
+                request.session['vehiculoTipo']        = vehiculoTipo
+                request.session['finalReservaHora']    = finalReserva.hour
+                request.session['finalReservaMinuto']  = finalReserva.minute
+                request.session['inicioReservaHora']   = inicioReserva.hour
+                request.session['inicioReservaMinuto'] = inicioReserva.minute
+                request.session['anioinicial']  = inicioReserva.year
+                request.session['mesinicial']   = inicioReserva.month
+                request.session['diainicial']   = inicioReserva.day
+                request.session['aniofinal']    = finalReserva.year
+                request.session['mesfinal']     = finalReserva.month
+                request.session['diafinal']     = finalReserva.day
+                
+                if monto > 0:
+                    return render(
+                        request,
+                        'confirmar-mover.html',
+                        { 'id'      : pago.id
+                        , 'monto'   : monto
+                        , 'reserva' : reservaFinal
+                        , 'color'   : 'green'
+                        , 'mensaje' : 'Existe un puesto disponible'
+                        , 'tituloMonto' : 'Monto a recargar'
+                        }
+                    )
+                    
+                else:
+                    return render(
+                        request,
+                        'confirmar-mover.html',
+                        { 'id'      : pago.id
+                        , 'monto'   : -monto
+                        , 'reserva' : reservaFinal
+                        , 'color'   : 'green'
+                        , 'mensaje' : 'Existe un puesto disponible'
+                        , 'tituloMonto' : 'Monto a cancelar'
+                        }
+                    )
+                
+            else:
+                return render(
+                    request,
+                    'mensaje.html',
+                    {'color'   : 'red'
+                    , 'mensaje' : 'No hay un puesto disponible para ese horario'
+                    }
+                )
+
+    return render(
+        request,
+        'mover-reserva.html',
+        { 'form': form
+        , 'estacionamiento': estacionamiento
+        }
+    )
     
+def pago_mover(request, id_pago):
+    id_pago = int(id_pago)
+    
+    try:
+        pago = Pago.objects.get(pk = id_pago)
+    except:
+        return Http404
+    
+    form = PagoForm()
+    
+    if request.method == 'POST':
+        form = PagoForm(request.POST)
+        if form.is_valid():
+            monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+            if (form.cleaned_data['tarjetaTipo'] == 'Billetera Electronica'):
+                billeteraE = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
+                
+                if (billeteraE == None):
+                    return render(
+                        request, 'mensaje.html',
+                        {'color' : 'red'
+                        , 'mensaje' : 'Autenticacion Denegada'
+                        }
+                    )
+                    
+                else:
+                    if(not billeteraE.validar_consumo(monto)):
+                        return render(
+                            request, 'mensaje.html',
+                            {'color' : 'red'
+                            , 'mensaje' : 'Saldo Insuficiente'
+                            }
+                        ) 
+                        
+                    else:
+                        pago = pago_reserva_aux(request, form, monto, pago.reserva.estacionamiento, pago)
+                        pago.save()
+                        billeteraE.consumir_saldo(monto)
+                        if (billeteraE.saldo == 0):
+                            return render(
+                                request,
+                                'pago.html',
+                                { "id"      : _id
+                                , "pago"    : pago
+                                , "color"   : "green"
+                                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                                , 'color2'  : 'red'
+                                , 'mensaje2': 'Se recomienda recargar la billetera.' 
+                                }
+                            )
+                            
+                        else:
+                            return render(
+                                request,
+                                'pago.html',
+                                { "id"      : _id
+                                , "pago"    : pago
+                                , "color"   : "green"
+                                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                                }
+                            )
+                        
+            
+            
+            else:
+                pago = pago_reserva_aux(request, form, monto, pago.reserva.estacionamiento)
+                pago.save()
+                return render(
+                    request,
+                    'pago.html',
+                    { "id"      : _id
+                    , "pago"    : pago
+                    , "color"   : "green"
+                    , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                    }
+                )
+
+    return render(
+        request,
+        'pago.html',
+        { 'form' : form }
+    )
