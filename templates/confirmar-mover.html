@@ -52,36 +52,63 @@
             {{ tituloMonto }}
           </b></td></tr>
           <tr><td>
+            {%if monto < 0%}
             BsF. {{monto|floatformat:2|intcomma }}
+            {% endif %}
+            {%if monto > 0%}
+            BsF. {{monto|floatformat:2|intcomma }}
+            {%endif%}
+            {%if monto == 0%}
+            BsF. {{monto|floatformat:2|intcomma }}
+            {%endif%}
           </td></tr>
 
           <tr><td>
-            <a href="pago" onClick="return popup(this, 'Pago de Reserva')">
-              <button class="btn btn-primary">
-                Mover Reservacion
-              </button>
-            </a>
-            <a href="/estacionamientos/{{ id }}/reserva">
-              <button type="submit" class="btn btn-primary">
-                Volver
-              </button>
-            </a>
+            <input
+            type="button"
+            value="Mover Reservacion"
+            id="id_mover"
+            class="btn btn-primary"
+             >
+            <input
+            type="button"
+            value="Volver"
+            onclick="self.close()"
+            class="btn btn-primary"
+          >
           </td></tr>
         </tbody>
       </table>
     </div>
   </div>
-  <script type="text/javascript">
-    function popup(mylink, windowname) {
-      if (! window.focus)
-        return true;
-      var href;
-      if (typeof(mylink) == 'string')
-        href=mylink;
-      else
-        href=mylink.href;
-      window.open(href, windowname, 'width=800,height=600,scrollbars=yes');
-      return false;
-    }
-  </script>
+{% endblock %}
+{% block scripts %}
+
+<script>
+
+        $('document').ready(function() {
+            
+           $('id_mover').click(function() {
+				
+			
+           		 if({{monto}} > 0){
+                		$(location).attr('href',"/estacionamientos/crear_billetera");
+            		}; 
+            
+            	 if({{monto}} < 0){
+              		    $(location).attr('href',"/estacionamientos/crear_billetera");
+                    }; 
+            
+                 if({{monto}} == 0){
+                        $(location).attr('href',"/estacionamientos/crear_billetera");
+                    }; 
+            
+			});
+			
+		});
+		
+</script>
+
+{% include "validator.js.html" %}
+ 
 {% endblock %}
