@@ -503,7 +503,7 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-def pago_reserva_aux(request, form, monto, estacionamiento, idFacturaReservaMovida = None):
+def pago_reserva_aux(request, form, monto, estacionamiento, idFacturaReservaMovida):
     inicioReserva = datetime(
         year   = request.session['anioinicial'],
         month  = request.session['mesinicial'],
@@ -556,7 +556,7 @@ def pago_reserva_aux(request, form, monto, estacionamiento, idFacturaReservaMovi
     return pago
 
 
-def estacionamiento_pago(request,_id):
+def estacionamiento_pago(request, _id, idFacturaReservaMovida = None):
     form = PagoForm()
     
     try:
@@ -592,7 +592,13 @@ def estacionamiento_pago(request,_id):
                         ) 
                         
                     else:
-                        pago = pago_reserva_aux(request, form, monto, estacionamiento)
+                        pago = pago_reserva_aux(
+                            request, 
+                            form, 
+                            monto, 
+                            estacionamiento, 
+                            idFacturaReservaMovida
+                        )
                         pago.save()
                         billeteraE.consumir_saldo(monto)
                         if (billeteraE.saldo == 0):
@@ -622,7 +628,14 @@ def estacionamiento_pago(request,_id):
             
             
             else:
-                pago = pago_reserva_aux(request, form, monto, estacionamiento)
+                pago = pago_reserva_aux(
+                            request, 
+                            form, 
+                            monto, 
+                            estacionamiento, 
+                            idFacturaReservaMovida
+                )
+                
                 pago.save()
                 return render(
                     request,
@@ -1133,6 +1146,7 @@ def mover_reserva(request, id_pago):
     
     try:
         pago = Pago.objects.get(pk = id_pago)
+        estacionamiento = pago.reserva.estacionamiento
         
     except:
         raise Http404
@@ -1142,10 +1156,10 @@ def mover_reserva(request, id_pago):
     if request.method == 'POST':
         form = MoverReservaForm(request.POST)
         if form.is_valid():
-            estacionamiento = pago.reserva.estacionamiento
             reserva = pago.reserva 
             variacionTiempo = reserva.finalReserva - reserva.inicioReserva
             inicioReserva = form['inicio']
+            print(type(variacionTiempo), type(inicioReserva))
             finalReserva = inicioReserva + variacionTiempo
             vehiculoTipo = reserva.vehiculoTipo
             horarioValidado = validarHorarioReserva(
@@ -1247,87 +1261,4 @@ def mover_reserva(request, id_pago):
         { 'form': form
         , 'estacionamiento': estacionamiento
         }
-    )
-    
-def pago_mover(request, id_pago):
-    id_pago = int(id_pago)
-    
-    try:
-        pago = Pago.objects.get(pk = id_pago)
-    except:
-        return Http404
-    
-    form = PagoForm()
-    
-    if request.method == 'POST':
-        form = PagoForm(request.POST)
-        if form.is_valid():
-            monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
-            if (form.cleaned_data['tarjetaTipo'] == 'Billetera Electronica'):
-                billeteraE = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
-                
-                if (billeteraE == None):
-                    return render(
-                        request, 'mensaje.html',
-                        {'color' : 'red'
-                        , 'mensaje' : 'Autenticacion Denegada'
-                        }
-                    )
-                    
-                else:
-                    if(not billeteraE.validar_consumo(monto)):
-                        return render(
-                            request, 'mensaje.html',
-                            {'color' : 'red'
-                            , 'mensaje' : 'Saldo Insuficiente'
-                            }
-                        ) 
-                        
-                    else:
-                        pago = pago_reserva_aux(request, form, monto, pago.reserva.estacionamiento, pago)
-                        pago.save()
-                        billeteraE.consumir_saldo(monto)
-                        if (billeteraE.saldo == 0):
-                            return render(
-                                request,
-                                'pago.html',
-                                { "id"      : _id
-                                , "pago"    : pago
-                                , "color"   : "green"
-                                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
-                                , 'color2'  : 'red'
-                                , 'mensaje2': 'Se recomienda recargar la billetera.' 
-                                }
-                            )
-                            
-                        else:
-                            return render(
-                                request,
-                                'pago.html',
-                                { "id"      : _id
-                                , "pago"    : pago
-                                , "color"   : "green"
-                                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
-                                }
-                            )
-                        
-            
-            
-            else:
-                pago = pago_reserva_aux(request, form, monto, pago.reserva.estacionamiento)
-                pago.save()
-                return render(
-                    request,
-                    'pago.html',
-                    { "id"      : _id
-                    , "pago"    : pago
-                    , "color"   : "green"
-                    , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
-                    }
-                )
-
-    return render(
-        request,
-        'pago.html',
-        { 'form' : form }
     )
