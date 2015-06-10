@@ -59,7 +59,8 @@ from estacionamientos.models import (
 def propietario_all(request):
     propietarios = Propietario.objects.all()
     estacionamientos = Estacionamiento.objects.all()
-
+    
+    
     # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
         form = PropietarioForm()
@@ -79,6 +80,8 @@ def propietario_all(request):
                 }
             )
 
+        
+
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
         if form.is_valid():
@@ -88,10 +91,13 @@ def propietario_all(request):
                 cedula    = form.cleaned_data['cedula'],
                 telefono1 = form.cleaned_data['telefono_1'],
                 cedulaTipo= form.cleaned_data['cedulaTipo']
-            )     
+            )
+            propietario = None
             try:
+                propietario = Propietario.objects.get(cedula=obj.cedula,cedulaTipo=obj.cedulaTipo)
+            except ObjectDoesNotExist:
                 obj.save()
-            except:
+            if propietario!= None:
                 return render(
                     request, 'template-mensaje.html',
                     { 'color'   : 'red'
@@ -350,8 +356,9 @@ def estacionamiento_edit(request, _id):
         if form.is_valid():
 
             cedula = form.cleaned_data['cedula']
+            cedulaTipo = form.cleaned_data['cedulaTipo']
             try:
-                propietario = Propietario.objects.get(cedula=cedula)
+                propietario = Propietario.objects.get(cedula=cedula, cedulaTipo=cedulaTipo)
                 Estacionamiento.objects.filter(id=_id).update(
                     propietario=propietario
                     )

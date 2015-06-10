@@ -12,9 +12,9 @@ SMAX = 10000
 class Propietario(models.Model):
 	nombres     = models.CharField(max_length = 30)
 	apellidos   = models.CharField(max_length = 30)
-	cedula      = models.CharField(max_length = 12, unique=True)
+	cedula      = models.CharField(max_length = 12)
 	telefono1   = models.CharField(blank = True, null = True, max_length = 30)
-	cedulaTipo = models.CharField(max_length = 1)
+	cedulaTipo  = models.CharField(max_length = 1)
 
 	def __str__(self):
 		return self.nombres+' '+self.apellidos

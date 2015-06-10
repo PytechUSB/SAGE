@@ -15,6 +15,7 @@ encoding//tests/tests_decimal.py=utf-8
 encoding//tests/tests_estacionamiento_form.py=utf-8
 encoding//tests/tests_extended_form.py=utf-8
 encoding//tests/tests_extended_form_controller.py=utf-8
+encoding//tests/tests_extended_form_feriados.py=utf-8
 encoding//tests/tests_integration.py=utf-8
 encoding//tests/tests_marzullo.py=utf-8
 encoding//tests/tests_pago_form.py=utf-8
