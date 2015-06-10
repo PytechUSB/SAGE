@@ -80,8 +80,6 @@ def propietario_all(request):
                 }
             )
 
-        
-
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
         if form.is_valid():
@@ -91,17 +89,14 @@ def propietario_all(request):
                 cedula    = form.cleaned_data['cedula'],
                 telefono1 = form.cleaned_data['telefono_1'],
                 cedulaTipo= form.cleaned_data['cedulaTipo']
-            )
-            propietario = None
+            )     
             try:
-                propietario = Propietario.objects.get(cedula=obj.cedula,cedulaTipo=obj.cedulaTipo)
-            except ObjectDoesNotExist:
                 obj.save()
-            if propietario!= None:
+            except:
                 return render(
                     request, 'template-mensaje.html',
                     { 'color'   : 'red'
-                    , 'mensaje' : 'Cédula ya existente'
+                    , 'mensaje' : 'CÃ©dula ya existente'
                     }
                 )
             # Recargamos los propietarios ya que acabamos de agregar
@@ -141,59 +136,21 @@ def propietario_edit(request, _id):
         form = PropietarioForm(request.POST)
         # Si el formulario es valido
         if form.is_valid():
-            obj = Propietario(
-                nombres   = form.cleaned_data['nombres'],
-                apellidos = form.cleaned_data['apellidos'],
-                cedula    = form.cleaned_data['cedula'],
-                telefono1 = form.cleaned_data['telefono_1'],
-                cedulaTipo= form.cleaned_data['cedulaTipo']
-            )
-            # Chequeamos que esté, si la combinación de la cédula y su tipo no existen 
-            # procedemos a  hacer el cambio en la base de datos. Sino, manda error
-            propietario2 = None
             try:
-                propietario2 = Propietario.objects.get(cedula=obj.cedula,cedulaTipo=obj.cedulaTipo)
-            except ObjectDoesNotExist:
-                
-                try:
-                    Propietario.objects.filter(id=_id).update(
-                    nombres     = form.cleaned_data['nombres'],
-                    apellidos   = form.cleaned_data['apellidos'],
-                    cedula      = form.cleaned_data['cedula'],
-                    telefono1   = form.cleaned_data['telefono_1'],
-                    cedulaTipo  = form.cleaned_data['cedulaTipo']
-                    )
-                except:
-                    return render(
-                        request, 'template-mensaje.html',
-                        { 'color'   : 'red'
-                        , 'mensaje' : 'Cédula ya existente'
-                        }
-                    ) 
-            if propietario2!= None:
-                if propietario2.id==_id:
-                    try:
-                        Propietario.objects.filter(id=_id).update(
-                        nombres     = form.cleaned_data['nombres'],
-                        apellidos   = form.cleaned_data['apellidos'],
-                        cedula      = form.cleaned_data['cedula'],
-                        telefono1   = form.cleaned_data['telefono_1'],
-                        cedulaTipo  = form.cleaned_data['cedulaTipo']
-                        )
-                    except:
-                        return render(
-                            request, 'template-mensaje.html',
-                            { 'color'   : 'red'
-                            , 'mensaje' : 'Cédula ya existente'
-                            }
-                        )
-                else:
-                    return render(
-                        request, 'template-mensaje.html',
-                        { 'color'   : 'red'
-                        , 'mensaje' : 'Cédula ya existente'
-                        }
-                    )
+                Propietario.objects.filter(id=_id).update(
+                nombres     = form.cleaned_data['nombres'],
+                apellidos   = form.cleaned_data['apellidos'],
+                cedula      = form.cleaned_data['cedula'],
+                telefono1   = form.cleaned_data['telefono_1'],
+                cedulaTipo  =form.cleaned_data['cedulaTipo']
+            )
+            except:
+                return render(
+                    request, 'template-mensaje.html',
+                    { 'color'   : 'red'
+                    , 'mensaje' : 'CÃ©dula ya existente'
+                    }
+                ) 
     propietario = Propietario.objects.get(id=_id)
     return render(
         request,

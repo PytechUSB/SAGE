@@ -87,6 +87,11 @@ def crearEstacionamiento(nomb, dir , rif, propietario, tlf1=None,tlf2=None,tlf3=
             
 
 def modificarPropietario(cts,cedsearch, nomb, apell, ct, cedul, tlf1=None):
+    try:
+        Propietario.objects.get(cedula= cedsearch,cedulaTipo=cts)
+    except:
+        return False
+                   
     form_data_buscar = {
             'nombres': 'asd',
             'apellidos': 'asd',
@@ -103,48 +108,22 @@ def modificarPropietario(cts,cedsearch, nomb, apell, ct, cedul, tlf1=None):
         }
     form1 = PropietarioForm(data = form_data_buscar)
     form2 = PropietarioForm(data = form_data_modif)
-    
             
     if (form1.is_valid()) and (form2.is_valid()) :
-        
-        propietario = None
+        x = False
         try:
-            propietario = Propietario.objects.get(cedula=cedul,cedulaTipo=ct)
-        except ObjectDoesNotExist:
-            if Propietario.objects.filter(cedula= cedsearch, cedulaTipo=cts)==[]:
-                return False       
-            try:                
-                with transaction.atomic():        
-                    Propietario.objects.filter(cedula= cedsearch, cedulaTipo=cts).update(
-                        nombres     = form2.cleaned_data['nombres'],
-                        apellidos   = form2.cleaned_data['apellidos'],
-                        cedula      = form2.cleaned_data['cedula'],
-                        telefono1   = form2.cleaned_data['telefono_1'],
-                        cedulaTipo  = form2.cleaned_data['cedulaTipo']
-                        )
-                return True
-            except:
-                return False
-                        
-        if propietario != None:
-            if cedsearch==cedul and ct==cts:
-                if Propietario.objects.filter(cedula= cedsearch, cedulaTipo=cts)==[]:
-                    return False
-                try:
-                    
-                    with transaction.atomic():        
-                        Propietario.objects.filter(cedula= cedsearch, cedulaTipo=cts).update(
-                        nombres     = form2.cleaned_data['nombres'],
-                        apellidos   = form2.cleaned_data['apellidos'],
-                        cedula      = form2.cleaned_data['cedula'],
-                        telefono1   = form2.cleaned_data['telefono_1'],
-                        cedulaTipo  = form2.cleaned_data['cedulaTipo']
-                        )
-                    return True
-                except:
-                    return False
-            else:        
-                return False
+            with transaction.atomic():        
+                Propietario.objects.filter(cedula= cedsearch,cedulaTipo=cts).update(
+                    nombres     = form2.cleaned_data['nombres'],
+                    apellidos   = form2.cleaned_data['apellidos'],
+                    cedula      = form2.cleaned_data['cedula'],
+                    cedulaTipo  = form2.cleaned_data['cedulaTipo'],
+                    telefono1   = form2.cleaned_data['telefono_1']
+                )
+                x = True
+        except:
+            pass 
+        return x
     return False
 
 def cambiarPropietario(estacionamiento,ct,cedul):
