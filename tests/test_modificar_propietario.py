@@ -10,6 +10,8 @@ from django.db import transaction
 
 from django.db.utils import IntegrityError
 
+from django.core.exceptions import ObjectDoesNotExist
+
 
 ###################################################################
 
@@ -101,27 +103,48 @@ def modificarPropietario(cts,cedsearch, nomb, apell, ct, cedul, tlf1=None):
         }
     form1 = PropietarioForm(data = form_data_buscar)
     form2 = PropietarioForm(data = form_data_modif)
-    props = Propietario.objects.all()
+    
             
     if (form1.is_valid()) and (form2.is_valid()) :
-        x = False
-        for obj in props:        
-            if ((obj.cedula==cedsearch) and (obj.cedulaTipo==cts)):
+        
+        propietario = None
+        try:
+            propietario = Propietario.objects.get(cedula=cedul,cedulaTipo=ct)
+        except ObjectDoesNotExist:
+            if Propietario.objects.filter(cedula= cedsearch, cedulaTipo=cts)==[]:
+                return False       
+            try:                
+                with transaction.atomic():        
+                    Propietario.objects.filter(cedula= cedsearch, cedulaTipo=cts).update(
+                        nombres     = form2.cleaned_data['nombres'],
+                        apellidos   = form2.cleaned_data['apellidos'],
+                        cedula      = form2.cleaned_data['cedula'],
+                        telefono1   = form2.cleaned_data['telefono_1'],
+                        cedulaTipo  = form2.cleaned_data['cedulaTipo']
+                        )
+                return True
+            except:
+                return False
+                        
+        if propietario != None:
+            if cedsearch==cedul and ct==cts:
+                if Propietario.objects.filter(cedula= cedsearch, cedulaTipo=cts)==[]:
+                    return False
                 try:
+                    
                     with transaction.atomic():        
                         Propietario.objects.filter(cedula= cedsearch, cedulaTipo=cts).update(
-                            nombres     = form2.cleaned_data['nombres'],
-                            apellidos   = form2.cleaned_data['apellidos'],
-                            cedula      = form2.cleaned_data['cedula'],
-                            telefono1   = form2.cleaned_data['telefono_1'],
-                            cedulaTipo  = form2.cleaned_data['cedulaTipo']
+                        nombres     = form2.cleaned_data['nombres'],
+                        apellidos   = form2.cleaned_data['apellidos'],
+                        cedula      = form2.cleaned_data['cedula'],
+                        telefono1   = form2.cleaned_data['telefono_1'],
+                        cedulaTipo  = form2.cleaned_data['cedulaTipo']
                         )
-                        x = True
+                    return True
                 except:
-                    pass 
-                finally:
-                    break
-        return x
+                    return False
+            else:        
+                return False
     return False
 
 def cambiarPropietario(estacionamiento,ct,cedul):

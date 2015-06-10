@@ -122,41 +122,78 @@ def propietario_edit(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
     try:
-        propietario = Propietario.objects.get(id=_id)
+        propietario1 = Propietario.objects.get(id=_id)
     except ObjectDoesNotExist:
         raise Http404
 
     if request.method == 'GET':
         form_data = {
-            'nombres'   : propietario.nombres,
-            'apellidos' : propietario.apellidos,
-            'cedula'    : propietario.cedula,
-            'telefono1' : propietario.telefono1, 
-            'cedulaTipo': propietario.cedulaTipo
+            'nombres'   : propietario1.nombres,
+            'apellidos' : propietario1.apellidos,
+            'cedula'    : propietario1.cedula,
+            'telefono1' : propietario1.telefono1, 
+            'cedulaTipo': propietario1.cedulaTipo
         }
         form = PropietarioForm(data=form_data)
 
     elif request.method == 'POST':
         # Leemos el formulario
         form = PropietarioForm(request.POST)
-        # Si el formulario
+        # Si el formulario es valido
         if form.is_valid():
-            try:
-                Propietario.objects.filter(id=_id).update(
-                nombres     = form.cleaned_data['nombres'],
-                apellidos   = form.cleaned_data['apellidos'],
-                cedula      = form.cleaned_data['cedula'],
-                telefono1   = form.cleaned_data['telefono_1'],
-                cedulaTipo  =form.cleaned_data['cedulaTipo']
+            obj = Propietario(
+                nombres   = form.cleaned_data['nombres'],
+                apellidos = form.cleaned_data['apellidos'],
+                cedula    = form.cleaned_data['cedula'],
+                telefono1 = form.cleaned_data['telefono_1'],
+                cedulaTipo= form.cleaned_data['cedulaTipo']
             )
-            except:
-                return render(
-                    request, 'template-mensaje.html',
-                    { 'color'   : 'red'
-                    , 'mensaje' : 'Cédula ya existente'
-                    }
-                ) 
-    
+            # Chequeamos que esté, si la combinación de la cédula y su tipo no existen 
+            # procedemos a  hacer el cambio en la base de datos. Sino, manda error
+            propietario2 = None
+            try:
+                propietario2 = Propietario.objects.get(cedula=obj.cedula,cedulaTipo=obj.cedulaTipo)
+            except ObjectDoesNotExist:
+                
+                try:
+                    Propietario.objects.filter(id=_id).update(
+                    nombres     = form.cleaned_data['nombres'],
+                    apellidos   = form.cleaned_data['apellidos'],
+                    cedula      = form.cleaned_data['cedula'],
+                    telefono1   = form.cleaned_data['telefono_1'],
+                    cedulaTipo  = form.cleaned_data['cedulaTipo']
+                    )
+                except:
+                    return render(
+                        request, 'template-mensaje.html',
+                        { 'color'   : 'red'
+                        , 'mensaje' : 'Cédula ya existente'
+                        }
+                    ) 
+            if propietario2!= None:
+                if propietario2.id==_id:
+                    try:
+                        Propietario.objects.filter(id=_id).update(
+                        nombres     = form.cleaned_data['nombres'],
+                        apellidos   = form.cleaned_data['apellidos'],
+                        cedula      = form.cleaned_data['cedula'],
+                        telefono1   = form.cleaned_data['telefono_1'],
+                        cedulaTipo  = form.cleaned_data['cedulaTipo']
+                        )
+                    except:
+                        return render(
+                            request, 'template-mensaje.html',
+                            { 'color'   : 'red'
+                            , 'mensaje' : 'Cédula ya existente'
+                            }
+                        )
+                else:
+                    return render(
+                        request, 'template-mensaje.html',
+                        { 'color'   : 'red'
+                        , 'mensaje' : 'Cédula ya existente'
+                        }
+                    )
     propietario = Propietario.objects.get(id=_id)
     return render(
         request,
