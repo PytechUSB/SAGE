@@ -53,6 +53,7 @@ from estacionamientos.models import (
     TarifaFinDeSemana,
     TarifaHoraPico, 
     Cancelaciones)
+from setuptools.unicode_utils import try_encode
 
 # Vista para procesar los propietarios
 def propietario_all(request):
@@ -81,6 +82,8 @@ def propietario_all(request):
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
         if form.is_valid():
+            cedula=form.cleaned_data['cedula'],
+            cedulaTipo=form.cleaned_data['cedulaTipo']
             obj = Propietario(
                 nombres=form.cleaned_data['nombres'],
                 apellidos=form.cleaned_data['apellidos'],
@@ -89,14 +92,16 @@ def propietario_all(request):
                 cedulaTipo=form.cleaned_data['cedulaTipo']
             )     
             try:
-                obj.save()
-            except:
+                prop=Propietario.objects.get(cedula=cedula[0],cedulaTipo=cedulaTipo)
                 return render(
                     request, 'template-mensaje.html',
                     { 'color'   : 'red'
                     , 'mensaje' : 'Cédula ya existente'
                     }
                 )
+            except:
+                obj.save()
+                
             # Recargamos los propietarios ya que acabamos de agregar
             propietarios = Propietario.objects.all()
             form = PropietarioForm()
@@ -135,13 +140,25 @@ def propietario_edit(request, _id):
         # Si el formulario
         if form.is_valid():
             try:
-                Propietario.objects.filter(id=_id).update(
-                nombres     = form.cleaned_data['nombres'],
-                apellidos   = form.cleaned_data['apellidos'],
                 cedula      = form.cleaned_data['cedula'],
-                telefono1   = form.cleaned_data['telefono_1'],
-                cedulaTipo  =form.cleaned_data['cedulaTipo']
-            )
+                cedulaTipo  = form.cleaned_data['cedulaTipo']
+                error=False
+                try:
+                    prop2=Propietario.objects.get(cedula=cedula[0],cedulaTipo=cedulaTipo)
+                    print(prop2==propietario)
+                    if prop2!=propietario:
+                        error=True
+                        raise Exception
+                except:
+                    if error:
+                        raise Exception
+                Propietario.objects.filter(id=_id).update(
+                    nombres     = form.cleaned_data['nombres'],
+                    apellidos   = form.cleaned_data['apellidos'],
+                    cedula      = form.cleaned_data['cedula'],
+                    telefono1   = form.cleaned_data['telefono_1'],
+                    cedulaTipo  =form.cleaned_data['cedulaTipo']
+                )
             except:
                 return render(
                     request, 'template-mensaje.html',
@@ -346,10 +363,10 @@ def estacionamiento_edit(request, _id):
     if request.method == 'POST':
         form = CedulaForm(request.POST)
         if form.is_valid():
-
+            cedulaT = form.cleaned_data['cedulaTipo']
             cedula = form.cleaned_data['cedula']
             try:
-                propietario = Propietario.objects.get(cedula=cedula)
+                propietario = Propietario.objects.get(cedula=cedula,cedulaTipo=cedulaT)
                 Estacionamiento.objects.filter(id=_id).update(
                     propietario=propietario
                     )

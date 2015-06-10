@@ -109,7 +109,7 @@ def modificarPropietario(cts,cedsearch, nomb, apell, ct, cedul, tlf1=None):
             if ((obj.cedula==cedsearch) and (obj.cedulaTipo==cts)):
                 try:
                     with transaction.atomic():        
-                        Propietario.objects.filter(cedula= cedsearch).update(
+                        Propietario.objects.filter(cedula=cedsearch,cedulatipo=cts).update(
                             nombres     = form2.cleaned_data['nombres'],
                             apellidos   = form2.cleaned_data['apellidos'],
                             cedula      = form2.cleaned_data['cedula'],
