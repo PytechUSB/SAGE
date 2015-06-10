@@ -292,6 +292,18 @@ class PuestosForm(forms.Form):
             }
         )
     )
+    
+    def clean(self):
+        cleaned_data = super(PuestosForm, self).clean()
+        sumaPuestos=0
+        for name in self.fields:
+            if type(cleaned_data.get(name))==type(1):
+                sumaPuestos+=cleaned_data.get(name)
+        if (sumaPuestos)==0:
+            raise forms.ValidationError("Debe haber al menos un puesto.")
+        return cleaned_data   
+    
+    
 class EstacionamientoExtendedForm(forms.Form):
     
     tarifa_validator = RegexValidator(

@@ -324,7 +324,7 @@ def estacionamiento_detail(request, _id):
             estacionamiento.capacidad_M = request.POST['motos']
             estacionamiento.capacidad_D = request.POST['discapacitados']
             estacionamiento.save()
-            
+        else: print("No es valida")   
     estacionamiento = Estacionamiento.objects.get(id=_id)    
     return render(
         request,

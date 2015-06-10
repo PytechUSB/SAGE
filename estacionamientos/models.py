@@ -7,6 +7,7 @@ from decimal import Decimal, ROUND_DOWN
 from datetime import timedelta, datetime
 from django.db.models.fields import IntegerField
 from django.db.models.fields.related import ForeignKey
+from django.template.defaultfilters import default
 SMAX = 10000
 
 class Propietario(models.Model):
@@ -50,13 +51,13 @@ class Estacionamiento(models.Model):
 	cierre       = models.TimeField(blank = True, null = True)
 	
 	#capacidad para vechiculos personales
-	capacidad    = models.IntegerField(blank = True, null = True)
+	capacidad    = models.IntegerField(blank = True, null = True, default=0)
 	#capacidad para motos
-	capacidad_M   = models.IntegerField(blank = True, null = True)
+	capacidad_M   = models.IntegerField(blank = True, null = True, default=0)
 	#capacidad para camiones de carga
-	capacidad_C   = models.IntegerField(blank = True, null = True)
+	capacidad_C   = models.IntegerField(blank = True, null = True, default=0)
 	#capacidad para vehiculos de discapacitados
-	capacidad_D   = models.IntegerField(blank = True, null = True)
+	capacidad_D   = models.IntegerField(blank = True, null = True, default=0)
 
 	#retorna la capacidd del estacionamiento segun el tipo de vehiculo
 	def obtenerCapacidad(self, tipoDeVehiculo):
