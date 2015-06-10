@@ -39,18 +39,7 @@ class PuestosFormTestCase(TestCase):
         self.assertFalse(form.is_valid())
 
     #tdd
-    def test_Tres_Campos(self):
-        form_data = {
-            'particulares': 9,
-            'motos'	: 8,
-            'camiones': 2,
-            'discapacitados': 5
-        }
-        form = PuestosForm(data = form_data)
-        self.assertTrue(form.is_valid())
-
-    #tdd
-    def test_Tres_Campos(self):
+    def test_Todos_Los_Campos(self):
         form_data = {
             'particulares': 9,
             'motos'	: 8,
@@ -149,7 +138,7 @@ class PuestosFormTestCase(TestCase):
         self.assertTrue(form.is_valid())
 
     #esquina
-    def test_Ningun_Vehiculo(self):
+    def test_Cero_Puestos(self):
         form_data = {
             'particulares': 0,
             'motos'	: 0,
