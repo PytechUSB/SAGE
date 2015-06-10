@@ -141,16 +141,14 @@ class Pago(models.Model):
 	monto            = models.DecimalField(decimal_places = 2, max_digits = 256)
 	reserva          = models.ForeignKey(Reserva)
 	cancelado 		 = models.BooleanField(default = False)
-	FacturaMovida	 = models.ForeignKey("self", null = True, blank = True)
+	facturaMovida	 = models.ForeignKey("self", null = True, blank = True)
 	
 	def __str__(self):
 		return str(self.id)+" "+str(self.reserva.estacionamiento.nombre)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
 	
 	def cancelar_reserva(self):
-		if self.validar_cancelacion(datetime.now()):
-			self.cancelado = True
-			self.save()
-		
+		self.cancelado = True
+		self.save()
 		
 	def validar_cancelacion(self, tiempo):
 		if ((tiempo < self.reserva.inicioReserva) and (not self.cancelado)):

@@ -503,7 +503,7 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-def pago_reserva_aux(request, form, monto, estacionamiento, idFacturaReservaMovida):
+def pago_reserva_aux(request, monto, estacionamiento, idFacturaReservaMovida, form = None):
     inicioReserva = datetime(
         year   = request.session['anioinicial'],
         month  = request.session['mesinicial'],
@@ -542,15 +542,16 @@ def pago_reserva_aux(request, form, monto, estacionamiento, idFacturaReservaMovi
         )
         
     else:
+        pagoAnterior = Pago.objects.get(pk = idFacturaReservaMovida)
         pago = Pago(
             id = asigna_id_unico(),
             fechaTransaccion = datetime.now(),
-            cedula           = form.cleaned_data['cedula'],
-            cedulaTipo       = form.cleaned_data['cedulaTipo'],
+            cedula           = pagoAnterior.cedula,
+            cedulaTipo       = pagoAnterior.cedulaTipo,
             monto            = monto,
-            tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
+            tarjetaTipo      = pagoAnterior.tarjetaTipo,
             reserva          = reservaFinal,
-            idFacturaMovida  = Pago.objects.get(pk = idFacturaReservaMovida)
+            facturaMovida    = pagoAnterior
         )
 
     return pago
@@ -594,10 +595,10 @@ def estacionamiento_pago(request, _id, idFacturaReservaMovida = None):
                     else:
                         pago = pago_reserva_aux(
                             request, 
-                            form, 
                             monto, 
                             estacionamiento, 
-                            idFacturaReservaMovida
+                            idFacturaReservaMovida,
+                            form
                         )
                         pago.save()
                         billeteraE.consumir_saldo(monto)
@@ -629,11 +630,11 @@ def estacionamiento_pago(request, _id, idFacturaReservaMovida = None):
             
             else:
                 pago = pago_reserva_aux(
-                            request, 
-                            form, 
+                            request,
                             monto, 
                             estacionamiento, 
-                            idFacturaReservaMovida
+                            idFacturaReservaMovida,
+                            form
                 )
                 
                 pago.save()
@@ -1032,7 +1033,7 @@ def validar_reserva(request, link = ''):
           }
     )
     
-def validar_billetera(request, id_pago):
+def validar_billetera(request, id_pago, link = ''):
     id_pago = int(id_pago)
     
     try:
@@ -1048,7 +1049,7 @@ def validar_billetera(request, id_pago):
             billetera = billetera_autenticar(int(form.cleaned_data['ID']), form.cleaned_data['Pin'])
             if (billetera != None):
                 if(billetera.validar_recarga(pago.monto)):
-                    direccion = "/estacionamientos/" + str(pago.id) + "/" + str(billetera.id) + "/cancelar_reserva"
+                    direccion = "/estacionamientos/" + str(pago.id) + "/" + str(billetera.id) + "/" + link
                     return HttpResponseRedirect(direccion)
                     
                 else:
@@ -1220,7 +1221,7 @@ def mover_reserva(request, id_pago):
                 request.session['mesfinal']     = finalReserva.month
                 request.session['diafinal']     = finalReserva.day
                 
-                if monto > 0:
+                if monto < 0:
                     return render(
                         request,
                         'confirmar-mover.html',
@@ -1262,3 +1263,32 @@ def mover_reserva(request, id_pago):
         , 'estacionamiento': estacionamiento
         }
     )
+    
+def recarga_mover(request, id_pago, id_billetera):
+    id_pago = int(id_pago)
+    id_billetera = int(id_billetera)
+    
+    try:
+        pago = Pago.objects.get(pk = id_pago)
+        billetera = BilleteraElectronica.objects.get(id_billetera)
+        
+    except:
+        raise Http404
+    
+    estacionamiento = pago.reserva.estacionamiento
+    monto = request.session['monto']
+    pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, id_pago)
+    pago_movido.save()
+    billetera.recargar_saldo(monto)
+    pago.cancelar_reserva()
+    
+    
+    return render(
+        request,
+        'pago-mover.html',
+        { "pago"    : pago_movido
+        , "color"   : "green"
+        , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+        }
+    )
+    
