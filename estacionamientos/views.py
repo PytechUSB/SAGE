@@ -19,7 +19,7 @@ from estacionamientos.controller import (
     validarHorarioReserva,
     marzullo,
     hitenmarzurulli,
-    cruceEsquema,
+    calcularMonto,
     get_client_ip,
     tasa_reservaciones,
     calcular_porcentaje_de_tasa,
@@ -435,7 +435,7 @@ def estacionamiento_reserva(request, _id):
                 print(inicioReserva)
 
                 #calcula el monto a pagar
-                monto = Decimal(cruceEsquema(estacionamiento.id, inicioReserva, finalReserva))
+                monto = Decimal(calcularMonto(estacionamiento.id, inicioReserva, finalReserva))
                 request.session['monto'] = float(monto)
                 
                 request.session['vehiculoTipo']        = vehiculoTipo

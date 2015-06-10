@@ -35,7 +35,7 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre):
 			return (False, 'No puede haber reservas entre dos dias distintos')
 		return (True,'')
 
-def cruceEsquema(idEstacionamiento, hIn, hOut):
+def calcularMonto(idEstacionamiento, hIn, hOut):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
 	monto  = 0
 	inicio = hIn
@@ -57,52 +57,6 @@ def cruceEsquema(idEstacionamiento, hIn, hOut):
 		else:
 			final += timedelta(days=1)
 	return monto
-
-def hitenmarzurulli(idEstacionamiento, hIn, hOut):
-	""" Siempre se llamara en reservas entre días"""
-	e = Estacionamiento.objects.get(id = idEstacionamiento)
-	monto = 0
-	completo=False
-	hora=timedelta(hours=1)
-	inicio=hIn
-	while hIn<hOut:
-		if (inicio.days!=(hIn+hora).days): # Aviso de cambio de dia
-			esInicioFeriado=str(inicio.date()) in e.feriados
-			if esInicioFeriado^(str(hIn.date()) in e.feriados): #Ambas son distintas
-				if hIn+hora>hOut: #Vemos si se pasa de la hora
-					if (60-hIn.time().minute)>=hOut.time().minute:
-						#se cobra la primera tarifa
-						if esInicioFeriado:
-							monto+=e.tarifaFeriados.calcularPrecio(inicio,hOut)
-						else: monto+=e.tarifa.calcularPrecio(inicio,hOut)
-					else:
-						#se cobra la segunda tarifa
-						if not esInicioFeriado:
-							monto+=e.tarifaFeriados.calcularPrecio(inicio,hOut)
-						else: monto+=e.tarifa.calcularPrecio(inicio,hOut)
-					completo=True
-				else:
-					if hIn.time().minute<30:
-						#se cobra la primera tarifa
-						if esInicioFeriado:
-							monto+=e.tarifaFeriados.calcularPrecio(inicio,hIn+hora)
-						else: monto+=e.tarifa.calcularPrecio(inicio,hIn+hora)
-					else:
-						#se cobra la segunda tarifa
-						if not esInicioFeriado:
-							monto+=e.tarifaFeriados.calcularPrecio(inicio,hIn+hora)
-						else: monto+=e.tarifa.calcularPrecio(inicio,hIn+hora)
-				
-				inicio=hIn+hora
-		hIn+=hora
-	if not completo: #Otro problema de cruce
-		esInicioFeriado=str(inicio.date()) in e.feriados
-		if esInicioFeriado:
-			monto+=e.tarifaFeriados.calcularPrecio(inicio,hOut)
-		else: monto+=e.tarifa.calcularPrecio(inicio,hOut)
-		
-	return monto
-# 22:40 - 00:30
 
 def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular'):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
