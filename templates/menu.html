@@ -22,7 +22,7 @@
     <li><a href="/estacionamientos/validar_reserva" onClick="return popup(this, 'Validar Reservacion')"><i class="fa fa-times"></i>
       Cancelar Reservación
     </a></li>
-    {% if estacionamiento.capacidad or estacionamiento.capacidad_M or estacionamiento.capacidad_C or estacionamiento.capacidad_D and estacionamiento.tarifa %}
+    {% if estacionamiento.capacidad and estacionamiento.tarifa %}
       <li><a href="./"><i class="fa fa-wrench"></i>
         Parametrizar
       </a></li>
