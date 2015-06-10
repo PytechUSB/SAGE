@@ -40,7 +40,8 @@ from estacionamientos.forms import (
     authBilleteraForm,
     CancelaReservaForm,
     MoverReservaForm,
-    PuestosForm)
+    PuestosForm
+)
 
 from estacionamientos.models import (
     Propietario,
@@ -503,7 +504,7 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-def pago_reserva_aux(request, monto, estacionamiento, idFacturaReservaMovida, form = None):
+def pago_reserva_aux(request, monto, estacionamiento, idFacturaReservaMovida = None, form = None):
     inicioReserva = datetime(
         year   = request.session['anioinicial'],
         month  = request.session['mesinicial'],
@@ -557,7 +558,7 @@ def pago_reserva_aux(request, monto, estacionamiento, idFacturaReservaMovida, fo
     return pago
 
 
-def estacionamiento_pago(request, _id, idFacturaReservaMovida = None):
+def estacionamiento_pago(request, _id):
     form = PagoForm()
     
     try:
@@ -596,8 +597,7 @@ def estacionamiento_pago(request, _id, idFacturaReservaMovida = None):
                         pago = pago_reserva_aux(
                             request, 
                             monto, 
-                            estacionamiento, 
-                            idFacturaReservaMovida,
+                            estacionamiento,
                             form
                         )
                         pago.save()
@@ -632,8 +632,7 @@ def estacionamiento_pago(request, _id, idFacturaReservaMovida = None):
                 pago = pago_reserva_aux(
                             request,
                             monto, 
-                            estacionamiento, 
-                            idFacturaReservaMovida,
+                            estacionamiento,
                             form
                 )
                 
@@ -1059,7 +1058,7 @@ def validar_billetera(request, id_pago, link = ''):
                         { 'color' : 'red'
                         , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
                         , 'mensaje2' : '1) Presione volver e ingrese una billetera diferente'
-                        , 'mensaje3' : '2) Cree una nueva billetera'
+                        , 'mensaje3' : '2) Cree una nueva billetera e intentelo de nuevo'
                         }
                     )
                     
@@ -1196,7 +1195,7 @@ def mover_reserva(request, id_pago):
                         estacionamiento.tarifaFeriados.calcularPrecio(
                             inicioReserva, finalReserva
                         )
-                    )
+                    ).quantize(Decimal('1.00'))
 
                 #monto de la tarifa en dia normal
                 else:
@@ -1204,7 +1203,7 @@ def mover_reserva(request, id_pago):
                         estacionamiento.tarifa.calcularPrecio(
                             inicioReserva, finalReserva
                         )
-                    )
+                    ).quantize(Decimal('1.00'))
                 
                 monto = Decimal(monto - pago.monto)
                 
@@ -1239,7 +1238,7 @@ def mover_reserva(request, id_pago):
                         request,
                         'confirmar-mover.html',
                         { 'id'      : pago.id
-                        , 'monto'   : -monto
+                        , 'monto'   : monto
                         , 'reserva' : reservaFinal
                         , 'color'   : 'green'
                         , 'mensaje' : 'Existe un puesto disponible'
@@ -1275,20 +1274,166 @@ def recarga_mover(request, id_pago, id_billetera):
     except:
         raise Http404
     
-    estacionamiento = pago.reserva.estacionamiento
-    monto = request.session['monto']
-    pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, id_pago)
-    pago_movido.save()
-    billetera.recargar_saldo(monto)
+    montoARecargar = request.session['monto']
+    cancelacion = Cancelaciones(
+        id = asigna_id_unico(),
+        pagoCancelado = pago,
+        billetera = billetera,
+        monto = montoARecargar,
+        fechaTransaccion = datetime.now()    
+    )
+    cancelacion.save()
     pago.cancelar_reserva()
+    billetera.recargar_saldo(montoARecargar)
+    estacionamiento = pago.reserva.estacionamiento
+    pago_movido = pago_reserva_aux(request, pago.monto - montoARecargar, estacionamiento, id_pago)
+    pago_movido.save()
     
     
     return render(
         request,
         'pago-mover.html',
-        { "pago"    : pago_movido
-        , "color"   : "green"
-        , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+        { 'pago'    : pago_movido
+        , 'id_billetera' : id_billetera
+        , 'id_pago_anterior' : id_pago
+        , 'monto' : montoARecargar
+        , 'color'   : 'green'
+        , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
         }
+    )
+    
+def pago_mover(request, id_pago, id_billetera):
+    idFacturaReservaMovida = int(id_pago)
+    
+    try:
+        pago = Pago.objects.get(pk = idFacturaReservaMovida)
+        estacionamiento = pago.reserva.estacionamiento
+        billetera = BilleteraElectronica.objects.get(pk = id_billetera)   
+    except:
+        raise Http404
+    
+    if (estacionamiento.apertura is None):
+        return HttpResponse(status = 403) # No esta permitido acceder a esta vista aun
+    
+    if ((request.method == 'GET') and (request.session['monto'] == 0)):
+        cancelacion = Cancelaciones(
+            id = asigna_id_unico(),
+            pagoCancelado = pago,
+            billetera = billetera,
+            monto = 0,
+            fechaTransaccion = datetime.now()    
+        )
+        cancelacion.save()
+        pago.cancelar_reserva()
+        estacionamiento = pago.reserva.estacionamiento
+        pago_movido = pago_reserva_aux(request, pago.monto, estacionamiento, id_pago)
+        pago_movido.save()
+        
+        return render(
+            request,
+            'pago-mover.html',
+            { 'pago'    : pago_movido
+            , 'id_pago_anterior' : id_pago
+            , 'color'   : 'green'
+            , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
+            }
+        )
+        
+    
+    form = PagoForm()
+    
+    if request.method == 'POST':
+        form = PagoForm(request.POST)
+        if form.is_valid():
+            monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+            if (form.cleaned_data['tarjetaTipo'] == 'Billetera Electronica'):
+                billeteraE = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
+                
+                if (billeteraE == None):
+                    return render(
+                        request, 'mensaje.html',
+                        {'color' : 'red'
+                        , 'mensaje' : 'Autenticacion Denegada'
+                        }
+                    )
+                    
+                else:
+                    if(not billeteraE.validar_consumo(monto)):
+                        return render(
+                            request, 'mensaje.html',
+                            {'color' : 'red'
+                            , 'mensaje' : 'Saldo Insuficiente'
+                            }
+                        ) 
+                        
+                    else:
+                        cancelacion = Cancelaciones(
+                            id = asigna_id_unico(),
+                            pagoCancelado = pago,
+                            billetera = billetera,
+                            monto = 0,
+                            fechaTransaccion = datetime.now()    
+                        )
+                        cancelacion.save()
+                        pago.cancelar_reserva()
+                        estacionamiento = pago.reserva.estacionamiento
+                        pago_movido = pago_reserva_aux(request, pago.monto, estacionamiento, id_pago)
+                        pago_movido.save()
+                        billeteraE.consumir_saldo(monto)
+                        
+                        if (billeteraE.saldo == 0):
+                            return render(
+                                request,
+                                'pago-mover.html',
+                                { 'pago'    : pago_movido
+                                , 'id_pago_anterior' : id_pago
+                                , 'color'   : 'green'
+                                , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
+                                , 'color2'  : 'red'
+                                , 'mensaje2': 'Se recomienda recargar la billetera.'
+                                }
+                            )
+                            
+                        else:
+                            return render(
+                                request,
+                                'pago-mover.html',
+                                { 'pago'    : pago_movido
+                                , 'id_pago_anterior' : id_pago
+                                , 'color'   : 'green'
+                                , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
+                                }
+                            )
+                        
+            
+            
+            else:
+                cancelacion = Cancelaciones(
+                    id = asigna_id_unico(),
+                    pagoCancelado = pago,
+                    billetera = billetera,
+                    monto = 0,
+                    fechaTransaccion = datetime.now()    
+                )
+                cancelacion.save()
+                pago.cancelar_reserva()
+                estacionamiento = pago.reserva.estacionamiento
+                pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, id_pago)
+                pago_movido.save()
+                
+                return render(
+                    request,
+                    'pago-mover.html',
+                    { 'pago'    : pago_movido
+                    , 'id_pago_anterior' : id_pago
+                    , 'color'   : 'green'
+                    , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
+                    }
+                )
+
+    return render(
+        request,
+        'pago-mover.html',
+        { 'form' : form }
     )
     
