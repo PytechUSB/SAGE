@@ -57,16 +57,16 @@ class Estacionamiento(models.Model):
 
 	#retorna la capacidd del estacionamiento segun el tipo de vehiculo
 	def obtenerCapacidad(self, tipoDeVehiculo):
+		puestos = 0
 		if tipoDeVehiculo == "Particular":
-			capacidad = self.capacidad
+			puestos  = self.capacidad
 		elif tipoDeVehiculo == "Moto":
-			capacidad = self.capacidad_M
+			puestos  = self.capacidad_M
 		elif tipoDeVehiculo == "Camion":
-			capacidad = self.capacidad_C
-		elif tipoDeVehiculo == "Dicapacitado":
-			capacidad = self.capacidad_D
-			
-		return capacidad
+			puestos  = self.capacidad_C
+		elif tipoDeVehiculo == "Discapacitado":
+			puestos  = self.capacidad_D
+		return puestos 
 	
 	def __str__(self):
 		return self.nombre+' '+str(self.id)

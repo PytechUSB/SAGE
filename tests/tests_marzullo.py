@@ -8,8 +8,8 @@ from estacionamientos.controller import marzullo
 
 from estacionamientos.models import (
     Estacionamiento,
-    Reserva
-, Propietario)
+    Reserva, 
+    Propietario)
 
 ###############################################################################
 # Marzullo
@@ -87,6 +87,18 @@ class MarzulloTestCase(TestCase):
         e = self.crear_estacionamiento(1)
         self.assertTrue(marzullo(e.id, datetime(2015,1,20,9), datetime(2015,1,20,15)))
 
+    def testReservarUnPuestoParaMoto(self): #borde, ocupacion = capacidad para motos
+        e = self.crear_estacionamiento(0,1)
+        self.assertTrue(marzullo(e.id, datetime(2015,1,20,9), datetime(2015,1,20,15),'Moto'))
+
+    def testReservarUnPuestoParaDiscapacitado(self): #borde, ocupacion = capacidad para Discapacitado
+        e = self.crear_estacionamiento(0,0,1)
+        self.assertTrue(marzullo(e.id, datetime(2015,1,20,9), datetime(2015,1,20,15),'Discapacitado'))
+
+    def testReservarUnPuestoParaCamion(self): #borde, ocupacion = capacidad para Camions
+        e = self.crear_estacionamiento(0,0,0,1)
+        self.assertTrue(marzullo(e.id, datetime(2015,1,20,9), datetime(2015,1,20,15),'Camion'))
+
     def testOneReservationEarly(self): #borde, inicio = aprtura
         e = self.crear_estacionamiento(2)
         self.assertTrue(marzullo(e.id, datetime(2015,1,20,6), datetime(2015,1,20,10)))
@@ -116,7 +128,23 @@ class MarzulloTestCase(TestCase):
             Reserva(estacionamiento = e, inicioReserva = datetime(2015, 1, 20, 6+i), finalReserva = datetime(2015, 1, 20, 7+i),vehiculoTipo = 'Particular').save()
         self.assertFalse(marzullo(e.id, datetime(2015, 1, 20, 6), datetime(2015, 1, 20, 18)))
 
-    def testNoSpotParking(self): #borde, capacidad = 0
+    def testReservarNoPuestoParaParticular(self): #borde, capacidad para motos = 0
+        e = self.crear_estacionamiento(0,2,3,4)
+        self.assertFalse(marzullo(e.id, datetime(2015,1,20,9), datetime(2015,1,20,15)))
+
+    def testReservarNoPuestoParaMoto(self): #borde, capacidad para motos = 0
+        e = self.crear_estacionamiento(3,0,3,4)
+        self.assertFalse(marzullo(e.id, datetime(2015,1,20,9), datetime(2015,1,20,15),'Moto'))
+
+    def testReservarNoPuestoParaDiscapacitado(self): #borde, capacidad para Discapacitado = 0
+        e = self.crear_estacionamiento(3,3,0,5)
+        self.assertFalse(marzullo(e.id, datetime(2015,1,20,9), datetime(2015,1,20,15),'Discapacitado'))
+
+    def testReservarNoPuestoParaCamion(self): #borde, capacidad para Camions = 0
+        e = self.crear_estacionamiento(3,4,5,0)
+        self.assertFalse(marzullo(e.id, datetime(2015,1,20,9), datetime(2015,1,20,15),'Camion'))
+
+    def testNoSpotParking(self): #esquina, capacidad = 0
         e = self.crear_estacionamiento(0)
         self.assertFalse(marzullo(e.id, datetime(2015,1,20,9), datetime(2015,1,20,15)))
 

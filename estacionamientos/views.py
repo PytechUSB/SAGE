@@ -434,8 +434,8 @@ def estacionamiento_reserva(request, _id):
                 )
                 print(inicioReserva)
 
-                monto = cruceEsquema(estacionamiento.id, inicioReserva, finalReserva)
-                monto = Decimal(monto)
+                #calcula el monto a pagar
+                monto = Decimal(cruceEsquema(estacionamiento.id, inicioReserva, finalReserva))
                 request.session['monto'] = float(monto)
                 
                 request.session['vehiculoTipo']        = vehiculoTipo

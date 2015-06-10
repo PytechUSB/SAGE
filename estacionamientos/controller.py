@@ -112,7 +112,6 @@ def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular'):
 		ocupacion += [(reserva.inicioReserva, 1), (reserva.finalReserva, -1)]
 	ocupacion += [(hIn, 1), (hOut, -1)]
 	count = 0
-	print(sorted(ocupacion))
 	for r in sorted(ocupacion):
 		count += r[1]
 		if count > capacidad:

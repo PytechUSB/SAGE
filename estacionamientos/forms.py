@@ -460,7 +460,7 @@ class ReservaForm(forms.Form):
             ('Particular',  ''),
             ('Moto', ''),
             ('Camion', ''),
-            ('Dicapacitado', '')
+            ('Discapacitado', '')
         ),
         widget  = forms.RadioSelect()
     )
