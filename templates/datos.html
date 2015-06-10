@@ -148,10 +148,12 @@
     </div>	
   </form>  
 </div>
+{% if mostrarBoton %}
     <div class="controls" align ="center">
     	<p><button id="puestos">Gestionar puestos</button></p>
     </div></p>
-	
+{% endif %}	
+
 {% include "validator.js.html" with form=formPuestos %}
  {% block scripts %}
   
