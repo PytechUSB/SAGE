@@ -35,7 +35,7 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre):
 			return (False, 'No puede haber reservas entre dos dias distintos')
 		return (True,'')
 
-def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular'):
+def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
 	ocupacion = []
 	capacidad = e.obtenerCapacidad(tipoDeVehiculo)

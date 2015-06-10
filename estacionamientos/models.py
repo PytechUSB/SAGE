@@ -18,6 +18,9 @@ class Propietario(models.Model):
 
 	def __str__(self):
 		return self.nombres+' '+self.apellidos
+	
+	class Meta:
+		unique_together = ('cedula', 'cedulaTipo',)
 
 class Estacionamiento(models.Model):
 	nombre      = models.CharField(max_length = 50)

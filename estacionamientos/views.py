@@ -92,16 +92,14 @@ def propietario_all(request):
                 cedulaTipo=form.cleaned_data['cedulaTipo']
             )     
             try:
-                prop=Propietario.objects.get(cedula=cedula[0],cedulaTipo=cedulaTipo)
+                obj.save()
+            except:
                 return render(
                     request, 'template-mensaje.html',
                     { 'color'   : 'red'
                     , 'mensaje' : 'Cédula ya existente'
                     }
                 )
-            except:
-                obj.save()
-                
             # Recargamos los propietarios ya que acabamos de agregar
             propietarios = Propietario.objects.all()
             form = PropietarioForm()
@@ -140,18 +138,6 @@ def propietario_edit(request, _id):
         # Si el formulario
         if form.is_valid():
             try:
-                cedula      = form.cleaned_data['cedula'],
-                cedulaTipo  = form.cleaned_data['cedulaTipo']
-                error=False
-                try:
-                    prop2=Propietario.objects.get(cedula=cedula[0],cedulaTipo=cedulaTipo)
-                    print(prop2==propietario)
-                    if prop2!=propietario:
-                        error=True
-                        raise Exception
-                except:
-                    if error:
-                        raise Exception
                 Propietario.objects.filter(id=_id).update(
                     nombres     = form.cleaned_data['nombres'],
                     apellidos   = form.cleaned_data['apellidos'],
@@ -166,7 +152,6 @@ def propietario_edit(request, _id):
                     , 'mensaje' : 'Cédula ya existente'
                     }
                 ) 
-    
     propietario = Propietario.objects.get(id=_id)
     return render(
         request,
