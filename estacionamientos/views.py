@@ -324,7 +324,21 @@ def estacionamiento_detail(request, _id):
             estacionamiento.capacidad_M = request.POST['motos']
             estacionamiento.capacidad_D = request.POST['discapacitados']
             estacionamiento.save()
-        else: print("No es valida")   
+        else:    
+            try:
+                formPuestos.errors['__all__']
+                mensaje='Debe haber al menos un puesto.'
+            except:
+                mensaje='Todos los campos son obligatorios'
+            return render(
+                request,
+                'detalle-estacionamiento.html',
+                { 'form': form
+                , 'formPuestos': formPuestos
+                , 'estacionamiento': estacionamiento
+                , 'errorDialog' : mensaje
+                }
+            )
     estacionamiento = Estacionamiento.objects.get(id=_id)    
     return render(
         request,
