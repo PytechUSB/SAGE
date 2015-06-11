@@ -1156,9 +1156,17 @@ def mover_reserva(request, id_pago):
     if request.method == 'POST':
         form = MoverReservaForm(request.POST)
         if form.is_valid():
+            inicioReserva = form.cleaned_data['inicio']
+            if inicioReserva < datetime.now():
+                return render(
+                    request,          
+                    'mensaje.html',
+                    { 'color' : 'red'
+                    , 'mensaje' : 'El inicio de su reserva no puede ser antes de la hora actual' 
+                    }
+                )
             reserva = pago.reserva 
             variacionTiempo = reserva.finalReserva - reserva.inicioReserva
-            inicioReserva = form.cleaned_data['inicio']
             finalReserva = inicioReserva + variacionTiempo
             vehiculoTipo = reserva.vehiculoTipo
             horarioValidado = validarHorarioReserva(
@@ -1217,14 +1225,15 @@ def mover_reserva(request, id_pago):
                 request.session['diafinal']     = finalReserva.day
                 
                 if monto < pago.monto: 
-                    monto = Decimal(pago.monto - monto)
-                    request.session['monto'] = float(monto)
+                    diferenciaMonto = Decimal(pago.monto - monto)
+                    request.session['monto'] = float(diferenciaMonto)
                     return render(
                         request,
                         'confirmar-mover.html',
                         { 'id'      : pago.id
                         , 'monto'   : monto
                         , 'montoAnterior' : pago.monto
+                        , 'diferencia' : diferenciaMonto
                         , 'reserva' : reservaFinal
                         , 'color'   : 'green'
                         , 'mensaje' : 'Existe un puesto disponible'
@@ -1270,14 +1279,15 @@ def recarga_mover(request, id_pago, id_billetera):
     id_pago = int(id_pago)
     id_billetera = int(id_billetera)
     
-    try:
-        pago = Pago.objects.get(pk = id_pago)
-        billetera = BilleteraElectronica.objects.get(id_billetera)
+    #try:
+    pago = Pago.objects.get(pk = id_pago)
+    billetera = BilleteraElectronica.objects.get(pk = id_billetera)
         
-    except:
+    '''except:
+        print("AQUI")
         raise Http404
-    
-    montoARecargar = request.session['monto']
+    '''
+    montoARecargar = Decimal(request.session['monto']).quantize(Decimal('1.00'))
     cancelacion = Cancelaciones(
         id = asigna_id_unico(),
         pagoCancelado = pago,
@@ -1289,7 +1299,7 @@ def recarga_mover(request, id_pago, id_billetera):
     pago.cancelar_reserva()
     billetera.recargar_saldo(montoARecargar)
     estacionamiento = pago.reserva.estacionamiento
-    pago_movido = pago_reserva_aux(request, pago.monto - montoARecargar, estacionamiento, id_pago)
+    pago_movido = pago_reserva_aux(request, pago.monto - montoARecargar, estacionamiento, idFacturaReservaMovida = id_pago)
     pago_movido.save()
     
     
@@ -1418,7 +1428,7 @@ def pago_mover(request, id_pago):
                 cancelacion.save()
                 pago.cancelar_reserva()
                 estacionamiento = pago.reserva.estacionamiento
-                pago_movido = pago_reserva_aux(request, monto + pago.monto, idFacturaReservaMovida = id_pago)
+                pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, idFacturaReservaMovida = id_pago)
                 pago_movido.save()
                 
                 return render(
