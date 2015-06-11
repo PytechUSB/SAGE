@@ -7,16 +7,21 @@ from decimal import Decimal, ROUND_DOWN
 from datetime import timedelta, datetime
 from django.db.models.fields import IntegerField
 from django.db.models.fields.related import ForeignKey
+from django.template.defaultfilters import default
 SMAX = 10000
 
 class Propietario(models.Model):
 	nombres     = models.CharField(max_length = 30)
 	apellidos   = models.CharField(max_length = 30)
-	cedula      = models.CharField(max_length = 12, unique=True)
+	cedula      = models.CharField(max_length = 12)
 	telefono1   = models.CharField(blank = True, null = True, max_length = 30)
+	cedulaTipo  = models.CharField(max_length = 1)
 
 	def __str__(self):
 		return self.nombres+' '+self.apellidos
+	
+	class Meta:
+		unique_together=('cedula','cedulaTipo',)
 
 class Estacionamiento(models.Model):
 	nombre      = models.CharField(max_length = 50)
@@ -44,8 +49,29 @@ class Estacionamiento(models.Model):
 	
 	apertura     = models.TimeField(blank = True, null = True)
 	cierre       = models.TimeField(blank = True, null = True)
-	capacidad    = models.IntegerField(blank = True, null = True)
+	
+	#capacidad para vechiculos personales
+	capacidad    = models.IntegerField(blank = True, null = True, default=0)
+	#capacidad para motos
+	capacidad_M   = models.IntegerField(blank = True, null = True, default=0)
+	#capacidad para camiones de carga
+	capacidad_C   = models.IntegerField(blank = True, null = True, default=0)
+	#capacidad para vehiculos de discapacitados
+	capacidad_D   = models.IntegerField(blank = True, null = True, default=0)
 
+	#retorna la capacidd del estacionamiento segun el tipo de vehiculo
+	def obtenerCapacidad(self, tipoDeVehiculo):
+		puestos = 0
+		if tipoDeVehiculo == "Particular":
+			puestos  = self.capacidad
+		elif tipoDeVehiculo == "Moto":
+			puestos  = self.capacidad_M
+		elif tipoDeVehiculo == "Camion":
+			puestos  = self.capacidad_C
+		elif tipoDeVehiculo == "Discapacitado":
+			puestos  = self.capacidad_D
+		return puestos 
+	
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
 
@@ -97,9 +123,10 @@ class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()
 	finalReserva    = models.DateTimeField()
+	vehiculoTipo   	= models.CharField(max_length = 15)
 
 	def __str__(self):
-		return self.estacionamiento.nombre+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
+		return str(self.id) + ' ' +self.estacionamiento.nombre + ' ' + self.vehiculoTipo+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
 	
 class ConfiguracionSMS(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
@@ -118,15 +145,42 @@ class Pago(models.Model):
 	monto            = models.DecimalField(decimal_places = 2, max_digits = 256)
 	reserva          = models.ForeignKey(Reserva)
 	cancelado 		 = models.BooleanField(default = False)
+	# Evalua True si la reserva ha sido movida
+	fueMovido		 = models.BooleanField(default = False)
+	nombreUsuario    = models.CharField(max_length = 30)
+	apellidoUsuario  = models.CharField(max_length = 30)
+	idBilletera 	 = models.IntegerField(blank = True, null = True)
+	# Pago que fue movido y origino esta factura
+	facturaMovida	 = models.ForeignKey("self", null = True, blank = True)
 	
 	def __str__(self):
 		return str(self.id)+" "+str(self.reserva.estacionamiento.nombre)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
 	
 	def cancelar_reserva(self):
-		if self.validar_cancelacion(datetime.now()):
-			self.cancelado = True
-			self.save()
+		self.cancelado = True
+		self.save()
 		
+	def fue_movido(self):
+		self.cancelado = True
+		self.fueMovido = True
+		self.save() 
+		
+	def obtener_string(self):
+		if self.fueMovido != None:
+			return "Reserva Movida"
+		
+		return "Reservacion"
+	
+	def obtener_tipo(self):
+		return "Pago"
+	
+	def obtener_monto(self):
+		if self.facturaMovida != None:
+			if self.facturaMovida.monto <= self.monto:
+				return self.monto - self.facturaMovida.monto
+			else: return 0
+		
+		return self.monto
 		
 	def validar_cancelacion(self, tiempo):
 		if ((tiempo < self.reserva.inicioReserva) and (not self.cancelado)):
@@ -142,19 +196,42 @@ class Recargas(models.Model):
 	tarjetaTipo      = models.CharField(max_length = 6)
 	monto            = models.DecimalField(decimal_places = 2, max_digits = 256)
 	billetera 		 = models.ForeignKey(BilleteraElectronica)
+	numTarjeta       = models.CharField(max_length = 16)
 	
 	def __str__(self):
 		return str(self.id)+" "+str(self.billetera.id)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
 	
+	def obtener_string(self):
+		return "Recarga"
+	
+	def ultimos_numeros(self):
+		arreglo = list(self.numTarjeta)
+		resultado = ""
+		resultado += str(arreglo[-4])
+		resultado += str(arreglo[-3])
+		resultado += str(arreglo[-2])
+		resultado += str(arreglo[-1])
+		return resultado
+	
+	
 class Cancelaciones(models.Model):
 	id 				 = models.IntegerField(primary_key = True)
 	pagoCancelado	 = models.ForeignKey(Pago)
-	billetera		 = models.ForeignKey(BilleteraElectronica)
+	billetera		 = models.ForeignKey(BilleteraElectronica, blank = True, null = True)
 	monto			 = models.DecimalField(decimal_places = 2, max_digits = 256)
 	fechaTransaccion = models.DateTimeField()
 	
 	def __str__(self):
-		return str(self.id)+" "+str(self.pagoCnacelado.id) + " " + str(self.fechaTransaccion)
+		return str(self.id)+" "+str(self.pagoCancelado.id) + " " + str(self.fechaTransaccion)
+	
+	def obtener_string(self):
+		if self.pagoCancelado.fueMovido:
+			return "Recarga Reserva Movida"
+		
+		return "Cancelacion"
+	
+	def obtener_tipo(self):
+		return "Cancelacion"
 
 class EsquemaTarifario(models.Model):
 

@@ -9,18 +9,55 @@
   </div>
   <div class="panel-body">
     <form action="." method="post" class="form form-vertical">
-      {% csrf_token %}
-      {% for field in form %}
+		{% csrf_token %}
         <div class="control-group">
-          <div class="controls">
-            {{ field }}
-            <span class='error' id='{{field.name}}_error' aria-live="polite">
-              {{ field.errors }}
-            </span>
-            <p>
-          </div>
+            <div class="controls">
+                <p>
+                  {{ form.nombres }}
+                  <span
+                    class='error'
+                    id='{{form.nombres.name}}_error'
+                    aria-live="polite"
+               	  ></span>
+              	</p>
+              	{{ form.nombre.errors }}
+              	<p>
+                  {{ form.apellidos }}
+                  <span
+                  	class='error'
+                  	id='{{form.apellidos.name}}_error'
+                  	aria-live="polite"
+                  ></span>
+              	</p>
+              	{{ form.apellido.errors }}
+                <p>
+                  <table><tbody><tr>
+                    <td>
+                      {{ form.cedulaTipo }}
+                    </td>
+                    <td>
+                      {{ form.cedula }}
+                    </td>
+                  </tr></tbody></table>
+                  <span
+                    class='error'
+                    id='{{form.cedula.name}}_error'
+                    aria-live="polite"
+                  ></span>
+                  {{ form.cedula.errors }}
+                </p>
+                <p>
+                  {{ form.telefono_1 }}
+                  <span
+                  	class='error'
+                  	id='{{form.telefono_1.name}}_error'
+                  	aria-live="polite"
+                  ></span>
+              	</p>
+              	{{ form.telefono_1.errors }}
+                 
+            </div>
         </div>
-      {% endfor %}
       <div class="control-group">
         <label></label>
         <div class="controls" align="center">

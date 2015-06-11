@@ -53,7 +53,7 @@ class EstacionamientoForm(forms.Form):
         validators = [name_validator],
         widget   = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Nombre del Estacionamiento'
+            , 'placeholder' : 'Nombre del Estacionamiento *'
             , 'pattern'     : name_validator.regex.pattern
             , 'message'     : name_validator.message
             }
@@ -66,7 +66,7 @@ class EstacionamientoForm(forms.Form):
         label    = "Direccion",
         widget   = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Dirección'
+            , 'placeholder' : 'Dirección *'
             , 'message'     : 'La entrada no puede quedar vacía.'
             }
         )
@@ -79,7 +79,7 @@ class EstacionamientoForm(forms.Form):
         validators = [rif_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'RIF: X-xxxxxxxxx'
+            , 'placeholder' : 'RIF: X-xxxxxxxxx *'
             , 'pattern'     : rif_validator.regex.pattern
             , 'message'     : rif_validator.message
             }
@@ -218,28 +218,99 @@ class PropietarioForm(forms.Form):
             }
         )
     )
-
+    
+    cedulaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'cedulaTipo',
+        choices  = (
+            ('V', 'V'),
+            ('E', 'E')
+        ),
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
+        )
+    )
+    
+class PuestosForm(forms.Form):
+    
+    particulares = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        initial = 0,
+        label     = 'Número de puestos particulares',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Para particulares'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'Debe ser un número entero no negativo.'
+            }
+        )
+    )
+        
+    motos = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        initial = 0,
+        label     = 'Número de Puestos',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Para motos'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'Debe ser un número entero no negativo.'
+            }
+        )
+    )
+    
+    camiones = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        initial = 0,
+        label     = 'Número de Puestos',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Para camiones'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'Debe ser un número entero no negativo.'
+            }
+        )
+    )
+    
+    discapacitados = forms.IntegerField(
+        required  = True,
+        initial = 0,    
+        min_value = 0,
+        label     = 'Número de Puestos',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Para discapacitados'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'Debe ser un número entero no negativo.'
+            }
+        )
+    )
+    
+    def clean(self):
+        cleaned_data = super(PuestosForm, self).clean()
+        sumaPuestos=0
+        for name in self.fields:
+            if type(cleaned_data.get(name))==type(1):
+                sumaPuestos+=cleaned_data.get(name)
+        if (sumaPuestos)==0:
+            raise forms.ValidationError("Debe haber al menos un puesto.")
+        return cleaned_data   
+    
+    
 class EstacionamientoExtendedForm(forms.Form):
     
     tarifa_validator = RegexValidator(
         regex   = '^([0-9]+(\.[0-9]+)?)$',
         message = 'Sólo debe contener dígitos.'
-    )
+    )    
     
-    puestos = forms.IntegerField(
-        required  = True,
-        min_value = 1,
-        label     = 'Número de Puestos',
-        widget    = forms.NumberInput(attrs=
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Número de Puestos'
-            , 'min'         : "0"
-            , 'pattern'     : '^[0-9]+'
-            , 'message'     : 'La entrada debe ser un número entero no negativo.'
-            }
-        )
-    )
-
     horarioin = forms.TimeField(
         required = True,
         label    = 'Horario Apertura',
@@ -394,6 +465,18 @@ class EstacionamientoExtendedForm(forms.Form):
 
 class ReservaForm(forms.Form):
     
+    vehiculoTipo = forms.ChoiceField(
+        required = True,
+        label    = 'Tipo de vehiculo',
+        choices  = (
+            ('Particular',  ''),
+            ('Moto', ''),
+            ('Camion', ''),
+            ('Discapacitado', '')
+        ),
+        widget  = forms.RadioSelect()
+    )
+
     inicio = forms.SplitDateTimeField(
         required = True,
         label = 'Horario Inicio Reserva',
@@ -574,8 +657,20 @@ class RifForm(forms.Form):
 
 class CedulaForm(forms.Form):
     
+    cedulaTipo = forms.ChoiceField(
+        required = True,
+        label    = 'cedulaTipo',
+        choices  = (
+            ('V', 'V'),
+            ('E', 'E')
+        ),
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
+        )
+    )
+    
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '[0-9]+$',
         message = 'La cédula solo puede contener caracteres numéricos.'
     )
     
@@ -890,6 +985,18 @@ class CancelaReservaForm(forms.Form):
             , 'placeholder' : 'Cédula'
             , 'pattern'     : id_validator.regex.pattern
             , 'message'     : id_validator.message
+            }
+        )
+    )
+    
+class MoverReservaForm(forms.Form):
+    inicio = forms.SplitDateTimeField(
+        required = True,
+        label = 'Horario Inicio Reserva',
+        widget= CustomSplitDateTimeWidget(attrs=
+            { 'class'       : 'form-control'
+            , 'type'        : 'date'
+            , 'placeholder' : 'Hora Inicio Reserva'
             }
         )
     )

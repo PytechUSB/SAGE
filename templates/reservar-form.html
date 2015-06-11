@@ -10,18 +10,56 @@
   <div class="panel-body">
     <form action="./reserva" method="post" class="form form-vertical">
       {% csrf_token %}
-      {% for field in form %}
+      <!--ELEGIR TIPO DE VEHICULO-->
+      <div class="control-group" >
+        <div class="controls" align="center">
+          <b>Tipo de vehículo:</b><br>
+          {% for value in form.vehiculoTipo.field.choices %}
+            <!--Particular-->
+            {% if estacionamiento.capacidad > 0 and value.0 == "Particular" %}
+              <div class="vehiculo_tipo">
+                <font size="4"><i class="fa fa-car"></i></font>
+                <br>{{ form.vehiculoTipo.0 }} 
+              </div>
+            <!--Moto-->
+            {% elif estacionamiento.capacidad_M > 0 and value.0 == "Moto" %}
+              <div class="vehiculo_tipo">
+                <font size="4"><i class="fa fa-motorcycle"></i></font>
+                <br>{{ form.vehiculoTipo.1 }} 
+              </div>
+            <!--Camion-->
+            {% elif estacionamiento.capacidad_C > 0 and value.0 == "Camion" %}
+              <div class="vehiculo_tipo">
+                <font size="4"><i class="fa fa-truck"></i></font>
+                <br>{{ form.vehiculoTipo.2 }} 
+              </div class="vehiculo_tipo">
+            <!--Discapacitado-->
+            {% elif estacionamiento.capacidad_D > 0 and value.0 == "Discapacitado" %}
+              <div class="vehiculo_tipo">
+                <font size="4"><i class="fa fa-wheelchair"> </i></font>
+                <br>{{ form.vehiculoTipo.3 }} 
+              </div>
+            {% endif %}
+          {% endfor %} 
+          {{ form.vehiculoTipo.errors }}
+        </div>
+      </div>
+      <!--ELEGIR FECHA Y HORA-->
         <div class="control-group">
           <div class="controls">
-              {{ field }}
-              {{ field.errors }}
+            <p>{{ form.inicio }}
+                <span class='error' id='{{form.inicio.name}}_error' aria-live="polite"></span>
+            </p>
+              {{ form.inicio.errors }}
+            <p>{{ form.final }}
+                <span class='error' id='{{form.final.name}}_error' aria-live="polite"></span>
+            </p>
+              {{ form.final.errors }}
           </div>
         </div>
-        <br/>
-      {% endfor %}
+        <br>
       <div class="control-group">
-        <label></label>
-        <div class="controls">
+        <div class="controls" align="center">
           <button type="submit" class="btn btn-primary">
             Chequear Disponibilidad
           </button>
@@ -33,13 +71,14 @@
 {% block scripts%}
   {% include "validator.js.html" %}
   <script type="text/javascript">
-    inicioDate 				= document.getElementById('id_inicio_0');
-    inicioTime 				= document.getElementById('id_inicio_1');
-    finDate 				= document.getElementById('id_final_0');
-    finTime 				= document.getElementById('id_final_1');
-    inicioDate.placeholder	="Fecha Inicio Reserva"
-    inicioTime.placeholder	="Hora Inicio Reserva"
-    finDate.placeholder		="Fecha Fin Reserva"
-    finTime.placeholder		="Hora Fin Reserva"
+    inicioDate    = document.getElementById('id_inicio_0');
+    inicioTime    = document.getElementById('id_inicio_1');
+    finDate       = document.getElementById('id_final_0');
+    finTime       = document.getElementById('id_final_1');
+    inicioDate.placeholder  ="Fecha Inicio Reserva"
+    inicioTime.placeholder  ="Hora Inicio Reserva"
+    finDate.placeholder     ="Fecha Fin Reserva"
+    finTime.placeholder     ="Hora Fin Reserva"
   </script>
 {% endblock %}
+
