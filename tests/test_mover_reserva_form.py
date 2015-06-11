@@ -44,3 +44,11 @@ class MoverReservaFormTestCase(TestCase):
                     }
         form = MoverReservaForm(data = form_data)
         self.assertFalse(form.is_valid())
+        
+    # malicia
+    def testMoverReserva_CamposInvertidos(self):
+        form_data = {'inicio_1': datetime.now().date(),
+                     'inicio_0': datetime.now().time()
+                    }
+        form = MoverReservaForm(data = form_data)
+        self.assertFalse(form.is_valid())
