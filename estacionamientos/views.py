@@ -504,7 +504,7 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaReservaMovida = None):
+def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaReservaMovida = None, id_billetera,nombre,apellido):
     inicioReserva = datetime(
         year   = request.session['anioinicial'],
         month  = request.session['mesinicial'],
@@ -540,6 +540,9 @@ def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaRese
             monto            = monto,
             tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
             reserva          = reservaFinal,
+            idBilletera      = id_billetera,
+            nombreUsuario    = nombre,
+            apellidoUsuario  = apellido
         )
         
     else:
@@ -552,7 +555,10 @@ def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaRese
             monto            = monto,
             tarjetaTipo      = pagoAnterior.tarjetaTipo,
             reserva          = reservaFinal,
-            facturaMovida    = pagoAnterior
+            facturaMovida    = pagoAnterior,
+            idBilletera      = id_billetera,
+            nombreUsuario    = nombre,
+            apellidoUsuario  = apellido
         )
 
     return pago
@@ -598,7 +604,10 @@ def estacionamiento_pago(request, _id):
                             request, 
                             monto, 
                             estacionamiento,
-                            form
+                            form,
+                            form.cleaned_data['ID'],
+                            form.cleaned_data['nombre'],
+                            form.cleaned_data['apellido']
                         )
                         pago.save()
                         billeteraE.consumir_saldo(monto)
@@ -634,6 +643,9 @@ def estacionamiento_pago(request, _id):
                             monto, 
                             estacionamiento,
                             form
+                            form.cleaned_data['ID'],
+                            form.cleaned_data['nombre'],
+                            form.cleaned_data['apellido']
                 )
                 
                 pago.save()
@@ -881,11 +893,13 @@ def billetera_datos(request):
 
         if formAuth.is_valid():
             billetera_autenticada = billetera_autenticar(int(formAuth.cleaned_data['ID']), formAuth.cleaned_data['Pin'])
+            historial = buscar_historial_billetera(int(formAuth.cleaned_data['ID']))
             if(billetera_autenticada != None):
                 return render(
                     request,
                     'datos-billetera.html', 
                     { 'billetera': billetera_autenticada
+                    , 'historial' : historial
                     , 'form': form
                     , 'formAuth': formAuth
                     }
@@ -952,7 +966,8 @@ def billetera_recarga(request, _id):
                         tarjetaTipo = form.cleaned_data['tarjetaTipo'],
                         monto = form.cleaned_data['monto'],
                         fechaTransaccion = datetime.now(),
-                        billetera = billeteraE   
+                        billetera = billeteraE,
+                        numTarjeta  = form.cleaned_data['tarjeta']
                     )
                 
                 recarga.save()

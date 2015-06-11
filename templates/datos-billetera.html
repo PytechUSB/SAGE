@@ -7,7 +7,113 @@
 
 {% block menu %}{% endblock %}
 
+
 {% block innerContents %}
+
+<style>
+#popup {
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 1001;
+}
+
+.content-popup {
+    margin:0px auto;
+    margin-top:120px;
+    position:relative;
+    padding:10px;
+    width:1000px;
+    min-height:50px;
+    border-radius:4px;
+    background-color:#FFFFFF;
+    box-shadow: 0 2px 5px #666666;
+}
+
+.content-popup h2 {
+    color:#48484B;
+    border-bottom: 1px solid #48484B;
+    margin-top: 0;
+    padding-bottom: 4px;
+}
+
+.popup-overlay {
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 999;
+    display:none;
+    background-color: #777777;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+
+</style>
+
+<div id="popup" style="display: none;">
+    <div class="content-popup">
+        <div class="close"><a href="#" id="close"></a></div>
+        <div class="panel panel-default">
+        <div class="panel-heading"> 
+          <div class="panel-title">
+           <i class="fa fa-history pull-left"></i>
+           <a class="fa fa-times pull-right" id="id_close" href="#"></a>
+           <h4><b>Historial de la Billetera Electronica de {{billetera.nombre}} {{billetera.apellido}}</b></h4>      
+           </div>
+           </div>
+           </div>
+           <table border="1" style="width:100%">
+           <tr>
+           <td align="center"><b> Fecha de transaccion </b></td> 
+           <td align="center"><b> Id transaccion </b></td>
+           <td align="center"><b> Descripcion de transaccion </b></td>
+           <td align="center"><b> Credito </b></td>
+           <td align="center"><b> Debito </b></td>
+           </tr>
+           
+           
+           {% for transaccion in historial %}
+           {% if transaccion.obtener_string == "Reservacion"  %}
+           <tr>
+            <td align="center">{{transaccion.fechaTransaccion}}</td> 
+            <td align="center">{{transaccion.id}}</td>
+            <td align="center">{{transaccion.obtener_string}} | A nombre de: {{transaccion.nombreUsuario}} {{transaccion.apellidoUsuario}} CI: {{transaccion.cedulaTipo}} {{transaccion.cedula}} </td>
+            <td></td>
+            <td align="center">-{{transaccion.monto}}</td>
+            </tr>
+            {% endif %}
+           {% if transaccion.obtener_string == "Cancelacion"  %}
+           <tr>
+            <td align="center">{{transaccion.fechaTransaccion}}</td> 
+            <td align="center">{{transaccion.id}}</td>
+            <td align="center">{{transaccion.obtener_string}} | Reserva a nombre de: {{transaccion.pagoCancelado.nombreUsuario}} {{transaccion.pagoCancelado.apellidoUsuario}} CI: {{transaccion.pagoCancelado.cedulaTipo}} {{transaccion.pagoCancelado.cedula}}</td>
+            <td align="center">+{{transaccion.monto}}</td>
+            <td></td>
+            </tr>
+            {% endif %}
+            {% if transaccion.obtener_string == "Recarga"  %}
+            <tr>
+            <td align="center">{{transaccion.fechaTransaccion}}</td> 
+            <td align="center">{{transaccion.id}}</td>
+            <td align="center">{{transaccion.obtener_string}} | Tipo Tarjeta: {{transaccion.tarjetaTipo}} | Cuatro ultimos digitos: ...{{transaccion.ultimos_numeros}} </td>
+            <td align="center">+{{transaccion.monto}}</td>
+            <td></td>
+            </tr>
+            {% endif %}
+           {% endfor %}
+           <tr>
+           <td colspan="3"></td>
+           <td align="center" colspan="2">Saldo Actual: {{billetera.saldo|floatformat:2|intcomma}}</td>
+           </tr>
+           </table>
+        </div>
+    </div>
+</div>
+
+
 {% if mensaje %}
    <div class="col-md-7" style="color:{{color}}">
    {{mensaje}}
@@ -64,9 +170,15 @@
             <div class="control-group" align="center">
             <a href="/estacionamientos/{{ billetera.id }}/recarga_billetera" onClick="return popup(this, 'Datos Billetera')">
               <button class="btn btn-primary">
-                Recargar
+                Recargar Billetera
               </button> </a>
-                <input
+                 <input
+	              type="button"
+	              value="Historial Billetera" 
+	              id="open"
+	              class="btn btn-primary"
+                 >
+                 <input
 	              type="button"
 	              value="Volver" 
 	              id="id_volver"
@@ -75,8 +187,8 @@
           <p></p>
             </div>
      </div>
-  
-
+ 
+    
 
 {%endblock%}
 {% block scripts %}
@@ -114,6 +226,24 @@
     }
     
 </script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#open').click(function(){
+        $('#popup').fadeIn('slow');
+        $('.popup-overlay').fadeIn('slow');
+        $('.popup-overlay').height($(window).height());
+        return false;
+    });
+    
+    $('#id_close').click(function(){
+        $('#popup').fadeOut('slow');
+        $('.popup-overlay').fadeOut('slow');
+        return false;
+    });
+});
+</script>
+
 
 {% include "validator.js.html" %}
  
