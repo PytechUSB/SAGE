@@ -1195,7 +1195,7 @@ def mover_reserva(request, id_pago):
                         estacionamiento.tarifaFeriados.calcularPrecio(
                             inicioReserva, finalReserva
                         )
-                    ).quantize(Decimal('1.00'))
+                    )
 
                 #monto de la tarifa en dia normal
                 else:
@@ -1203,7 +1203,7 @@ def mover_reserva(request, id_pago):
                         estacionamiento.tarifa.calcularPrecio(
                             inicioReserva, finalReserva
                         )
-                    ).quantize(Decimal('1.00'))
+                    )
                 
                 request.session['vehiculoTipo']        = vehiculoTipo
                 request.session['finalReservaHora']    = finalReserva.hour
@@ -1219,7 +1219,7 @@ def mover_reserva(request, id_pago):
                 
                 if monto < pago.monto: 
                     monto = Decimal(pago.monto - monto)
-                    request.session['monto'] = monto
+                    request.session['monto'] = float(monto)
                     return render(
                         request,
                         'confirmar-mover.html',
@@ -1235,7 +1235,7 @@ def mover_reserva(request, id_pago):
                         
                 else:
                     monto = Decimal(monto - pago.monto)
-                    request.session['monto'] = monto
+                    request.session['monto'] = float(monto)
                     return render(
                         request,
                         'confirmar-mover.html',
