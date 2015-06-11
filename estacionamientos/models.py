@@ -145,9 +145,12 @@ class Pago(models.Model):
 	monto            = models.DecimalField(decimal_places = 2, max_digits = 256)
 	reserva          = models.ForeignKey(Reserva)
 	cancelado 		 = models.BooleanField(default = False)
+	# Evalua True si la reserva ha sido movida
+	fueMovido		 = models.BooleanField(default = False)
 	nombreUsuario    = models.CharField(max_length = 30)
 	apellidoUsuario  = models.CharField(max_length = 30)
 	idBilletera 	 = models.IntegerField(blank = True, null = True)
+	# Pago que fue movido y origino esta factura
 	facturaMovida	 = models.ForeignKey("self", null = True, blank = True)
 	
 	def __str__(self):
@@ -157,12 +160,25 @@ class Pago(models.Model):
 		self.cancelado = True
 		self.save()
 		
+	def fue_movido(self):
+		self.cancelado = True
+		self.fueMovido = True
+		self.save() 
+		
 	def obtener_string(self):
+		if self.fueMovido != None:
+			return "Reserva Movida"
+		
 		return "Reservacion"
+	
+	def obtener_tipo(self):
+		return "Pago"
 	
 	def obtener_monto(self):
 		if self.facturaMovida != None:
-			return self.monto - self.facturaMovida.monto
+			if self.facturaMovida.monto <= self.monto:
+				return self.monto - self.facturaMovida.monto
+			else: return 0
 		
 		return self.monto
 		
@@ -206,9 +222,15 @@ class Cancelaciones(models.Model):
 	fechaTransaccion = models.DateTimeField()
 	
 	def __str__(self):
-		return str(self.id)+" "+str(self.pagoCnacelado.id) + " " + str(self.fechaTransaccion)
+		return str(self.id)+" "+str(self.pagoCancelado.id) + " " + str(self.fechaTransaccion)
 	
 	def obtener_string(self):
+		if self.pagoCancelado.fueMovido:
+			return "Recarga Reserva Movida"
+		
+		return "Cancelacion"
+	
+	def obtener_tipo(self):
 		return "Cancelacion"
 
 class EsquemaTarifario(models.Model):

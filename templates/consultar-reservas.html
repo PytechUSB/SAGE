@@ -36,18 +36,9 @@
                 <td>{%firstof factura.reserva.estacionamiento.telefono1 factura.reserva.estacionamiento.telefono2 factura.reserva.estacionamiento.telefono3 "N/A"%}
                 </td>
               </tr>
-            {% endfor %}
+            {% endfor %}		
           </tbody>
           </table>
-          <div class="control-group" align="center">
-            <div class="controls">
-            <a href="/estacionamientos/validar_reserva/mover_reserva" onClick="return popup(this, 'Validar Reservacion')">
-              <button type="submit" class="btn btn-primary">
-                Mover Reserva
-              </button>
-              </a>
-            </div>
-            </div>
           <hr>
         {% else %}
           <h3>Introduzca su Cédula</h3>
@@ -91,6 +82,15 @@
               </div>
           </form>
         </div>
+      </div>
+      <div class="control-group" align="center">
+      	<div class="controls">
+        	<a href="/estacionamientos/validar_reserva/mover_reserva" onClick="return popup(this, 'Validar Reservacion')">
+              <button type="submit" class="btn btn-primary">
+                Mover Reserva
+              </button>
+            </a>
+         </div>
       </div>
     </div>
   </div>

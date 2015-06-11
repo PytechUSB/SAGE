@@ -541,7 +541,7 @@ def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaRese
         
     else:
         pagoAnterior = Pago.objects.get(pk = idFacturaReservaMovida)
-        if monto == pagoAnterior.monto:
+        if monto == pagoAnterior.monto or form == None:
             pago = Pago(
                 id = asigna_id_unico(),
                 fechaTransaccion = datetime.now(),
@@ -1019,7 +1019,7 @@ def validar_reserva(request, link = ''):
                         request,
                         'mensaje.html',
                         { 'color': 'red'
-                        , 'mensaje': 'Cancelacion denegada, las cancelaciones deben hacerse al menos un minuto antes de que empiece la reservacion' 
+                        , 'mensaje': 'Cancelacion denegada, las operaciones cancelar o mover reserva deben hacerse al menos un minuto antes de que empiece la reservacion' 
                         }          
                     )
                     
@@ -1299,15 +1299,17 @@ def recarga_mover(request, id_pago, id_billetera):
     id_pago = int(id_pago)
     id_billetera = int(id_billetera)
     
-    #try:
-    pago = Pago.objects.get(pk = id_pago)
-    billetera = BilleteraElectronica.objects.get(pk = id_billetera)
+    try:
+        pago = Pago.objects.get(pk = id_pago)
+        billetera = BilleteraElectronica.objects.get(pk = id_billetera)
         
-    '''except:
-        print("AQUI")
+    except:
         raise Http404
-    '''
+    
+    estacionamiento = pago.reserva.estacionamiento
     montoARecargar = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+    pago_movido = pago_reserva_aux(request, pago.monto - montoARecargar, estacionamiento, idFacturaReservaMovida = id_pago)
+    pago_movido.save()
     cancelacion = Cancelaciones(
         id = asigna_id_unico(),
         pagoCancelado = pago,
@@ -1316,11 +1318,8 @@ def recarga_mover(request, id_pago, id_billetera):
         fechaTransaccion = datetime.now()    
     )
     cancelacion.save()
-    pago.cancelar_reserva()
+    pago.fue_movido()
     billetera.recargar_saldo(montoARecargar)
-    estacionamiento = pago.reserva.estacionamiento
-    pago_movido = pago_reserva_aux(request, pago.monto - montoARecargar, estacionamiento, idFacturaReservaMovida = id_pago)
-    pago_movido.save()
     
     
     return render(
@@ -1348,6 +1347,9 @@ def pago_mover(request, id_pago):
         return HttpResponse(status = 403) # No esta permitido acceder a esta vista aun
     
     if ((request.method == 'GET') and (request.session['monto'] == 0)):
+        estacionamiento = pago.reserva.estacionamiento
+        pago_movido = pago_reserva_aux(request, pago.monto, estacionamiento, idFacturaReservaMovida = id_pago)
+        pago_movido.save()
         cancelacion = Cancelaciones(
             id = asigna_id_unico(),
             pagoCancelado = pago,
@@ -1355,10 +1357,7 @@ def pago_mover(request, id_pago):
             fechaTransaccion = datetime.now()    
         )
         cancelacion.save()
-        pago.cancelar_reserva()
-        estacionamiento = pago.reserva.estacionamiento
-        pago_movido = pago_reserva_aux(request, pago.monto, estacionamiento, idFacturaReservaMovida = id_pago)
-        pago_movido.save()
+        pago.fue_movido()
         
         return render(
             request,
@@ -1405,7 +1404,7 @@ def pago_mover(request, id_pago):
                             fechaTransaccion = datetime.now()    
                         )
                         cancelacion.save()
-                        pago.cancelar_reserva()
+                        pago.fue_movido()
                         estacionamiento = pago.reserva.estacionamiento
                         pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
                         pago_movido.save()
@@ -1445,7 +1444,7 @@ def pago_mover(request, id_pago):
                     fechaTransaccion = datetime.now()    
                 )
                 cancelacion.save()
-                pago.cancelar_reserva()
+                pago.fue_movido()
                 estacionamiento = pago.reserva.estacionamiento
                 pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
                 pago_movido.save()

@@ -76,21 +76,21 @@
            
            
            {% for transaccion in historial %}
-           {% if transaccion.obtener_string == "Reservacion"  %}
+           {% if transaccion.obtener_tipo == "Pago" %}
            <tr>
             <td align="center">{{transaccion.fechaTransaccion}}</td> 
             <td align="center">{{transaccion.id}}</td>
-            <td align="center">{{transaccion.obtener_string}} | A nombre de: {{transaccion.nombreUsuario}} {{transaccion.apellidoUsuario}} CI: {{transaccion.cedulaTipo}} {{transaccion.cedula}} </td>
+            <td align="center">{{transaccion.obtener_string}} | A nombre de: {{transaccion.nombreUsuario}} {{transaccion.apellidoUsuario}} CI: {{transaccion.cedulaTipo}}-{{transaccion.cedula}} </td>
             <td></td>
-            <td align="center">-{{transaccion.obtener_monto}}</td>
+            <td align="center">-{{transaccion.obtener_monto|floatformat:2|intcomma }}</td>
             </tr>
             {% endif %}
-           {% if transaccion.obtener_string == "Cancelacion"  %}
+           {% if transaccion.obtener_tipo == "Cancelacion"  %}
            <tr>
             <td align="center">{{transaccion.fechaTransaccion}}</td> 
             <td align="center">{{transaccion.id}}</td>
-            <td align="center">{{transaccion.obtener_string}} | Reserva a nombre de: {{transaccion.pagoCancelado.nombreUsuario}} {{transaccion.pagoCancelado.apellidoUsuario}} CI: {{transaccion.pagoCancelado.cedulaTipo}} {{transaccion.pagoCancelado.cedula}}</td>
-            <td align="center">+{{transaccion.monto}}</td>
+            <td align="center">{{transaccion.obtener_string}} | Reserva a nombre de: {{transaccion.pagoCancelado.nombreUsuario}} {{transaccion.pagoCancelado.apellidoUsuario}} CI: {{transaccion.pagoCancelado.cedulaTipo}}-{{transaccion.pagoCancelado.cedula}}</td>
+            <td align="center">+{{transaccion.monto|floatformat:2|intcomma }}</td>
             <td></td>
             </tr>
             {% endif %}
@@ -98,8 +98,8 @@
             <tr>
             <td align="center">{{transaccion.fechaTransaccion}}</td> 
             <td align="center">{{transaccion.id}}</td>
-            <td align="center">{{transaccion.obtener_string}} | Tipo Tarjeta: {{transaccion.tarjetaTipo}} | Cuatro ultimos digitos: ...{{transaccion.ultimos_numeros}} </td>
-            <td align="center">+{{transaccion.monto}}</td>
+            <td align="center">{{transaccion.obtener_string}} | Tipo Tarjeta: {{transaccion.tarjetaTipo}} | Tarjeta: ***{{transaccion.ultimos_numeros}} </td>
+            <td align="center">+{{transaccion.monto|floatformat:2|intcomma }}</td>
             <td></td>
             </tr>
             {% endif %}
