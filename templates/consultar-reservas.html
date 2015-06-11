@@ -22,6 +22,7 @@
               <th>Estacionamiento</th>
               <th>Vehículo</th>
               <th>Teléfono</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -37,11 +38,22 @@
               </tr>
             {% endfor %}
           </tbody>
+          </table>
+          <div class="control-group" align="center">
+            <div class="controls">
+            <a href="/estacionamientos/validar_reserva/mover_reserva" onClick="return popup(this, 'Validar Reservacion')">
+              <button type="submit" class="btn btn-primary">
+                Mover Reserva
+              </button>
+              </a>
+            </div>
+            </div>
+          <hr>
         {% else %}
           <h3>Introduzca su Cédula</h3>
+          </table>
+          <hr>
         {% endif %}
-      </table>
-      <hr>
     </div>
     <div class="col-md-4">
       <div class="panel panel-default">
@@ -82,4 +94,25 @@
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+    function popup(mylink, windowname) {
+      if (! window.focus)
+        return true;
+      var href;
+      if (typeof(mylink) == 'string')
+        href=mylink;
+      else
+        href=mylink.href;
+      window.open(href, windowname, 'width=400,height=400,scrollbars=no');
+      return false;
+    }
+    
+</script>
+
+{% include "validator.js.html" %}
+ 
 {% endblock %}

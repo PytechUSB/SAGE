@@ -23,7 +23,10 @@ urlpatterns = patterns('',
     url(r'^crear_billetera$', views.billetera_all, name = 'billetera_all'),
     url(r'^datos_billetera$', views.billetera_datos, name = 'billetera_datos'),
     url(r'^(?P<_id>\d+)/recarga_billetera$', views.billetera_recarga, name = 'billetera_recarga'),
-    url(r'^validar_reserva$', views.validar_reserva, name = 'validar_reserva'),
-    url(r'^(?P<id_pago>\d+)/validar_billetera$', views.validar_billetera, name = 'validar_billetera'),
-    url(r'^(?P<id_pago>\d+)/(?P<id_billetera>\d+)/cancelar_reserva$', views.cancelar_reserva, name = 'cancelar_reserva')
+    url(r'^validar_reserva/(?P<link>\mover_reserva|validar_billetera/cancelar_reserva)/$', views.validar_reserva, name = 'validar_reserva'),
+    url(r'^(?P<id_pago>\d+)/validar_billetera/(?P<link>\cancelar_reserva|recarga_mover)/$', views.validar_billetera, name = 'validar_billetera'),
+    url(r'^(?P<id_pago>\d+)/mover_reserva$', views.mover_reserva, name = 'mover_reserva'),
+    url(r'^(?P<id_pago>\d+)/(?P<id_billetera>\d+)/cancelar_reserva$', views.cancelar_reserva, name = 'cancelar_reserva'),
+    url(r'^(?P<id_pago>\d+)/(?P<id_billetera>\d+)/recarga_mover$', views.recarga_mover, name = 'recarga_mover'),
+    url(r'^(?P<id_pago>\d+)/pago_mover$', views.pago_mover, name = 'pago_mover')
 )

@@ -126,7 +126,7 @@ class Reserva(models.Model):
 	vehiculoTipo   	= models.CharField(max_length = 15)
 
 	def __str__(self):
-		return self.estacionamiento.nombre+self.vehiculoTipo+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
+		return str(self.id) + ' ' +self.estacionamiento.nombre + ' ' + self.vehiculoTipo+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
 	
 class ConfiguracionSMS(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
@@ -145,15 +145,26 @@ class Pago(models.Model):
 	monto            = models.DecimalField(decimal_places = 2, max_digits = 256)
 	reserva          = models.ForeignKey(Reserva)
 	cancelado 		 = models.BooleanField(default = False)
+	nombreUsuario    = models.CharField(max_length = 30)
+	apellidoUsuario  = models.CharField(max_length = 30)
+	idBilletera 	 = models.IntegerField(blank = True, null = True)
+	facturaMovida	 = models.ForeignKey("self", null = True, blank = True)
 	
 	def __str__(self):
 		return str(self.id)+" "+str(self.reserva.estacionamiento.nombre)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
 	
 	def cancelar_reserva(self):
-		if self.validar_cancelacion(datetime.now()):
-			self.cancelado = True
-			self.save()
+		self.cancelado = True
+		self.save()
 		
+	def obtener_string(self):
+		return "Reservacion"
+	
+	def obtener_monto(self):
+		if self.facturaMovida != None:
+			return self.monto - self.facturaMovida.monto
+		
+		return self.monto
 		
 	def validar_cancelacion(self, tiempo):
 		if ((tiempo < self.reserva.inicioReserva) and (not self.cancelado)):
@@ -169,19 +180,36 @@ class Recargas(models.Model):
 	tarjetaTipo      = models.CharField(max_length = 6)
 	monto            = models.DecimalField(decimal_places = 2, max_digits = 256)
 	billetera 		 = models.ForeignKey(BilleteraElectronica)
+	numTarjeta       = models.CharField(max_length = 16)
 	
 	def __str__(self):
 		return str(self.id)+" "+str(self.billetera.id)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
 	
+	def obtener_string(self):
+		return "Recarga"
+	
+	def ultimos_numeros(self):
+		arreglo = list(self.numTarjeta)
+		resultado = ""
+		resultado += str(arreglo[-4])
+		resultado += str(arreglo[-3])
+		resultado += str(arreglo[-2])
+		resultado += str(arreglo[-1])
+		return resultado
+	
+	
 class Cancelaciones(models.Model):
 	id 				 = models.IntegerField(primary_key = True)
 	pagoCancelado	 = models.ForeignKey(Pago)
-	billetera		 = models.ForeignKey(BilleteraElectronica)
+	billetera		 = models.ForeignKey(BilleteraElectronica, blank = True, null = True)
 	monto			 = models.DecimalField(decimal_places = 2, max_digits = 256)
 	fechaTransaccion = models.DateTimeField()
 	
 	def __str__(self):
 		return str(self.id)+" "+str(self.pagoCnacelado.id) + " " + str(self.fechaTransaccion)
+	
+	def obtener_string(self):
+		return "Cancelacion"
 
 class EsquemaTarifario(models.Model):
 
