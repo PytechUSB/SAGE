@@ -82,7 +82,7 @@
             <td align="center">{{transaccion.id}}</td>
             <td align="center">{{transaccion.obtener_string}} | A nombre de: {{transaccion.nombreUsuario}} {{transaccion.apellidoUsuario}} CI: {{transaccion.cedulaTipo}} {{transaccion.cedula}} </td>
             <td></td>
-            <td align="center">-{{transaccion.monto}}</td>
+            <td align="center">-{{transaccion.obtener_monto}}</td>
             </tr>
             {% endif %}
            {% if transaccion.obtener_string == "Cancelacion"  %}

@@ -24,7 +24,8 @@ from estacionamientos.controller import (
     consultar_ingresos,
     billetera_autenticar,
     pago_autenticar,
-    asigna_id_unico
+    asigna_id_unico,
+    buscar_historial_billetera
 )
 
 from estacionamientos.forms import (
@@ -504,7 +505,7 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaReservaMovida = None, id_billetera,nombre,apellido):
+def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaReservaMovida = None):
     inicioReserva = datetime(
         year   = request.session['anioinicial'],
         month  = request.session['mesinicial'],
@@ -531,6 +532,10 @@ def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaRese
 
     # Se guarda la reserva en la base de datos
     reservaFinal.save()
+    
+    if form != None and form.cleaned_data['ID'] == '':
+        form.cleaned_data['ID'] = None
+        
     if (idFacturaReservaMovida == None):
         pago = Pago(
             id = asigna_id_unico(),
@@ -540,27 +545,44 @@ def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaRese
             monto            = monto,
             tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
             reserva          = reservaFinal,
-            idBilletera      = id_billetera,
-            nombreUsuario    = nombre,
-            apellidoUsuario  = apellido
+            idBilletera      = form.cleaned_data['ID'],
+            nombreUsuario    = form.cleaned_data['nombre'],
+            apellidoUsuario  = form.cleaned_data['apellido']
         )
         
     else:
         pagoAnterior = Pago.objects.get(pk = idFacturaReservaMovida)
-        pago = Pago(
-            id = asigna_id_unico(),
-            fechaTransaccion = datetime.now(),
-            cedula           = pagoAnterior.cedula,
-            cedulaTipo       = pagoAnterior.cedulaTipo,
-            monto            = monto,
-            tarjetaTipo      = pagoAnterior.tarjetaTipo,
-            reserva          = reservaFinal,
-            facturaMovida    = pagoAnterior,
-            idBilletera      = id_billetera,
-            nombreUsuario    = nombre,
-            apellidoUsuario  = apellido
-        )
-
+        if monto == pagoAnterior.monto:
+            pago = Pago(
+                id = asigna_id_unico(),
+                fechaTransaccion = datetime.now(),
+                cedula           = pagoAnterior.cedula,
+                cedulaTipo       = pagoAnterior.cedulaTipo,
+                monto            = monto,
+                tarjetaTipo      = pagoAnterior.tarjetaTipo,
+                reserva          = reservaFinal,
+                facturaMovida    = pagoAnterior,
+                idBilletera      = pagoAnterior.idBilletera,
+                nombreUsuario    = pagoAnterior.nombreUsuario,
+                apellidoUsuario  = pagoAnterior.apellidoUsuario
+            )
+            
+        else:
+            pago = Pago(
+                id = asigna_id_unico(),
+                fechaTransaccion = datetime.now(),
+                cedula           = pagoAnterior.cedula,
+                cedulaTipo       = pagoAnterior.cedulaTipo,
+                monto            = monto,
+                tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
+                reserva          = reservaFinal,
+                facturaMovida    = pagoAnterior,
+                idBilletera      = form.cleaned_data['ID'],
+                nombreUsuario    = form.cleaned_data['nombre'],
+                apellidoUsuario  = form.cleaned_data['apellido']
+            )
+    
+    print(pago.idBilletera)            
     return pago
 
 
@@ -604,10 +626,7 @@ def estacionamiento_pago(request, _id):
                             request, 
                             monto, 
                             estacionamiento,
-                            form,
-                            form.cleaned_data['ID'],
-                            form.cleaned_data['nombre'],
-                            form.cleaned_data['apellido']
+                            form
                         )
                         pago.save()
                         billeteraE.consumir_saldo(monto)
@@ -643,9 +662,6 @@ def estacionamiento_pago(request, _id):
                             monto, 
                             estacionamiento,
                             form
-                            form.cleaned_data['ID'],
-                            form.cleaned_data['nombre'],
-                            form.cleaned_data['apellido']
                 )
                 
                 pago.save()
@@ -1396,14 +1412,13 @@ def pago_mover(request, id_pago):
                         cancelacion = Cancelaciones(
                             id = asigna_id_unico(),
                             pagoCancelado = pago,
-                            billetera = billeteraE,
                             monto = 0,
                             fechaTransaccion = datetime.now()    
                         )
                         cancelacion.save()
                         pago.cancelar_reserva()
                         estacionamiento = pago.reserva.estacionamiento
-                        pago_movido = pago_reserva_aux(request, pago.monto, estacionamiento, idFacturaReservaMovida = id_pago)
+                        pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
                         pago_movido.save()
                         billeteraE.consumir_saldo(monto)
                         
@@ -1443,7 +1458,7 @@ def pago_mover(request, id_pago):
                 cancelacion.save()
                 pago.cancelar_reserva()
                 estacionamiento = pago.reserva.estacionamiento
-                pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, idFacturaReservaMovida = id_pago)
+                pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
                 pago_movido.save()
                 
                 return render(
