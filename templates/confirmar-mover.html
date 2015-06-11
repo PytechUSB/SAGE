@@ -52,15 +52,7 @@
             {{ tituloMonto }}
           </b></td></tr>
           <tr><td>
-            {%if monto < 0%}
-            BsF. {{monto|floatformat:2|intcomma }}
-            {% endif %}
-            {%if monto > 0%}
-            BsF. {{monto|floatformat:2|intcomma }}
-            {%endif%}
-            {%if monto == 0%}
-            BsF. {{monto|floatformat:2|intcomma }}
-            {%endif%}
+            BsF. {{diferencia|floatformat:2|intcomma }}
           </td></tr>
 
           <tr><td>
@@ -88,7 +80,7 @@
 
         $('document').ready(function() {
             
-           $('id_mover').click(function() {
+           $('#id_mover').click(function() {
 				
 			
            		 if({{monto}} >= {{montoAnterior}}){

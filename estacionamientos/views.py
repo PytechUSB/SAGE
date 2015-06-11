@@ -1159,7 +1159,6 @@ def mover_reserva(request, id_pago):
             reserva = pago.reserva 
             variacionTiempo = reserva.finalReserva - reserva.inicioReserva
             inicioReserva = form.cleaned_data['inicio']
-            print(inicioReserva)
             finalReserva = inicioReserva + variacionTiempo
             vehiculoTipo = reserva.vehiculoTipo
             horarioValidado = validarHorarioReserva(
@@ -1234,13 +1233,15 @@ def mover_reserva(request, id_pago):
                     )
                         
                 else:
-                    monto = Decimal(monto - pago.monto)
-                    request.session['monto'] = float(monto)
+                    diferenciaMonto = Decimal(monto - pago.monto)
+                    request.session['monto'] = float(diferenciaMonto)
                     return render(
                         request,
                         'confirmar-mover.html',
                         { 'id'      : pago.id
                         , 'monto'   : monto
+                        , 'montoAnterior' : pago.monto
+                        , 'diferencia' : diferenciaMonto
                         , 'reserva' : reservaFinal
                         , 'color'   : 'green'
                         , 'mensaje' : 'Existe un puesto disponible'
@@ -1326,7 +1327,7 @@ def pago_mover(request, id_pago):
         cancelacion.save()
         pago.cancelar_reserva()
         estacionamiento = pago.reserva.estacionamiento
-        pago_movido = pago_reserva_aux(request, pago.monto, estacionamiento, id_pago)
+        pago_movido = pago_reserva_aux(request, pago.monto, estacionamiento, idFacturaReservaMovida = id_pago)
         pago_movido.save()
         
         return render(

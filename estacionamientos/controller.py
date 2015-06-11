@@ -40,10 +40,14 @@ def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular', idReserv
 	ocupacion = []
 	capacidad = e.obtenerCapacidad(tipoDeVehiculo)
 	reservas = e.reserva_set.filter(vehiculoTipo=tipoDeVehiculo)
-	if idReservaMovida != None:
-		reservas = reservas.exclude(pk = idReservaMovida)
+	pagos_cancelados = Pago.objects.filter(cancelado = True)
+	for pago in pagos_cancelados:
+		reservas = reservas.exclude(pk = pago.reserva.id)
 		
-	print(reservas)
+	if idReservaMovida != None:
+		print(reservas)
+		reservas = reservas.exclude(pk = idReservaMovida)
+		print(reservas)
 		
 	for reserva in reservas:
 		ocupacion += [(reserva.inicioReserva, 1), (reserva.finalReserva, -1)]

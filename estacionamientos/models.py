@@ -122,7 +122,7 @@ class Reserva(models.Model):
 	vehiculoTipo   	= models.CharField(max_length = 15)
 
 	def __str__(self):
-		return self.estacionamiento.nombre+self.vehiculoTipo+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
+		return str(self.id) + ' ' +self.estacionamiento.nombre + ' ' + self.vehiculoTipo+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
 	
 class ConfiguracionSMS(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
