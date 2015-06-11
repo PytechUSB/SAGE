@@ -504,7 +504,7 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-def pago_reserva_aux(request, monto, estacionamiento, idFacturaReservaMovida = None, form = None):
+def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaReservaMovida = None):
     inicioReserva = datetime(
         year   = request.session['anioinicial'],
         month  = request.session['mesinicial'],
@@ -1158,8 +1158,8 @@ def mover_reserva(request, id_pago):
         if form.is_valid():
             reserva = pago.reserva 
             variacionTiempo = reserva.finalReserva - reserva.inicioReserva
-            inicioReserva = form['inicio']
-            print(type(variacionTiempo), type(inicioReserva))
+            inicioReserva = form.cleaned_data['inicio']
+            print(inicioReserva)
             finalReserva = inicioReserva + variacionTiempo
             vehiculoTipo = reserva.vehiculoTipo
             horarioValidado = validarHorarioReserva(
@@ -1205,9 +1205,6 @@ def mover_reserva(request, id_pago):
                         )
                     ).quantize(Decimal('1.00'))
                 
-                monto = Decimal(monto - pago.monto)
-                
-                request.session['monto'] = monto
                 request.session['vehiculoTipo']        = vehiculoTipo
                 request.session['finalReservaHora']    = finalReserva.hour
                 request.session['finalReservaMinuto']  = finalReserva.minute
@@ -1220,20 +1217,25 @@ def mover_reserva(request, id_pago):
                 request.session['mesfinal']     = finalReserva.month
                 request.session['diafinal']     = finalReserva.day
                 
-                if monto < 0:
+                if monto < pago.monto: 
+                    monto = Decimal(pago.monto - monto)
+                    request.session['monto'] = monto
                     return render(
                         request,
                         'confirmar-mover.html',
                         { 'id'      : pago.id
                         , 'monto'   : monto
+                        , 'montoAnterior' : pago.monto
                         , 'reserva' : reservaFinal
                         , 'color'   : 'green'
                         , 'mensaje' : 'Existe un puesto disponible'
                         , 'tituloMonto' : 'Monto a recargar'
                         }
                     )
-                    
+                        
                 else:
+                    monto = Decimal(monto - pago.monto)
+                    request.session['monto'] = monto
                     return render(
                         request,
                         'confirmar-mover.html',
@@ -1242,10 +1244,10 @@ def mover_reserva(request, id_pago):
                         , 'reserva' : reservaFinal
                         , 'color'   : 'green'
                         , 'mensaje' : 'Existe un puesto disponible'
-                        , 'tituloMonto' : 'Monto a cancelar'
+                        , 'tituloMonto' : 'Monto a pagar'
                         }
                     )
-                
+
             else:
                 return render(
                     request,
@@ -1302,13 +1304,12 @@ def recarga_mover(request, id_pago, id_billetera):
         }
     )
     
-def pago_mover(request, id_pago, id_billetera):
+def pago_mover(request, id_pago):
     idFacturaReservaMovida = int(id_pago)
     
     try:
         pago = Pago.objects.get(pk = idFacturaReservaMovida)
-        estacionamiento = pago.reserva.estacionamiento
-        billetera = BilleteraElectronica.objects.get(pk = id_billetera)   
+        estacionamiento = pago.reserva.estacionamiento   
     except:
         raise Http404
     
@@ -1319,7 +1320,6 @@ def pago_mover(request, id_pago, id_billetera):
         cancelacion = Cancelaciones(
             id = asigna_id_unico(),
             pagoCancelado = pago,
-            billetera = billetera,
             monto = 0,
             fechaTransaccion = datetime.now()    
         )
@@ -1370,14 +1370,14 @@ def pago_mover(request, id_pago, id_billetera):
                         cancelacion = Cancelaciones(
                             id = asigna_id_unico(),
                             pagoCancelado = pago,
-                            billetera = billetera,
+                            billetera = billeteraE,
                             monto = 0,
                             fechaTransaccion = datetime.now()    
                         )
                         cancelacion.save()
                         pago.cancelar_reserva()
                         estacionamiento = pago.reserva.estacionamiento
-                        pago_movido = pago_reserva_aux(request, pago.monto, estacionamiento, id_pago)
+                        pago_movido = pago_reserva_aux(request, pago.monto, estacionamiento, idFacturaReservaMovida = id_pago)
                         pago_movido.save()
                         billeteraE.consumir_saldo(monto)
                         
@@ -1411,14 +1411,13 @@ def pago_mover(request, id_pago, id_billetera):
                 cancelacion = Cancelaciones(
                     id = asigna_id_unico(),
                     pagoCancelado = pago,
-                    billetera = billetera,
                     monto = 0,
                     fechaTransaccion = datetime.now()    
                 )
                 cancelacion.save()
                 pago.cancelar_reserva()
                 estacionamiento = pago.reserva.estacionamiento
-                pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, id_pago)
+                pago_movido = pago_reserva_aux(request, monto + pago.monto, idFacturaReservaMovida = id_pago)
                 pago_movido.save()
                 
                 return render(

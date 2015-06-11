@@ -171,7 +171,7 @@ class Recargas(models.Model):
 class Cancelaciones(models.Model):
 	id 				 = models.IntegerField(primary_key = True)
 	pagoCancelado	 = models.ForeignKey(Pago)
-	billetera		 = models.ForeignKey(BilleteraElectronica)
+	billetera		 = models.ForeignKey(BilleteraElectronica, blank = True, null = True)
 	monto			 = models.DecimalField(decimal_places = 2, max_digits = 256)
 	fechaTransaccion = models.DateTimeField()
 	

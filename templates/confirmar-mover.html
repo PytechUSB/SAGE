@@ -91,16 +91,12 @@
            $('id_mover').click(function() {
 				
 			
-           		 if({{monto}} > 0){
-                		$(location).attr('href',"/estacionamientos/crear_billetera");
+           		 if({{monto}} >= {{montoAnterior}}){
+                		$(location).attr('href',"/estacionamientos/{{id}}/pago_mover");
             		}; 
             
-            	 if({{monto}} < 0){
-              		    $(location).attr('href',"/estacionamientos/crear_billetera");
-                    }; 
-            
-                 if({{monto}} == 0){
-                        $(location).attr('href',"/estacionamientos/crear_billetera");
+            	 if({{monto}} < {{montoAnterior}}){
+              		    $(location).attr('href',"/estacionamientos/{{id}}/validar_billetera/recarga_mover");
                     }; 
             
 			});

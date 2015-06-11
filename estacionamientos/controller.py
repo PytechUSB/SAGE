@@ -43,6 +43,8 @@ def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular', idReserv
 	if idReservaMovida != None:
 		reservas = reservas.exclude(pk = idReservaMovida)
 		
+	print(reservas)
+		
 	for reserva in reservas:
 		ocupacion += [(reserva.inicioReserva, 1), (reserva.finalReserva, -1)]
 	ocupacion += [(hIn, 1), (hOut, -1)]
