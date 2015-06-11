@@ -18,6 +18,8 @@ from estacionamientos.controller import (
     HorarioEstacionamiento,
     validarHorarioReserva,
     marzullo,
+    hitenmarzurulli,
+    cruceEsquema,
     get_client_ip,
     tasa_reservaciones,
     calcular_porcentaje_de_tasa,
@@ -435,36 +437,9 @@ def estacionamiento_reserva(request, _id):
                     vehiculoTipo    = vehiculoTipo,
                 )
                 
-                feriados = estacionamiento.feriados.split(',')
-                inicio   = inicioReserva.date()
-                
-                #monto de la tarifa en dia feriaro
-                if(estacionamiento.tarifaFeriados and (str(inicio) in feriados)):
-                    monto = Decimal(
-                        estacionamiento.tarifaFeriados.calcularPrecio(
-                            inicioReserva, finalReserva
-                        )
-                    )
-
-                    request.session['monto'] = float(
-                        estacionamiento.tarifaFeriados.calcularPrecio(
-                            inicioReserva,
-                            finalReserva
-                        )
-                    )
-                #monto de la tarifa en dia normal
-                else:
-                    monto = Decimal(
-                        estacionamiento.tarifa.calcularPrecio(
-                            inicioReserva, finalReserva
-                        )
-                    )
-                    request.session['monto'] = float(
-                        estacionamiento.tarifa.calcularPrecio(
-                            inicioReserva,
-                            finalReserva
-                        )
-                    )
+                monto = cruceEsquema(estacionamiento.id, inicioReserva, finalReserva)
+                monto = Decimal(monto)
+                request.session['monto'] = float(monto)
                 
                 request.session['vehiculoTipo']        = vehiculoTipo
                 request.session['finalReservaHora']    = finalReserva.hour
@@ -909,8 +884,8 @@ def billetera_datos(request):
 
         if formAuth.is_valid():
             billetera_autenticada = billetera_autenticar(int(formAuth.cleaned_data['ID']), formAuth.cleaned_data['Pin'])
-            historial = buscar_historial_billetera(int(formAuth.cleaned_data['ID']))
             if(billetera_autenticada != None):
+                historial = buscar_historial_billetera(int(formAuth.cleaned_data['ID']))
                 return render(
                     request,
                     'datos-billetera.html', 
