@@ -10,6 +10,8 @@ from django.db import transaction
 
 from django.db.utils import IntegrityError
 
+from django.core.exceptions import ObjectDoesNotExist
+
 
 ###################################################################
 
@@ -85,6 +87,11 @@ def crearEstacionamiento(nomb, dir , rif, propietario, tlf1=None,tlf2=None,tlf3=
             
 
 def modificarPropietario(cts,cedsearch, nomb, apell, ct, cedul, tlf1=None):
+    try:
+        Propietario.objects.get(cedula= cedsearch,cedulaTipo=cts)
+    except:
+        return False
+                   
     form_data_buscar = {
             'nombres': 'asd',
             'apellidos': 'asd',
@@ -101,26 +108,21 @@ def modificarPropietario(cts,cedsearch, nomb, apell, ct, cedul, tlf1=None):
         }
     form1 = PropietarioForm(data = form_data_buscar)
     form2 = PropietarioForm(data = form_data_modif)
-    props = Propietario.objects.all()
             
     if (form1.is_valid()) and (form2.is_valid()) :
         x = False
-        for obj in props:        
-            if ((obj.cedula==cedsearch) and (obj.cedulaTipo==cts)):
-                try:
-                    with transaction.atomic():        
-                        Propietario.objects.filter(cedula= cedsearch).update(
-                            nombres     = form2.cleaned_data['nombres'],
-                            apellidos   = form2.cleaned_data['apellidos'],
-                            cedula      = form2.cleaned_data['cedula'],
-                            telefono1   = form2.cleaned_data['telefono_1'],
-                            cedulaTipo  = form2.cleaned_data['cedulaTipo']
-                        )
-                        x = True
-                except:
-                    pass 
-                finally:
-                    break
+        try:
+            with transaction.atomic():        
+                Propietario.objects.filter(cedula= cedsearch,cedulaTipo=cts).update(
+                    nombres     = form2.cleaned_data['nombres'],
+                    apellidos   = form2.cleaned_data['apellidos'],
+                    cedula      = form2.cleaned_data['cedula'],
+                    cedulaTipo  = form2.cleaned_data['cedulaTipo'],
+                    telefono1   = form2.cleaned_data['telefono_1']
+                )
+                x = True
+        except:
+            pass 
         return x
     return False
 

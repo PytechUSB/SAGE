@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block menu %} {% endblock %}
+{% block title %}
+  SAGE - Pago Mover
+{% endblock %}
+{% block innerContents %}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Reservación
+    </h3>
+    <hr>
+    <div class="row">
+      <div class="col-md-8" style="color:{{color}}">
+        {{ mensaje }}
+        <hr>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <table class="table table-striped">
+        <thead></thead>
+        <tbody>
+          <tr><td><b><i class="fa fa-car"></i>
+            Nombre del estacionamiento:
+          </b></td></tr>
+          <tr><td>
+            {{reserva.estacionamiento.nombre}}
+          </td></tr>
+
+          <tr><td><b><i class="fa fa-clock-o"></i>
+            Horario inicio de reserva:
+          </b></td></tr>
+          <tr><td>
+            {{reserva.inicioReserva}}
+          </td></tr>
+
+          <tr><td><b><i class="fa fa-clock-o"></i>
+            Horario fin de reserva:
+          </b></td></tr>
+          <tr><td>
+            {{reserva.finalReserva}}
+          </td></tr>
+
+          <tr><td><b><i class="fa fa-car"></i>
+            Tipo de vehículo:
+          </b></td></tr>
+          <tr><td>
+            {{reserva.vehiculoTipo}}
+          </td></tr>
+
+          <tr><td><b><i class="fa fa-money"></i>
+            {{ tituloMonto }}
+          </b></td></tr>
+          <tr><td>
+            BsF. {{diferencia|floatformat:2|intcomma }}
+          </td></tr>
+
+          <tr><td>
+            <input
+            type="button"
+            value="Mover Reservacion"
+            id="id_mover"
+            class="btn btn-primary"
+             >
+            <input
+            type="button"
+            value="Volver"
+            onclick="self.close()"
+            class="btn btn-primary"
+          >
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+
+<script>
+
+        $('document').ready(function() {
+            
+           $('#id_mover').click(function() {
+				
+			
+           		 if({{monto}} >= {{montoAnterior}}){
+                		$(location).attr('href',"/estacionamientos/{{id}}/pago_mover");
+            		}; 
+            
+            	 if({{monto}} < {{montoAnterior}}){
+              		    $(location).attr('href',"/estacionamientos/{{id}}/validar_billetera/recarga_mover");
+                    }; 
+            
+			});
+			
+		});
+		
+</script>
+
+{% include "validator.js.html" %}
+ 
+{% endblock %}

@@ -19,16 +19,18 @@
     <li><a href="/estacionamientos/crear_billetera"><i class="fa fa-credit-card"></i>
       Billetera Electrónica
     </a></li>
-    <li><a href="/estacionamientos/validar_reserva" onClick="return popup(this, 'Validar Reservacion')"><i class="fa fa-times"></i>
+    <li><a href="/estacionamientos/validar_reserva/validar_billetera/cancelar_reserva" onClick="return popup(this, 'Validar Reservacion')"><i class="fa fa-times"></i>
       Cancelar Reservación
     </a></li>
-    {% if estacionamiento.tarifa  %}
+    {% if estacionamiento.capacidad or estacionamiento.capacidad_M or estacionamiento.capacidad_C or estacionamiento.capacidad_D%}
+      {% if estacionamiento.tarifa %}
       <li><a href="./"><i class="fa fa-wrench"></i>
         Parametrizar
       </a></li>
       <li><a href="./reserva"><i class="fa fa-pencil-square-o"></i>
         Reservar
       </a></li>
+      {% endif %}
     {% endif %}
   </ul>
   <hr>

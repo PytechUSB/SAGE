@@ -35,15 +35,45 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre):
 			return (False, 'No puede haber reservas entre dos dias distintos')
 		return (True,'')
 
-def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular'):
+def calcularMonto(idEstacionamiento, hIn, hOut):
+	e = Estacionamiento.objects.get(id = idEstacionamiento)
+	monto  = 0
+	inicio = hIn
+	#revisa si la hora de inicio y finalizacion corresponden al mismo dia
+	if(inicio.date() == hOut.date()):
+		final = hOut
+	else:
+		final  = datetime.combine(inicio.date() + timedelta(days=1), time(0,0))
+	#calcula el monto segun el esquema y el dia
+	while inicio<hOut:
+		if(e.tarifaFeriados and (str(inicio.date()) in e.feriados)):
+			monto+=e.tarifaFeriados.calcularPrecio(inicio,final)
+		else:
+			monto+=e.tarifa.calcularPrecio(inicio,final)
+
+		inicio=final
+		if(final.date() == hOut.date()):
+			final = hOut
+		else:
+			final += timedelta(days=1)
+	return monto
+
+def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular', idReservaMovida = None):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
 	ocupacion = []
 	capacidad = e.obtenerCapacidad(tipoDeVehiculo)
-	for reserva in e.reserva_set.filter(vehiculoTipo=tipoDeVehiculo):
+	reservas = e.reserva_set.filter(vehiculoTipo=tipoDeVehiculo)
+	pagos_cancelados = Pago.objects.filter(cancelado = True)
+	for pago in pagos_cancelados:
+		reservas = reservas.exclude(pk = pago.reserva.id)
+		
+	if idReservaMovida != None:
+		reservas = reservas.exclude(pk = idReservaMovida)
+		
+	for reserva in reservas:
 		ocupacion += [(reserva.inicioReserva, 1), (reserva.finalReserva, -1)]
 	ocupacion += [(hIn, 1), (hOut, -1)]
 	count = 0
-	print(sorted(ocupacion))
 	for r in sorted(ocupacion):
 		count += r[1]
 		if count > capacidad:
@@ -140,3 +170,23 @@ def asigna_id_unico():
 	num_recargas = len(Recargas.objects.all())
 	num_cancelaciones = len(Cancelaciones.objects.all())
 	return (1 + num_pagos_reservas + num_recargas + num_cancelaciones)
+
+def buscar_historial_billetera(identificador):
+	historial = []
+	
+	lista_recargas = Recargas.objects.filter(billetera = identificador)
+	for rec in lista_recargas:
+		historial.append(rec)
+		
+	lista_cancelaciones = Cancelaciones.objects.filter(billetera = identificador)	
+	for can in lista_cancelaciones:
+		historial.append(can)
+	
+	lista_pagos = Pago.objects.filter(idBilletera = identificador)
+	for pag in lista_pagos:
+		historial.append(pag)
+		
+	def getKey(item):
+		return item.fechaTransaccion	
+		
+	return sorted(historial,key=getKey)

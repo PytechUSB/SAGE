@@ -3,7 +3,7 @@
 from django.test import TestCase
 from estacionamientos.forms import BilleteraPagoForm
 
-class BilleteraBilleteraPagoFormTestCase(TestCase):
+class BilleteraPagoFormTestCase(TestCase):
     
     # interno
     def testBilleteraPago_FormValido(self):

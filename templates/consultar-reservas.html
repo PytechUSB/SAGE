@@ -22,6 +22,7 @@
               <th>Estacionamiento</th>
               <th>Vehículo</th>
               <th>Teléfono</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -35,13 +36,15 @@
                 <td>{%firstof factura.reserva.estacionamiento.telefono1 factura.reserva.estacionamiento.telefono2 factura.reserva.estacionamiento.telefono3 "N/A"%}
                 </td>
               </tr>
-            {% endfor %}
+            {% endfor %}		
           </tbody>
+          </table>
+          <hr>
         {% else %}
           <h3>Introduzca su Cédula</h3>
+          </table>
+          <hr>
         {% endif %}
-      </table>
-      <hr>
     </div>
     <div class="col-md-4">
       <div class="panel panel-default">
@@ -60,15 +63,26 @@
             class="form form-vertical"
           >
             {% csrf_token %}
-              {% for field in form %}
-                <div class="control-group">
-                  <div class="controls">
-                    {{ field }}
-                    <span class='error' id='{{field.name}}_error' aria-live="   polite">{{ field.errors }}</span>
-                    <p></p>
-                  </div>
-                </div>
-              {% endfor %}
+              <div class="control-group">
+              	<div class="controls">                
+	                <p>
+	                  <table><tbody><tr>
+	                    <td>
+	                      {{ form.cedulaTipo }}
+	                    </td>
+	                    <td>
+	                      {{ form.cedula }}
+	                    </td>
+	                  </tr></tbody></table>
+	                  <span
+	                    class='error'
+	                    id='{{form.cedula.name}}_error'
+	                    aria-live="polite"
+	                  ></span>
+	                  {{ form.cedula.errors }}
+	                </p>
+	            </div>
+              </div>
               <div class="control-group">
                 <label></label>
                 <div class="controls">
@@ -80,6 +94,36 @@
           </form>
         </div>
       </div>
+      <div class="control-group" align="center">
+      	<div class="controls">
+        	<a href="/estacionamientos/validar_reserva/mover_reserva" onClick="return popup(this, 'Validar Reservacion')">
+              <button type="submit" class="btn btn-primary">
+                Mover Reserva
+              </button>
+            </a>
+         </div>
+      </div>
     </div>
   </div>
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+    function popup(mylink, windowname) {
+      if (! window.focus)
+        return true;
+      var href;
+      if (typeof(mylink) == 'string')
+        href=mylink;
+      else
+        href=mylink.href;
+      window.open(href, windowname, 'width=400,height=400,scrollbars=no');
+      return false;
+    }
+    
+</script>
+
+{% include "validator.js.html" %}
+ 
 {% endblock %}

@@ -18,13 +18,15 @@ from estacionamientos.controller import (
     HorarioEstacionamiento,
     validarHorarioReserva,
     marzullo,
+    calcularMonto,
     get_client_ip,
     tasa_reservaciones,
     calcular_porcentaje_de_tasa,
     consultar_ingresos,
     billetera_autenticar,
     pago_autenticar,
-    asigna_id_unico
+    asigna_id_unico,
+    buscar_historial_billetera
 )
 
 from estacionamientos.forms import (
@@ -38,8 +40,11 @@ from estacionamientos.forms import (
     BilleteraForm,
     BilleteraPagoForm,
     authBilleteraForm,
-    CancelaReservaForm
-, PuestosForm)
+    CancelaReservaForm,
+    MoverReservaForm,
+    PuestosForm
+)
+
 from estacionamientos.models import (
     Propietario,
     Estacionamiento,
@@ -58,7 +63,8 @@ from estacionamientos.models import (
 def propietario_all(request):
     propietarios = Propietario.objects.all()
     estacionamientos = Estacionamiento.objects.all()
-
+    
+    
     # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
         form = PropietarioForm()
@@ -94,7 +100,7 @@ def propietario_all(request):
                 return render(
                     request, 'template-mensaje.html',
                     { 'color'   : 'red'
-                    , 'mensaje' : 'Cédula ya existente'
+                    , 'mensaje' : 'CÃ©dula ya existente'
                     }
                 )
             # Recargamos los propietarios ya que acabamos de agregar
@@ -115,24 +121,24 @@ def propietario_edit(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
     try:
-        propietario = Propietario.objects.get(id=_id)
+        propietario1 = Propietario.objects.get(id=_id)
     except ObjectDoesNotExist:
         raise Http404
 
     if request.method == 'GET':
         form_data = {
-            'nombres'   : propietario.nombres,
-            'apellidos' : propietario.apellidos,
-            'cedula'    : propietario.cedula,
-            'telefono1' : propietario.telefono1, 
-            'cedulaTipo': propietario.cedulaTipo
+            'nombres'   : propietario1.nombres,
+            'apellidos' : propietario1.apellidos,
+            'cedula'    : propietario1.cedula,
+            'telefono1' : propietario1.telefono1, 
+            'cedulaTipo': propietario1.cedulaTipo
         }
         form = PropietarioForm(data=form_data)
 
     elif request.method == 'POST':
         # Leemos el formulario
         form = PropietarioForm(request.POST)
-        # Si el formulario
+        # Si el formulario es valido
         if form.is_valid():
             try:
                 Propietario.objects.filter(id=_id).update(
@@ -146,10 +152,9 @@ def propietario_edit(request, _id):
                 return render(
                     request, 'template-mensaje.html',
                     { 'color'   : 'red'
-                    , 'mensaje' : 'Cédula ya existente'
+                    , 'mensaje' : 'CÃ©dula ya existente'
                     }
                 ) 
-    
     propietario = Propietario.objects.get(id=_id)
     return render(
         request,
@@ -323,7 +328,21 @@ def estacionamiento_detail(request, _id):
             estacionamiento.capacidad_M = request.POST['motos']
             estacionamiento.capacidad_D = request.POST['discapacitados']
             estacionamiento.save()
-            
+        else:    
+            try:
+                formPuestos.errors['__all__']
+                mensaje='Debe haber al menos un puesto.'
+            except:
+                mensaje='Todos los campos son obligatorios'
+            return render(
+                request,
+                'detalle-estacionamiento.html',
+                { 'form': form
+                , 'formPuestos': formPuestos
+                , 'estacionamiento': estacionamiento
+                , 'errorDialog' : mensaje
+                }
+            )
     estacionamiento = Estacionamiento.objects.get(id=_id)    
     return render(
         request,
@@ -349,8 +368,9 @@ def estacionamiento_edit(request, _id):
         if form.is_valid():
 
             cedula = form.cleaned_data['cedula']
+            cedulaTipo = form.cleaned_data['cedulaTipo']
             try:
-                propietario = Propietario.objects.get(cedula=cedula)
+                propietario = Propietario.objects.get(cedula=cedula, cedulaTipo=cedulaTipo)
                 Estacionamiento.objects.filter(id=_id).update(
                     propietario=propietario
                     )
@@ -430,39 +450,11 @@ def estacionamiento_reserva(request, _id):
                     finalReserva    = finalReserva,
                     vehiculoTipo    = vehiculoTipo,
                 )
-                print(inicioReserva)
-                
-                feriados = estacionamiento.feriados.split(',')
-                inicio   = inicioReserva.date()
-                
-                #monto de la tarifa en dia feriaro
-                if(estacionamiento.tarifaFeriados and (str(inicio) in feriados)):
-                    monto = Decimal(
-                        estacionamiento.tarifaFeriados.calcularPrecio(
-                            inicioReserva, finalReserva
-                        )
-                    )
 
-                    request.session['monto'] = float(
-                        estacionamiento.tarifaFeriados.calcularPrecio(
-                            inicioReserva,
-                            finalReserva
-                        )
-                    )
-                #monto de la tarifa en dia normal
-                else:
-                    monto = Decimal(
-                        estacionamiento.tarifa.calcularPrecio(
-                            inicioReserva, finalReserva
-                        )
-                    )
-                    request.session['monto'] = float(
-                        estacionamiento.tarifa.calcularPrecio(
-                            inicioReserva,
-                            finalReserva
-                        )
-                    )
-                
+                #calcula el monto a pagar
+                monto = Decimal(calcularMonto(estacionamiento.id, inicioReserva, finalReserva))
+                request.session['monto'] = float(monto)
+                                
                 request.session['vehiculoTipo']        = vehiculoTipo
                 request.session['finalReservaHora']    = finalReserva.hour
                 request.session['finalReservaMinuto']  = finalReserva.minute
@@ -502,7 +494,7 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-def pago_reserva_aux(request, form, monto, estacionamiento):
+def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaReservaMovida = None):
     inicioReserva = datetime(
         year   = request.session['anioinicial'],
         month  = request.session['mesinicial'],
@@ -519,6 +511,7 @@ def pago_reserva_aux(request, form, monto, estacionamiento):
         minute = request.session['finalReservaMinuto']
     )
 
+    
     reservaFinal = Reserva(
         estacionamiento = estacionamiento,
         inicioReserva   = inicioReserva,
@@ -528,20 +521,61 @@ def pago_reserva_aux(request, form, monto, estacionamiento):
 
     # Se guarda la reserva en la base de datos
     reservaFinal.save()
-    pago = Pago(
-        id = asigna_id_unico(),
-        fechaTransaccion = datetime.now(),
-        cedula           = form.cleaned_data['cedula'],
-        cedulaTipo       = form.cleaned_data['cedulaTipo'],
-        monto            = monto,
-        tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
-        reserva          = reservaFinal,
-    )
-
+    
+    if form != None and form.cleaned_data['ID'] == '':
+        form.cleaned_data['ID'] = None
+        
+    if (idFacturaReservaMovida == None):
+        pago = Pago(
+            id = asigna_id_unico(),
+            fechaTransaccion = datetime.now(),
+            cedula           = form.cleaned_data['cedula'],
+            cedulaTipo       = form.cleaned_data['cedulaTipo'],
+            monto            = monto,
+            tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
+            reserva          = reservaFinal,
+            idBilletera      = form.cleaned_data['ID'],
+            nombreUsuario    = form.cleaned_data['nombre'],
+            apellidoUsuario  = form.cleaned_data['apellido']
+        )
+        
+    else:
+        pagoAnterior = Pago.objects.get(pk = idFacturaReservaMovida)
+        if monto == pagoAnterior.monto or form == None:
+            pago = Pago(
+                id = asigna_id_unico(),
+                fechaTransaccion = datetime.now(),
+                cedula           = pagoAnterior.cedula,
+                cedulaTipo       = pagoAnterior.cedulaTipo,
+                monto            = monto,
+                tarjetaTipo      = pagoAnterior.tarjetaTipo,
+                reserva          = reservaFinal,
+                facturaMovida    = pagoAnterior,
+                idBilletera      = pagoAnterior.idBilletera,
+                nombreUsuario    = pagoAnterior.nombreUsuario,
+                apellidoUsuario  = pagoAnterior.apellidoUsuario
+            )
+            
+        else:
+            pago = Pago(
+                id = asigna_id_unico(),
+                fechaTransaccion = datetime.now(),
+                cedula           = pagoAnterior.cedula,
+                cedulaTipo       = pagoAnterior.cedulaTipo,
+                monto            = monto,
+                tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
+                reserva          = reservaFinal,
+                facturaMovida    = pagoAnterior,
+                idBilletera      = form.cleaned_data['ID'],
+                nombreUsuario    = form.cleaned_data['nombre'],
+                apellidoUsuario  = form.cleaned_data['apellido']
+            )
+    
+    print(pago.idBilletera)            
     return pago
 
 
-def estacionamiento_pago(request,_id):
+def estacionamiento_pago(request, _id):
     form = PagoForm()
     
     try:
@@ -577,7 +611,12 @@ def estacionamiento_pago(request,_id):
                         ) 
                         
                     else:
-                        pago = pago_reserva_aux(request, form, monto, estacionamiento)
+                        pago = pago_reserva_aux(
+                            request, 
+                            monto, 
+                            estacionamiento,
+                            form
+                        )
                         pago.save()
                         billeteraE.consumir_saldo(monto)
                         if (billeteraE.saldo == 0):
@@ -607,7 +646,13 @@ def estacionamiento_pago(request,_id):
             
             
             else:
-                pago = pago_reserva_aux(request, form, monto, estacionamiento)
+                pago = pago_reserva_aux(
+                            request,
+                            monto, 
+                            estacionamiento,
+                            form
+                )
+                
                 pago.save()
                 return render(
                     request,
@@ -656,7 +701,9 @@ def estacionamiento_consulta_reserva(request):
         if form.is_valid():
 
             cedula        = form.cleaned_data['cedula']
+            cedulaTipo    = form.cleaned_data['cedulaTipo']
             facturas      = Pago.objects.filter(cedula = cedula)
+            facturas      = facturas.filter(cedulaTipo = cedulaTipo)
             facturas      = facturas.exclude(cancelado = True)
             listaFacturas = []
 
@@ -854,10 +901,12 @@ def billetera_datos(request):
         if formAuth.is_valid():
             billetera_autenticada = billetera_autenticar(int(formAuth.cleaned_data['ID']), formAuth.cleaned_data['Pin'])
             if(billetera_autenticada != None):
+                historial = buscar_historial_billetera(int(formAuth.cleaned_data['ID']))
                 return render(
                     request,
                     'datos-billetera.html', 
                     { 'billetera': billetera_autenticada
+                    , 'historial' : historial
                     , 'form': form
                     , 'formAuth': formAuth
                     }
@@ -924,7 +973,8 @@ def billetera_recarga(request, _id):
                         tarjetaTipo = form.cleaned_data['tarjetaTipo'],
                         monto = form.cleaned_data['monto'],
                         fechaTransaccion = datetime.now(),
-                        billetera = billeteraE   
+                        billetera = billeteraE,
+                        numTarjeta  = form.cleaned_data['tarjeta']
                     )
                 
                 recarga.save()
@@ -947,7 +997,7 @@ def billetera_recarga(request, _id):
         }
     )
     
-def validar_reserva(request):
+def validar_reserva(request, link = ''):
     form = CancelaReservaForm()
     
     if request.method == 'POST':
@@ -971,7 +1021,7 @@ def validar_reserva(request):
                         request,
                         'mensaje.html',
                         { 'color': 'red'
-                        , 'mensaje': 'Cancelacion denegada, las cancelaciones deben hacerse al menos un minuto antes de que empiece la reservacion' 
+                        , 'mensaje': 'Cancelacion denegada, las operaciones cancelar o mover reserva deben hacerse al menos un minuto antes de que empiece la reservacion' 
                         }          
                     )
                     
@@ -985,7 +1035,7 @@ def validar_reserva(request):
                     )
                     
                 else:
-                    direccion = "/estacionamientos/" + str(form.cleaned_data['ID']) + "/validar_billetera"
+                    direccion = "/estacionamientos/" + str(form.cleaned_data['ID']) + "/" + link
                     return HttpResponseRedirect(direccion)
             
             else:
@@ -1004,7 +1054,7 @@ def validar_reserva(request):
           }
     )
     
-def validar_billetera(request, id_pago):
+def validar_billetera(request, id_pago, link = ''):
     id_pago = int(id_pago)
     
     try:
@@ -1020,7 +1070,7 @@ def validar_billetera(request, id_pago):
             billetera = billetera_autenticar(int(form.cleaned_data['ID']), form.cleaned_data['Pin'])
             if (billetera != None):
                 if(billetera.validar_recarga(pago.monto)):
-                    direccion = "/estacionamientos/" + str(pago.id) + "/" + str(billetera.id) + "/cancelar_reserva"
+                    direccion = "/estacionamientos/" + str(pago.id) + "/" + str(billetera.id) + "/" + link
                     return HttpResponseRedirect(direccion)
                     
                 else:
@@ -1030,7 +1080,7 @@ def validar_billetera(request, id_pago):
                         { 'color' : 'red'
                         , 'mensaje' : 'Monto de la recarga excede saldo máximo permitido'
                         , 'mensaje2' : '1) Presione volver e ingrese una billetera diferente'
-                        , 'mensaje3' : '2) Cree una nueva billetera'
+                        , 'mensaje3' : '2) Cree una nueva billetera e intentelo de nuevo'
                         }
                     )
                     
@@ -1051,6 +1101,8 @@ def validar_billetera(request, id_pago):
     )         
     
 def cancelar_reserva(request, id_pago, id_billetera):
+    id_pago = int(id_pago)
+    id_billetera = int(id_billetera)
     try:
         pago = Pago.objects.get(pk = id_pago)
         billeteraE = BilleteraElectronica.objects.get(pk = id_billetera)
@@ -1110,3 +1162,308 @@ def cancelar_reserva(request, id_pago, id_billetera):
             , 'mensaje1': '¿Desea cancelar esta reservacion?'
             }
         )
+
+def mover_reserva(request, id_pago):
+    id_pago = int(id_pago)
+    
+    try:
+        pago = Pago.objects.get(pk = id_pago)
+        estacionamiento = pago.reserva.estacionamiento
+        
+    except:
+        raise Http404
+    
+    form = MoverReservaForm()
+    
+    if request.method == 'POST':
+        form = MoverReservaForm(request.POST)
+        if form.is_valid():
+            inicioReserva = form.cleaned_data['inicio']
+            if inicioReserva < datetime.now():
+                return render(
+                    request,          
+                    'mensaje.html',
+                    { 'color' : 'red'
+                    , 'mensaje' : 'El inicio de su reserva no puede ser antes de la hora actual' 
+                    }
+                )
+            reserva = pago.reserva 
+            variacionTiempo = reserva.finalReserva - reserva.inicioReserva
+            finalReserva = inicioReserva + variacionTiempo
+            vehiculoTipo = reserva.vehiculoTipo
+            horarioValidado = validarHorarioReserva(
+                inicioReserva, 
+                finalReserva, 
+                estacionamiento.apertura, 
+                estacionamiento.cierre
+            )
+            
+            if not horarioValidado[0]:
+                return render(
+                    request,          
+                    'mensaje.html',
+                    { 'color' : 'red'
+                    , 'mensaje' : horarioValidado[1]  
+                    }
+                )
+            
+            if marzullo(estacionamiento.id, inicioReserva, finalReserva, vehiculoTipo, reserva.id):
+                reservaFinal = Reserva(
+                    estacionamiento = estacionamiento,
+                    inicioReserva   = inicioReserva,
+                    finalReserva    = finalReserva,
+                    vehiculoTipo    = vehiculoTipo,
+                )
+                
+                feriados = estacionamiento.feriados.split(',')
+                inicio   = inicioReserva.date()
+                
+                #monto de la tarifa en dia feriaro
+                if(estacionamiento.tarifaFeriados and (str(inicio) in feriados)):
+                    monto = Decimal(
+                        estacionamiento.tarifaFeriados.calcularPrecio(
+                            inicioReserva, finalReserva
+                        )
+                    )
+
+                #monto de la tarifa en dia normal
+                else:
+                    monto = Decimal(
+                        estacionamiento.tarifa.calcularPrecio(
+                            inicioReserva, finalReserva
+                        )
+                    )
+                
+                request.session['vehiculoTipo']        = vehiculoTipo
+                request.session['finalReservaHora']    = finalReserva.hour
+                request.session['finalReservaMinuto']  = finalReserva.minute
+                request.session['inicioReservaHora']   = inicioReserva.hour
+                request.session['inicioReservaMinuto'] = inicioReserva.minute
+                request.session['anioinicial']  = inicioReserva.year
+                request.session['mesinicial']   = inicioReserva.month
+                request.session['diainicial']   = inicioReserva.day
+                request.session['aniofinal']    = finalReserva.year
+                request.session['mesfinal']     = finalReserva.month
+                request.session['diafinal']     = finalReserva.day
+                
+                if monto < pago.monto: 
+                    diferenciaMonto = Decimal(pago.monto - monto)
+                    request.session['monto'] = float(diferenciaMonto)
+                    return render(
+                        request,
+                        'confirmar-mover.html',
+                        { 'id'      : pago.id
+                        , 'monto'   : monto
+                        , 'montoAnterior' : pago.monto
+                        , 'diferencia' : diferenciaMonto
+                        , 'reserva' : reservaFinal
+                        , 'color'   : 'green'
+                        , 'mensaje' : 'Existe un puesto disponible'
+                        , 'tituloMonto' : 'Monto a recargar'
+                        }
+                    )
+                        
+                else:
+                    diferenciaMonto = Decimal(monto - pago.monto)
+                    request.session['monto'] = float(diferenciaMonto)
+                    return render(
+                        request,
+                        'confirmar-mover.html',
+                        { 'id'      : pago.id
+                        , 'monto'   : monto
+                        , 'montoAnterior' : pago.monto
+                        , 'diferencia' : diferenciaMonto
+                        , 'reserva' : reservaFinal
+                        , 'color'   : 'green'
+                        , 'mensaje' : 'Existe un puesto disponible'
+                        , 'tituloMonto' : 'Monto a pagar'
+                        }
+                    )
+
+            else:
+                return render(
+                    request,
+                    'mensaje.html',
+                    {'color'   : 'red'
+                    , 'mensaje' : 'No hay un puesto disponible para ese horario'
+                    }
+                )
+
+    return render(
+        request,
+        'mover-reserva.html',
+        { 'form': form
+        , 'estacionamiento': estacionamiento
+        }
+    )
+    
+def recarga_mover(request, id_pago, id_billetera):
+    id_pago = int(id_pago)
+    id_billetera = int(id_billetera)
+    
+    try:
+        pago = Pago.objects.get(pk = id_pago)
+        billetera = BilleteraElectronica.objects.get(pk = id_billetera)
+        
+    except:
+        raise Http404
+    
+    estacionamiento = pago.reserva.estacionamiento
+    montoARecargar = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+    pago_movido = pago_reserva_aux(request, pago.monto - montoARecargar, estacionamiento, idFacturaReservaMovida = id_pago)
+    pago_movido.save()
+    cancelacion = Cancelaciones(
+        id = asigna_id_unico(),
+        pagoCancelado = pago,
+        billetera = billetera,
+        monto = montoARecargar,
+        fechaTransaccion = datetime.now()    
+    )
+    cancelacion.save()
+    pago.fue_movido()
+    billetera.recargar_saldo(montoARecargar)
+    
+    
+    return render(
+        request,
+        'pago-mover.html',
+        { 'pago'    : pago_movido
+        , 'id_billetera' : id_billetera
+        , 'id_pago_anterior' : id_pago
+        , 'monto' : montoARecargar
+        , 'color'   : 'green'
+        , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
+        }
+    )
+    
+def pago_mover(request, id_pago):
+    idFacturaReservaMovida = int(id_pago)
+    
+    try:
+        pago = Pago.objects.get(pk = idFacturaReservaMovida)
+        estacionamiento = pago.reserva.estacionamiento   
+    except:
+        raise Http404
+    
+    if (estacionamiento.apertura is None):
+        return HttpResponse(status = 403) # No esta permitido acceder a esta vista aun
+    
+    if ((request.method == 'GET') and (request.session['monto'] == 0)):
+        estacionamiento = pago.reserva.estacionamiento
+        pago_movido = pago_reserva_aux(request, pago.monto, estacionamiento, idFacturaReservaMovida = id_pago)
+        pago_movido.save()
+        cancelacion = Cancelaciones(
+            id = asigna_id_unico(),
+            pagoCancelado = pago,
+            monto = 0,
+            fechaTransaccion = datetime.now()    
+        )
+        cancelacion.save()
+        pago.fue_movido()
+        
+        return render(
+            request,
+            'pago-mover.html',
+            { 'pago'    : pago_movido
+            , 'id_pago_anterior' : id_pago
+            , 'color'   : 'green'
+            , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
+            }
+        )
+        
+    
+    form = PagoForm()
+    
+    if request.method == 'POST':
+        form = PagoForm(request.POST)
+        if form.is_valid():
+            monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+            if (form.cleaned_data['tarjetaTipo'] == 'Billetera Electronica'):
+                billeteraE = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
+                
+                if (billeteraE == None):
+                    return render(
+                        request, 'mensaje.html',
+                        {'color' : 'red'
+                        , 'mensaje' : 'Autenticacion Denegada'
+                        }
+                    )
+                    
+                else:
+                    if(not billeteraE.validar_consumo(monto)):
+                        return render(
+                            request, 'mensaje.html',
+                            {'color' : 'red'
+                            , 'mensaje' : 'Saldo Insuficiente'
+                            }
+                        ) 
+                        
+                    else:
+                        cancelacion = Cancelaciones(
+                            id = asigna_id_unico(),
+                            pagoCancelado = pago,
+                            monto = 0,
+                            fechaTransaccion = datetime.now()    
+                        )
+                        cancelacion.save()
+                        pago.fue_movido()
+                        estacionamiento = pago.reserva.estacionamiento
+                        pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
+                        pago_movido.save()
+                        billeteraE.consumir_saldo(monto)
+                        
+                        if (billeteraE.saldo == 0):
+                            return render(
+                                request,
+                                'pago-mover.html',
+                                { 'pago'    : pago_movido
+                                , 'id_pago_anterior' : id_pago
+                                , 'color'   : 'green'
+                                , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
+                                , 'color2'  : 'red'
+                                , 'mensaje2': 'Se recomienda recargar la billetera.'
+                                }
+                            )
+                            
+                        else:
+                            return render(
+                                request,
+                                'pago-mover.html',
+                                { 'pago'    : pago_movido
+                                , 'id_pago_anterior' : id_pago
+                                , 'color'   : 'green'
+                                , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
+                                }
+                            )
+                        
+            
+            
+            else:
+                cancelacion = Cancelaciones(
+                    id = asigna_id_unico(),
+                    pagoCancelado = pago,
+                    monto = 0,
+                    fechaTransaccion = datetime.now()    
+                )
+                cancelacion.save()
+                pago.fue_movido()
+                estacionamiento = pago.reserva.estacionamiento
+                pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
+                pago_movido.save()
+                
+                return render(
+                    request,
+                    'pago-mover.html',
+                    { 'pago'    : pago_movido
+                    , 'id_pago_anterior' : id_pago
+                    , 'color'   : 'green'
+                    , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
+                    }
+                )
+
+    return render(
+        request,
+        'pago-mover.html',
+        { 'form' : form }
+    )
+    

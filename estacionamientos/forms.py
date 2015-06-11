@@ -292,6 +292,18 @@ class PuestosForm(forms.Form):
             }
         )
     )
+    
+    def clean(self):
+        cleaned_data = super(PuestosForm, self).clean()
+        sumaPuestos=0
+        for name in self.fields:
+            if type(cleaned_data.get(name))==type(1):
+                sumaPuestos+=cleaned_data.get(name)
+        if (sumaPuestos)==0:
+            raise forms.ValidationError("Debe haber al menos un puesto.")
+        return cleaned_data   
+    
+    
 class EstacionamientoExtendedForm(forms.Form):
     
     tarifa_validator = RegexValidator(
@@ -460,7 +472,7 @@ class ReservaForm(forms.Form):
             ('Particular',  ''),
             ('Moto', ''),
             ('Camion', ''),
-            ('Dicapacitado', '')
+            ('Discapacitado', '')
         ),
         widget  = forms.RadioSelect()
     )
@@ -973,6 +985,18 @@ class CancelaReservaForm(forms.Form):
             , 'placeholder' : 'Cédula'
             , 'pattern'     : id_validator.regex.pattern
             , 'message'     : id_validator.message
+            }
+        )
+    )
+    
+class MoverReservaForm(forms.Form):
+    inicio = forms.SplitDateTimeField(
+        required = True,
+        label = 'Horario Inicio Reserva',
+        widget= CustomSplitDateTimeWidget(attrs=
+            { 'class'       : 'form-control'
+            , 'type'        : 'date'
+            , 'placeholder' : 'Hora Inicio Reserva'
             }
         )
     )

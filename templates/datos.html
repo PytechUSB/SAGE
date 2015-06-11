@@ -109,6 +109,11 @@
 </table>
 
 <div id="dialogpuestos" title="Gestionar puestos" style="display: none">
+  {% if errorDialog %}
+    <p style="color:red" align ="center">
+	    {{errorDialog}}
+    </p>
+  {% endif %}	
   <form action="." method="POST" class="form form-vertical">
   {% csrf_token %} 
   <div class="control-group" align ="center">
@@ -148,10 +153,20 @@
     </div>	
   </form>  
 </div>
+{% if mostrarBoton %}
     <div class="controls" align ="center">
     	<p><button id="puestos">Gestionar puestos</button></p>
     </div></p>
-	
+{% endif %}	
+
+{% if errorDialog %}
+    <script>
+	  $(function() {
+	      $( "#dialogpuestos" ).dialog( "open" );
+	  });
+    </script>
+{% endif %}	
+
 {% include "validator.js.html" with form=formPuestos %}
  {% block scripts %}
   
