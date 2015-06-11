@@ -187,8 +187,6 @@ def buscar_historial_billetera(identificador):
 		historial.append(pag)
 		
 	def getKey(item):
-		return item.fechaTransaccion
-	
-	print(sorted(historial, key = getKey))		
+		return item.fechaTransaccion	
 		
 	return sorted(historial,key=getKey)
