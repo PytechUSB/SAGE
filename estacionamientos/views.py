@@ -701,7 +701,9 @@ def estacionamiento_consulta_reserva(request):
         if form.is_valid():
 
             cedula        = form.cleaned_data['cedula']
+            cedulaTipo    = form.cleaned_data['cedulaTipo']
             facturas      = Pago.objects.filter(cedula = cedula)
+            facturas      = facturas.filter(cedulaTipo = cedulaTipo)
             facturas      = facturas.exclude(cancelado = True)
             listaFacturas = []
 
