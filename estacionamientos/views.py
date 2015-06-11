@@ -570,8 +570,7 @@ def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaRese
                 nombreUsuario    = form.cleaned_data['nombre'],
                 apellidoUsuario  = form.cleaned_data['apellido']
             )
-    
-    print(pago.idBilletera)            
+             
     return pago
 
 
