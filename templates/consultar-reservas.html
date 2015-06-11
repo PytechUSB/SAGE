@@ -72,15 +72,26 @@
             class="form form-vertical"
           >
             {% csrf_token %}
-              {% for field in form %}
-                <div class="control-group">
-                  <div class="controls">
-                    {{ field }}
-                    <span class='error' id='{{field.name}}_error' aria-live="   polite">{{ field.errors }}</span>
-                    <p></p>
-                  </div>
-                </div>
-              {% endfor %}
+              <div class="control-group">
+              	<div class="controls">                
+	                <p>
+	                  <table><tbody><tr>
+	                    <td>
+	                      {{ form.cedulaTipo }}
+	                    </td>
+	                    <td>
+	                      {{ form.cedula }}
+	                    </td>
+	                  </tr></tbody></table>
+	                  <span
+	                    class='error'
+	                    id='{{form.cedula.name}}_error'
+	                    aria-live="polite"
+	                  ></span>
+	                  {{ form.cedula.errors }}
+	                </p>
+	            </div>
+              </div>
               <div class="control-group">
                 <label></label>
                 <div class="controls">
