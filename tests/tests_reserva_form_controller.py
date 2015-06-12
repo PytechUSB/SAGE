@@ -68,7 +68,7 @@ class ReservaFormControllerTestCase(TestCase):
 
     #Esquina
     def test_SieteDiasDeReserva(self):
-        hoy=datetime.now()
+        hoy=datetime.now() + timedelta(seconds = 60)
         HoraApertura=time(0,0)
         HoraCierre=time(23,59)
         ReservaInicio=hoy
@@ -77,7 +77,7 @@ class ReservaFormControllerTestCase(TestCase):
         self.assertEqual(x, (True, ''))
 
     def test_SieteDiasDeReservaYUnMinuto(self):
-        hoy=datetime.now()
+        hoy=datetime.now() + timedelta(seconds = 60)
         HoraApertura=time(0,0)
         HoraCierre=time(23,59)
         ReservaInicio=hoy
