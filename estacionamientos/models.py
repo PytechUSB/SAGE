@@ -166,7 +166,10 @@ class Pago(models.Model):
 		self.save() 
 		
 	def obtener_string(self):
-		if self.fueMovido != None:
+		if self.fueMovido and self.facturaMovida == None:
+			return "Reservacion"
+		
+		elif self.fueMovido:	
 			return "Reserva Movida"
 		
 		return "Reservacion"
