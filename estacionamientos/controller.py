@@ -115,8 +115,10 @@ def tasa_reservaciones(id_estacionamiento,prt=False):
 			ocupacion_por_dia[reserva_inicio.date()] += longitud_reserva.seconds/60+longitud_reserva.days*24*60
 			reserva_inicio = final_aux
 		longitud_reserva=reserva_final-reserva_inicio
-		ocupacion_por_dia[reserva_inicio.date()] += longitud_reserva.seconds/60 + longitud_reserva.days*24*60
-			
+		try:
+			ocupacion_por_dia[reserva_inicio.date()] += longitud_reserva.seconds/60 + longitud_reserva.days*24*60
+		except:
+			ocupacion_por_dia [reserva_inicio.date()] = longitud_reserva.seconds/60 + longitud_reserva.days*24*60
 	return ocupacion_por_dia
 
 def calcular_porcentaje_de_tasa(hora_apertura,hora_cierre, capacidad, ocupacion):
@@ -173,7 +175,6 @@ def asigna_id_unico():
 
 def buscar_historial_billetera(identificador):
 	historial = []
-	
 	lista_recargas = Recargas.objects.filter(billetera = identificador)
 	for rec in lista_recargas:
 		historial.append(rec)
