@@ -76,7 +76,7 @@ def propietario_all(request):
 
         # Parte de la entrega era limitar la cantidad maxima de
         # estacionamientos a 5
-        if len(propietarios) >= 5 or 5 - len(estacionamientos) <= 0:
+        if len(propietarios) >= 6:
             return render(
                 request, 'template-mensaje.html',
                 { 'color'   : 'red'
@@ -293,7 +293,7 @@ def estacionamiento_detail(request, _id):
                 inicioEspecial  = inicioTarifa2,
                 finEspecial     = finTarifa2
             )
-            if (tarifaFeriados):
+            if (tarifaFeriados is not None):
                 esquemaTarifaFeriados = eval(tipo2)(
                     tarifa      = tarifaFeriados,
                     tarifa2     = tarifaFeriados2,
@@ -303,7 +303,7 @@ def estacionamiento_detail(request, _id):
                 esquemaTarifaFeriados.save()
                 estacionamiento.tarifaFeriados = esquemaTarifaFeriados
             else:
-                if (estacionamiento.tarifaFeriados):
+                if (estacionamiento.tarifaFeriados is not None):
                     estacionamiento.tarifaFeriados.delete()
             esquemaTarifa.save()
             
