@@ -83,7 +83,7 @@ class ReservaFormControllerTestCase(TestCase):
         ReservaInicio=hoy
         ReservaFin=hoy + timedelta(days=7,minutes=1)
         x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
-        self.assertEqual(x, (False, 'La reserva debe estar dentro de los próximos 7 días.'))
+        self.assertEqual(x, (False, 'Se puede reservar un puesto por un maximo de 7 dias.'))
 
     # caso borde
     def test_HorarioReservaInvalido_InicioReservacion_Mayor_FinalReservacion(self):
