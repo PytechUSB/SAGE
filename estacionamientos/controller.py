@@ -15,15 +15,17 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre,horizonte=
 		return (False, 'El tiempo de reserva debe ser al menos de 1 hora.')
 	if inicioReserva < datetime.now():
 		return (False, 'La reserva no puede tener lugar en el pasado.')
-	if finReserva > datetime.now()+timedelta(hours=horizonte):
-		return (False, 'La reserva debe estar dentro del horizonte de reservacion')
 	if apertura.hour==0 and apertura.minute==0 \
 		and cierre.hour==23 and cierre.minute==59:
-		horizontehours=timedelta(hours=horizonte)
-		if finReserva-inicioReserva<=horizontehours:
+		fifteen_days=timedelta(days=15)
+		if finReserva-inicioReserva<=fifteen_days:
+			if finReserva > datetime.now()+timedelta(hours=horizonte):
+				return (False, 'La reserva debe estar dentro del horizonte de reservacion.')
 			return (True,'')
 		else:
-			return(False,'Se puede reservar un puesto por el maximo del horizonte de reservacion.')
+			return(False,'Se puede reservar un puesto por un maximo de 15 dias dependiendo horizonte de reservacion.')
+	if finReserva > datetime.now()+timedelta(hours=horizonte):
+		return (False, 'La reserva debe estar dentro del horizonte de reservacion.')
 	else:
 		hora_inicio = time(hour = inicioReserva.hour, minute = inicioReserva.minute)
 		hora_final  = time(hour = finReserva.hour   , minute = finReserva.minute)

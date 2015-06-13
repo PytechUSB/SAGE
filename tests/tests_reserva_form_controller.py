@@ -68,7 +68,7 @@ class ReservaFormControllerTestCase(TestCase):
 
     #Esquina
     def test_SieteDiasDeReserva(self):
-        hoy=datetime.now() + timedelta(seconds = 60)
+        hoy=datetime.now()
         HoraApertura=time(0,0)
         HoraCierre=time(23,59)
         ReservaInicio=hoy
@@ -76,14 +76,14 @@ class ReservaFormControllerTestCase(TestCase):
         x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
         self.assertEqual(x, (True, ''))
 
-    def test_SieteDiasDeReservaYUnMinuto(self):
-        hoy=datetime.now() + timedelta(seconds = 60)
+    def test_QuinceDiasDeReservaYUnMinuto(self):
+        hoy=datetime.now()
         HoraApertura=time(0,0)
         HoraCierre=time(23,59)
         ReservaInicio=hoy
-        ReservaFin=hoy + timedelta(days=7,minutes=1)
+        ReservaFin=hoy + timedelta(days=16,minutes=1)
         x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
-        self.assertEqual(x, (False, 'Se puede reservar un puesto por un maximo de 7 dias.'))
+        self.assertEqual(x, (False, 'Se puede reservar un puesto por un maximo de 15 dias dependiendo horizonte de reservacion.'))
 
     # caso borde
     def test_HorarioReservaInvalido_InicioReservacion_Mayor_FinalReservacion(self):
@@ -123,4 +123,70 @@ class ReservaFormControllerTestCase(TestCase):
         x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
         self.assertEqual(x, (False, 'El horario de inicio de reserva debe estar en un horario válido.'))
 
-    # malicia
+    #########################################################
+    #             TESTS HORIZONTE DE RESERVACION            #
+    #########################################################
+    
+    # TDD
+    def test_TDDHorizonteExito(self):
+        hoy=datetime.now()
+        HoraApertura=time(0,0)
+        HoraCierre=time(23,59)
+        ReservaInicio=hoy
+        ReservaFin=hoy + timedelta(2)
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre,horizonte=24*3)
+        self.assertEqual(x, (True, ''))
+        
+    # TDD
+    def test_TDDHorizonteFalla(self):
+        hoy=datetime.now()
+        HoraApertura=time(0,0)
+        HoraCierre=time(23,59)
+        ReservaInicio=hoy
+        ReservaFin=hoy + timedelta(days=4)
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre,horizonte=24*3)
+        self.assertEqual(x, (False, 'La reserva debe estar dentro del horizonte de reservacion.'))
+        
+    # borde
+    def test_Horizonte3DiasFalla(self):
+        hoy=datetime.now()
+        HoraApertura=time(0,0)
+        HoraCierre=time(23,59)
+        ReservaInicio=hoy
+        ReservaFin=hoy + timedelta(days=3,minutes=1)
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre,horizonte=24*3)
+        self.assertEqual(x, (False, 'La reserva debe estar dentro del horizonte de reservacion.'))
+        
+    # esquina
+    def test_HorizonteNulo(self):
+        hoy=datetime.now()
+        HoraApertura=time(0,0)
+        HoraCierre=time(23,59)
+        ReservaInicio=hoy
+        ReservaFin=hoy + timedelta(hours=1)
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre,horizonte=0)
+        self.assertEqual(x, (False, 'La reserva debe estar dentro del horizonte de reservacion.'))
+        
+    # borde
+    def test_Horizonte1Hora(self):
+        hoy=datetime.now()
+        HoraApertura=time(15,0)
+        HoraCierre=time(18,0)
+        ReservaInicio=hoy
+        ReservaFin=hoy + timedelta(hours=1)
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre,horizonte=1)
+        self.assertEqual(x, (True, ''))
+        
+    # esquina
+    def test_ExitoMaxHorizonte(self):
+        hoy=datetime.now()
+        HoraApertura=time(0,0)
+        HoraCierre=time(23,59)
+        ReservaInicio=hoy
+        ReservaFin=hoy + timedelta(days=14,hours=23,minutes=59)
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre,horizonte=360)
+        self.assertEqual(x, (True, ''))   
+        
+        
+        
+        
