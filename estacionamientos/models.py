@@ -118,6 +118,21 @@ class BilleteraElectronica (models.Model):
 			self.saldo -= Decimal(monto)
 			self.saldo = Decimal(self.saldo).quantize(Decimal('.01'), rounding = ROUND_DOWN)
 			self.save()
+			
+class AdministracionSageManager(models.Manager):
+	def create_AdministracionSage(self, monto = 0):
+		if len(AdministracionSage.objects.all()) < 1:
+			administracionSage = self.create(montOperaciones = Decimal(monto))
+			administracionSage.save()
+	
+			
+class AdministracionSage(models.Model):
+	montOperaciones = models.DecimalField(max_digits = 3, decimal_places = 1, default= Decimal(0))
+	
+	objects = AdministracionSageManager()
+	
+	def __str__(self):
+		return str(self.id) + ' ' + str(self.montOperaciones)
 	
 class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)

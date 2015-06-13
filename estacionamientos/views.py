@@ -57,7 +57,12 @@ from estacionamientos.models import (
     TarifaHorayFraccion,
     TarifaFinDeSemana,
     TarifaHoraPico, 
-    Cancelaciones)
+    Cancelaciones,
+    AdministracionSage
+)
+
+# Creacion de la unica instancia de la Administracion de SAGE
+AdministracionSage.objects.create_AdministracionSage()
 
 # Vista para procesar los propietarios
 def propietario_all(request):
