@@ -9,7 +9,12 @@
       Estacionamiento {{estacionamiento.nombre}}
     </h3>
     <hr>
-    <div class="col-md-4">
+    <p>
+	  <label for="amount">Horizonte de reservacion:</label>
+	   <input type="text" id="horizonteReserva" readonly style="border:0; color:#0033AF; font-weight:bold;">
+	</p>
+	<hr>
+	<div class="col-md-4">
       {% include "datos.html" %}
     </div>
     <div class="col-md-4">
@@ -19,4 +24,22 @@
       {% include "reservar-form.html" %}
     </div>
   </div>
+  
+<script>
+  $(function() {
+    value="{{estacionamiento.horizonte}}";
+    if (value == 0) {
+   	 $( "#horizonteReserva" ).val("No se admiten reservas");
+   	}
+   	else if (value % 24 == 0) {
+   	 $( "#horizonteReserva" ).val( parseInt(value/24) + " dias" );
+   	}
+   	else if (value > 24) {
+   	 $( "#horizonteReserva" ).val( parseInt(value/24) + " dias y " + value%24 + " horas" );
+   	}
+   	else {
+   	 $( "#horizonteReserva" ).val( value%24 + " horas" );
+   	}
+  });
+</script>
 {% endblock %}

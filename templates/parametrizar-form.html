@@ -58,6 +58,10 @@
   tarifaFeriados2 = document.getElementById('id_tarifaFeriados2');
   inicioTarifaFeriados  = document.getElementById('id_inicioTarifaFeriados');
   finTarifaFeriados     = document.getElementById('id_finTarifaFeriados');
+  
+  // Para el horizonte de reservacion
+  horizonte        = document.getElementById('id_horizonte');
+  
   tarifaFeriados.style.display = 'none';
   tarifaFeriados2.style.display = 'none';
   inicioTarifaFeriados.style.display = 'none';
@@ -204,12 +208,12 @@
       } else {
         document.getElementById('calendar_feriados').style.display = 'none';
         tarifaFeriados.style.display	     = 'none';
-	 	    esquemaFeriados.style.display 	   = 'none';
-	 	    esquemaFeriados.value		 	         = 'TarifaHora';
-	      tarifaFeriados2.style.display 	   = 'none';
-	  	  inicioTarifaFeriados.style.display = 'none';
-	  	  finTarifaFeriados.style.display    = 'none';
-        tarifaFeriados.value 			         = "";
+	 	esquemaFeriados.style.display 	 	 = 'none';
+	 	esquemaFeriados.value		 	     = 'TarifaHora';
+	    tarifaFeriados2.style.display 	 	 = 'none';
+	  	inicioTarifaFeriados.style.display	 = 'none';
+	    finTarifaFeriados.style.display   	 = 'none';
+        tarifaFeriados.value 			     = "";
       }
     };
   </script>	

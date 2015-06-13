@@ -8,15 +8,15 @@ from estacionamientos.models import Propietario, Estacionamiento, Reserva, Pago,
 def HorarioEstacionamiento(HoraInicio, HoraFin):
 	return HoraFin > HoraInicio
 
-def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre):
+def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre,horizonte=168):
 	if inicioReserva >= finReserva:
 		return (False, 'El horario de inicio de reservacion debe ser menor al horario de fin de la reserva.')
 	if finReserva - inicioReserva < timedelta(hours=1):
 		return (False, 'El tiempo de reserva debe ser al menos de 1 hora.')
 	if inicioReserva < datetime.now():
 		return (False, 'La reserva no puede tener lugar en el pasado.')
-	if finReserva.date() > (datetime.now()+timedelta(days=7)).date():
-		return (False, 'La reserva debe estar dentro de los próximos 7 días.')
+	if finReserva > datetime.now()+timedelta(hours=horizonte):
+		return (False, 'La reserva debe estar dentro del horizonte de reservacion')
 	if apertura.hour==0 and apertura.minute==0 \
 		and cierre.hour==23 and cierre.minute==59:
 		seven_days=timedelta(days=7)

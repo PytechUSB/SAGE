@@ -225,7 +225,9 @@ def estacionamiento_detail(request, _id):
     except ObjectDoesNotExist:
         raise Http404
     
-    form = EstacionamientoExtendedForm() 
+    form = EstacionamientoExtendedForm({ 
+        'horizonte'   : estacionamiento.horizonte
+    })
     form_data_puestos={
             'particulares'  : estacionamiento.capacidad,
             'camiones'      : estacionamiento.capacidad_C,
@@ -243,7 +245,8 @@ def estacionamiento_detail(request, _id):
             'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
             'finTarifa2' : estacionamiento.tarifa.finEspecial,
             'esquema'    : estacionamiento.tarifa.__class__.__name__,
-            'feriados'   : estacionamiento.feriados
+            'feriados'   : estacionamiento.feriados,
+            'horizonte'   : estacionamiento.horizonte
         }
         if estacionamiento.tarifaFeriados:
             form_data.update({
@@ -275,6 +278,7 @@ def estacionamiento_detail(request, _id):
             finTarifaFeriados    = form.cleaned_data['finTarifaFeriados']
             tarifaFeriados2      = form.cleaned_data['tarifaFeriados2']
             tarifaFeriados       = form.cleaned_data['tarifaFeriados']
+            horizonte    = request.POST['horizonte']
             
             # debería funcionar con excepciones, y el mensaje debe ser mostrado
             # en el mismo formulario
@@ -307,13 +311,13 @@ def estacionamiento_detail(request, _id):
                     estacionamiento.tarifaFeriados.delete()
             esquemaTarifa.save()
             
-            # debería funcionar con excepciones
             estacionamiento.feriados = feriados
+            estacionamiento.horizonte = horizonte
             estacionamiento.tarifa   = esquemaTarifa
             estacionamiento.apertura = horaIn
             estacionamiento.cierre   = horaOut
-
             estacionamiento.save()
+            
     elif request.method == 'POST' and 'botonPuestos' in request.POST:
         form_data_puestos={
                 'particulares' : request.POST['particulares'],
@@ -431,6 +435,7 @@ def estacionamiento_reserva(request, _id):
                 finalReserva,
                 estacionamiento.apertura,
                 estacionamiento.cierre,
+                estacionamiento.horizonte,
             )
 
             # Si no es valido devolvemos el request
@@ -759,6 +764,7 @@ def receive_sms(request):
         final_reserva,
         estacionamiento.apertura,
         estacionamiento.cierre,
+        estacionamiento.horizonte,
     )
     if m_validado[0]:
         '''reserva_sms = Reserva(
@@ -1194,7 +1200,8 @@ def mover_reserva(request, id_pago):
                 inicioReserva, 
                 finalReserva, 
                 estacionamiento.apertura, 
-                estacionamiento.cierre
+                estacionamiento.cierre,
+                estacionamiento.horizonte
             )
             
             if not horarioValidado[0]:

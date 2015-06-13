@@ -8,6 +8,7 @@
     </div>
   </div>
   <div class="panel-body">
+    {% if estacionamiento.horizonte %}
     <form action="./reserva" method="post" class="form form-vertical">
       {% csrf_token %}
       <!--ELEGIR TIPO DE VEHICULO-->
@@ -66,6 +67,13 @@
         </div>
       </div>
     </form>
+    {% else %}
+    <div style="color:red"><b>
+        No se admiten reservas</b>
+        <hr>
+    </div>
+    {% endif %}
+    
   </div>
 </div>
 {% block scripts%}

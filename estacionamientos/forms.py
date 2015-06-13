@@ -303,7 +303,8 @@ class PuestosForm(forms.Form):
             raise forms.ValidationError("Debe haber al menos un puesto.")
         return cleaned_data   
     
-    
+ 
+        
 class EstacionamientoExtendedForm(forms.Form):
     
     tarifa_validator = RegexValidator(
@@ -348,6 +349,11 @@ class EstacionamientoExtendedForm(forms.Form):
     feriados = forms.CharField(
         required = False,
         initial  = '2015-05-01,2015-06-24,2015-07-05,2015-07-24,2015-10-12,2015-12-25',
+        widget   = forms.HiddenInput()
+    )
+    
+    horizonte = forms.CharField(
+        required = False,
         widget   = forms.HiddenInput()
     )
 
@@ -462,6 +468,8 @@ class EstacionamientoExtendedForm(forms.Form):
             }
         )
     )
+    
+    
 
 class ReservaForm(forms.Form):
     

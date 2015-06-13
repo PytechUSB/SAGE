@@ -59,6 +59,8 @@ class Estacionamiento(models.Model):
 	#capacidad para vehiculos de discapacitados
 	capacidad_D   = models.IntegerField(blank = True, null = True, default=0)
 
+	#Horizonte de reservación medido en horas
+	horizonte    = models.IntegerField(blank = True, default=168) # 7 dias
 	#retorna la capacidd del estacionamiento segun el tipo de vehiculo
 	def obtenerCapacidad(self, tipoDeVehiculo):
 		puestos = 0
