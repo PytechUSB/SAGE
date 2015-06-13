@@ -42,7 +42,8 @@ from estacionamientos.forms import (
     authBilleteraForm,
     CancelaReservaForm,
     MoverReservaForm,
-    PuestosForm
+    PuestosForm,
+    TarifasForm
 )
 
 from estacionamientos.models import (
@@ -224,8 +225,12 @@ def estacionamiento_detail(request, _id):
         estacionamiento = Estacionamiento.objects.get(id=_id)
     except ObjectDoesNotExist:
         raise Http404
-    
+
+    formTarifa_M = TarifasForm()
+    formTarifa_C = TarifasForm()
+    formTarifa_D = TarifasForm()
     form = EstacionamientoExtendedForm() 
+
     form_data_puestos={
             'particulares'  : estacionamiento.capacidad,
             'camiones'      : estacionamiento.capacidad_C,
@@ -244,6 +249,9 @@ def estacionamiento_detail(request, _id):
             'finTarifa2' : estacionamiento.tarifa.finEspecial,
             'esquema'    : estacionamiento.tarifa.__class__.__name__,
             'feriados'   : estacionamiento.feriados
+            #'tarifa_M'     : estacionamiento.tarifa.tarifa_M,
+            #'tarifa2_M'    : estacionamiento.tarifa.tarifa2_M
+            
         }
         if estacionamiento.tarifaFeriados:
             form_data.update({
@@ -252,10 +260,52 @@ def estacionamiento_detail(request, _id):
                 'inicioTarifaFeriados2' : estacionamiento.tarifaFeriados.inicioEspecial,
                 'finTarifaFeriados2' : estacionamiento.tarifaFeriados.finEspecial,
                 'esquemaFeriados'    : estacionamiento.tarifaFeriados.__class__.__name__
+
+                #'tarifaFeriados_M'    : estacionamiento.tarifaFeriados.tarifa_M,
+                #'tarifaFeriados2_M'   : estacionamiento.tarifaFeriados.tarifa2_M
             })
-            
-            
+                        
         form = EstacionamientoExtendedForm(data=form_data)
+
+        
+        ##########################################################
+        if estacionamiento.capacidad_M > 0:
+            form_data_tarifa_moto = {
+                'tarifa'     : estacionamiento.tarifa.tarifa_M,
+                'tarifa2'    : estacionamiento.tarifa.tarifa2_M
+            }
+            if estacionamiento.tarifaFeriados:
+                form_data_tarifa_moto.update({
+                    'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa_M,
+                    'tarifaFeriados2'   : estacionamiento.tarifaFeriados.tarifa2_M
+                })
+        formTarifa_M = TarifasForm(data=form_data_tarifa_moto)
+
+        if estacionamiento.capacidad_C > 0:
+            form_data_tarifa_camion = {
+                'tarifa'     : estacionamiento.tarifa.tarifa_C,
+                'tarifa2'    : estacionamiento.tarifa.tarifa2_C
+            }
+            if estacionamiento.tarifaFeriados:
+                form_data_tarifa_camion.update({
+                    'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa_C,
+                    'tarifaFeriados2'   : estacionamiento.tarifaFeriados.tarifa2_C
+                })
+        formTarifa_C = TarifasForm(data=form_data_tarifa_camion)
+
+        if estacionamiento.capacidad_D > 0:
+            form_data_tarifa_discapacitado = {
+                'tarifa'     : estacionamiento.tarifa.tarifa_D,
+                'tarifa2'    : estacionamiento.tarifa.tarifa2_D
+            }
+            if estacionamiento.tarifaFeriados:
+                form_data_tarifa_discapacitado.update({
+                    'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa_D,
+                    'tarifaFeriados2'   : estacionamiento.tarifaFeriados.tarifa2_D
+                })
+        formTarifa_D = TarifasForm(data=form_data_tarifa_discapacitado)
+        ##########################################################
+        
 
     if request.method == 'POST' and 'botonSubmit' in request.POST:
         # Leemos el formulario
@@ -264,18 +314,27 @@ def estacionamiento_detail(request, _id):
         if form.is_valid():
             horaIn  = form.cleaned_data['horarioin']
             horaOut = form.cleaned_data['horarioout']
-            tarifa  = form.cleaned_data['tarifa']
             tipo    = form.cleaned_data['esquema']
             inicioTarifa2   = form.cleaned_data['inicioTarifa2']
             finTarifa2  = form.cleaned_data['finTarifa2']
-            tarifa2     = form.cleaned_data['tarifa2']
             feriados    = form.cleaned_data['feriados']
             tipo2       = form.cleaned_data['esquemaFeriados']
             inicioTarifaFeriados = form.cleaned_data['inicioTarifaFeriados']
             finTarifaFeriados    = form.cleaned_data['finTarifaFeriados']
+            #Particulares
+            tarifa  = form.cleaned_data['tarifa']
+            print(tarifa)
+            tarifa2     = form.cleaned_data['tarifa2']
             tarifaFeriados2      = form.cleaned_data['tarifaFeriados2']
             tarifaFeriados       = form.cleaned_data['tarifaFeriados']
-            
+            #Motos 
+            '''
+            tarifa_M  = form.cleaned_data['tarifa_M']
+            tarifa2_M = form.cleaned_data['tarifa2_M']
+            tarifaFeriados_M  = form.cleaned_data['tarifaFeriados_M']
+            tarifaFeriados2_M = form.cleaned_data['tarifaFeriados2_M']
+            '''
+
             # debería funcionar con excepciones, y el mensaje debe ser mostrado
             # en el mismo formulario
             if not HorarioEstacionamiento(horaIn, horaOut):
@@ -287,18 +346,63 @@ def estacionamiento_detail(request, _id):
                     }
                 )
 
+            ##########################################################
+            if estacionamiento.capacidad_M > 0:
+                formTarifa_M = TarifasForm(request.POST)
+
+                if formTarifa_M.is_valid():
+                    tarifa_M  = formTarifa_M.cleaned_data['tarifa']
+                    print(tarifa_M)
+                    tarifa2_M = formTarifa_M.cleaned_data['tarifa2']
+                    tarifaFeriados_M  = formTarifa_M.cleaned_data['tarifaFeriados']
+                    tarifaFeriados2_M = formTarifa_M.cleaned_data['tarifaFeriados2']
+
+            if estacionamiento.capacidad_C > 0:
+                formTarifa_C = TarifasForm(request.POST)
+
+                if formTarifa_C.is_valid():
+                    tarifa_C  = formTarifa_C.cleaned_data['tarifa']
+                    print(tarifa_C)
+                    tarifa2_C = formTarifa_C.cleaned_data['tarifa2']
+                    tarifaFeriados_C  = formTarifa_C.cleaned_data['tarifaFeriados']
+                    tarifaFeriados2_C = formTarifa_C.cleaned_data['tarifaFeriados2']
+
+            if estacionamiento.capacidad_D > 0:
+                formTarifa_D = TarifasForm(request.POST)
+
+                if formTarifa_D.is_valid():
+                    tarifa_D  = formTarifa_D.cleaned_data['tarifa']
+                    print(tarifa_D)
+                    tarifa2_D = formTarifa_D.cleaned_data['tarifa2']
+                    tarifaFeriados_D  = formTarifa_D.cleaned_data['tarifaFeriados']
+                    tarifaFeriados2_D = formTarifa_D.cleaned_data['tarifaFeriados2']
+            ##########################################################
+
+
             esquemaTarifa = eval(tipo)(
-                tarifa      = tarifa,
-                tarifa2     = tarifa2,
+                tarifa          = tarifa,
+                tarifa2         = tarifa2,
                 inicioEspecial  = inicioTarifa2,
-                finEspecial     = finTarifa2
+                finEspecial     = finTarifa2,
+                tarifa_M        = tarifa_M,
+                tarifa2_M       = tarifa2_M, 
+                tarifa_C        = tarifa_C,
+                tarifa2_C       = tarifa2_C, 
+                tarifa_D        = tarifa_D,
+                tarifa2_D       = tarifa2_D 
             )
             if (tarifaFeriados is not None):
                 esquemaTarifaFeriados = eval(tipo2)(
-                    tarifa      = tarifaFeriados,
-                    tarifa2     = tarifaFeriados2,
+                    tarifa         = tarifaFeriados,
+                    tarifa2        = tarifaFeriados2,
                     inicioEspecial = inicioTarifaFeriados,
-                    finEspecial    = finTarifaFeriados
+                    finEspecial    = finTarifaFeriados,
+                    tarifa_M       = tarifaFeriados_M,
+                    tarifa2_M      = tarifaFeriados2_M,
+                    tarifa_C       = tarifaFeriados_C,
+                    tarifa2_C      = tarifaFeriados2_C,
+                    tarifa_D       = tarifaFeriados_D,
+                    tarifa2_D      = tarifaFeriados2_D                      
                 )
                 esquemaTarifaFeriados.save()
                 estacionamiento.tarifaFeriados = esquemaTarifaFeriados
@@ -314,6 +418,9 @@ def estacionamiento_detail(request, _id):
             estacionamiento.cierre   = horaOut
 
             estacionamiento.save()
+        
+
+
     elif request.method == 'POST' and 'botonPuestos' in request.POST:
         form_data_puestos={
                 'particulares' : request.POST['particulares'],
@@ -347,9 +454,12 @@ def estacionamiento_detail(request, _id):
     return render(
         request,
         'detalle-estacionamiento.html',
-        { 'form': form
-        , 'formPuestos': formPuestos
-        , 'estacionamiento': estacionamiento
+        { 'form': form,
+          'formPuestos': formPuestos,
+          'formTarifa_M': formTarifa_M,
+          'formTarifa_C': formTarifa_C,
+          'formTarifa_D': formTarifa_D,
+          'estacionamiento': estacionamiento
         }
     )
 

@@ -235,30 +235,25 @@ class Cancelaciones(models.Model):
 
 class EsquemaTarifario(models.Model):
 
-    # No se cuantos digitos deberiamos poner
-    tarifa         = models.DecimalField(max_digits=20, decimal_places=2)
-    tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
     inicioEspecial = models.TimeField(blank = True, null = True)
     finEspecial    = models.TimeField(blank = True, null = True)
+
+    # Para Particulares
+    tarifa         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
+    tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
     
     # Para Motos
-    tarifa_M         = models.DecimalField(max_digits=20, decimal_places=2)
+    tarifa_M         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
     tarifa2_M        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
-    inicioEspecial_M = models.TimeField(blank = True, null = True)
-    finEspecial_M    = models.TimeField(blank = True, null = True)
 
     # Para Camiones
-    tarifa_C         = models.DecimalField(max_digits=20, decimal_places=2)
+    tarifa_C         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
     tarifa2_C        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
-    inicioEspecial_C = models.TimeField(blank = True, null = True)
-    finEspecial_C    = models.TimeField(blank = True, null = True)
 
     # Para Discapacitados
-    tarifa_D         = models.DecimalField(max_digits=20, decimal_places=2)
+    tarifa_D         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
     tarifa2_D        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
-    inicioEspecial_D = models.TimeField(blank = True, null = True)
-    finEspecial_D    = models.TimeField(blank = True, null = True)
-    
+
     
     class Meta:
         abstract = True
