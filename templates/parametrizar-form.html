@@ -28,7 +28,7 @@
       {% if estacionamiento.capacidad_M > 0 %}
         <p>Tarifa para motos:</p>
         {% csrf_token %}     
-        {% for field in formTarifa_M %}
+        {% for field in formTarifaM %}
           <div class="control-group">
             <div class="controls">
               {{ field }}
@@ -44,7 +44,7 @@
       {% if estacionamiento.capacidad_C > 0 %}
         <p>Tarifa para comiones:</p>
         {% csrf_token %}     
-        {% for field in formTarifa_C %}
+        {% for field in formTarifaC %}
           <div class="control-group">
             <div class="controls">
               {{ field }}
@@ -61,7 +61,7 @@
       {% if estacionamiento.capacidad_D > 0 %}
         <p>Tarifa para discapacitados:</p>
         {% csrf_token %}     
-        {% for field in formTarifa_D %}
+        {% for field in formTarifaD %}
           <div class="control-group">
             <div class="controls">
               {{ field }}
