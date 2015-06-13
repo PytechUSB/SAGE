@@ -225,9 +225,7 @@ def estacionamiento_detail(request, _id):
     except ObjectDoesNotExist:
         raise Http404
     
-    form = EstacionamientoExtendedForm({ 
-        'horizonte'   : estacionamiento.horizonte
-    })
+    form = EstacionamientoExtendedForm()
     form_data_puestos={
             'particulares'  : estacionamiento.capacidad,
             'camiones'      : estacionamiento.capacidad_C,
