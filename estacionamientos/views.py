@@ -1116,7 +1116,11 @@ def cancelar_reserva(request, id_pago, id_billetera):
         raise Http404
     
     administracion = AdministracionSage.objects.get(pk = 1)
-    monto_debitar = administracion.calcular_monto(pago.monto)
+    if pago.tarjetaTipo != 'Billetera Electronica':
+        monto_debitar = administracion.calcular_monto(pago.monto)
+    else:
+        monto_debitar = 0
+    
     monto_reembolso = pago.monto - monto_debitar
     
     if request.method == 'POST':
@@ -1129,14 +1133,16 @@ def cancelar_reserva(request, id_pago, id_billetera):
                             fechaTransaccion = datetime.now()
             )
             cancelacion.save()
-            pago_op_especial = PagoOperacionesEspeciales(
-                                id = asigna_id_unico(),
-                                monto = monto_debitar,
-                                billetera = billeteraE,
-                                cancelacion = cancelacion,
-                                fechaTransaccion = datetime.now()
-            )
-            pago_op_especial.save()
+            if pago.tarjetaTipo != 'Billetera Electronica':
+                pago_op_especial = PagoOperacionesEspeciales(
+                                    id = asigna_id_unico(),
+                                    monto = monto_debitar,
+                                    billetera = billeteraE,
+                                    cancelacion = cancelacion,
+                                    fechaTransaccion = datetime.now()
+                )
+                pago_op_especial.save()
+                
             billeteraE.recargar_saldo(monto_reembolso)
             pago.cancelar_reserva()
             return render(
