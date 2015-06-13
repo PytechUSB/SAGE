@@ -60,7 +60,7 @@ from estacionamientos.models import (
     TarifaHoraPico, 
     Cancelaciones,
     AdministracionSage
-)
+, PagoOperacionesEspeciales)
 
 # Creacion de la unica instancia de la Administracion de SAGE
 AdministracionSage.objects.create_AdministracionSage()
@@ -1108,12 +1108,16 @@ def validar_billetera(request, id_pago, link = ''):
 def cancelar_reserva(request, id_pago, id_billetera):
     id_pago = int(id_pago)
     id_billetera = int(id_billetera)
+    
     try:
         pago = Pago.objects.get(pk = id_pago)
         billeteraE = BilleteraElectronica.objects.get(pk = id_billetera)
     except ObjectDoesNotExist:
         raise Http404
     
+    administracion = AdministracionSage.objects.get(pk = 1)
+    monto_debitar = administracion.calcular_monto(pago.monto)
+    monto_reembolso = pago.monto - monto_debitar
     
     if request.method == 'POST':
         if (pago.validar_cancelacion(datetime.now()) and billeteraE.validar_recarga(pago.monto)):
@@ -1125,13 +1129,23 @@ def cancelar_reserva(request, id_pago, id_billetera):
                             fechaTransaccion = datetime.now()
             )
             cancelacion.save()
-            billeteraE.recargar_saldo(pago.monto)
+            pago_op_especial = PagoOperacionesEspeciales(
+                                id = asigna_id_unico(),
+                                monto = monto_debitar,
+                                billetera = billeteraE,
+                                cancelacion = cancelacion,
+                                fechaTransaccion = datetime.now()
+            )
+            pago_op_especial.save()
+            billeteraE.recargar_saldo(monto_reembolso)
             pago.cancelar_reserva()
             return render(
                 request, 
                 'cancelar_reserva.html',
                 { 'pago' : pago
                 , 'billetera' : billeteraE
+                , 'monto_debitar': monto_debitar
+                , 'monto_reembolso' : monto_reembolso
                 , 'cancelacion' : cancelacion
                 , 'color' : 'green'
                 , 'mensaje2': 'Reservacion cancelada satisfactoriamente'
@@ -1163,6 +1177,8 @@ def cancelar_reserva(request, id_pago, id_billetera):
             'cancelar_reserva.html',
             { 'pago' : pago
             , 'billetera' : billeteraE
+            , 'monto_debitar': monto_debitar
+            , 'monto_reembolso' : monto_reembolso
             , 'color' : 'red'
             , 'mensaje1': '¿Desea cancelar esta reservacion?'
             }
@@ -1494,7 +1510,6 @@ def administrar_sage(request):
                 
             else: 
                 administracion.cambiar_porcentaje(porcentaje)
-                print(administracion.porcentaje)
                 return render(
                     request, 
                     'mensaje_cambio_porcentaje.html',

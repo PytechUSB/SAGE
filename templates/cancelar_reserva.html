@@ -67,10 +67,22 @@
                 </td></tr>
 
                 <tr><td><b><i class="fa fa-money"></i>
-                  Monto:
+                  Monto de la reserva:
                 </b></td></tr>
                 <tr><td>
                   BsF. {{pago.monto|floatformat:2|intcomma }}
+                </td></tr>
+                <tr><td><b><i class="fa fa-money"></i>
+                  Cargo por operaciones especiales:
+                </b></td></tr>
+                <tr><td>
+                  BsF. {{monto_debitar|floatformat:2|intcomma }}
+                </td></tr>
+                <tr><td><b><i class="fa fa-money"></i>
+                  Monto a reembolsar:
+                </b></td></tr>
+                <tr><td>
+                  BsF. {{monto_reembolso|floatformat:2|intcomma }}
                 </td></tr>
               </tbody>
             </table>
@@ -155,10 +167,22 @@
                 </td></tr>
 
                 <tr><td><b><i class="fa fa-money"></i>
-                  Monto:
+                  Monto de la reserva:
                 </b></td></tr>
                 <tr><td>
                   BsF. {{pago.monto|floatformat:2|intcomma }}
+                </td></tr>
+                <tr><td><b><i class="fa fa-money"></i>
+                  Cargo por operaciones especiales:
+                </b></td></tr>
+                <tr><td>
+                  BsF. {{monto_debitar|floatformat:2|intcomma }}
+                </td></tr>
+                <tr><td><b><i class="fa fa-money"></i>
+                  Monto reembolsado:
+                </b></td></tr>
+                <tr><td>
+                  BsF. {{monto_reembolso|floatformat:2|intcomma }}
                 </td></tr>
               </tbody>
             </table>

@@ -138,6 +138,11 @@ class AdministracionSage(models.Model):
 		self.porcentaje = porcentaje
 		self.save()
 	
+	def calcular_monto(self, monto_pago):
+		monto_debitar = Decimal((self.porcentaje * monto_pago)/100).quantize(Decimal('.01'))
+		return  monto_debitar
+		
+
 class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()
@@ -255,6 +260,18 @@ class Cancelaciones(models.Model):
 	def obtener_tipo(self):
 		return "Cancelacion"
 
+class PagoOperacionesEspeciales(models.Model):
+	id 						= models.IntegerField(primary_key = True)
+	monto 					= models.DecimalField(decimal_places = 2, max_digits = 256)
+	billetera 	 			= models.ForeignKey(BilleteraElectronica, blank = True, null = True)
+	pago_mover				= models.ForeignKey(Pago, blank = True, null = True)
+	cancelacion				= models.ForeignKey(Cancelaciones, blank = True, null = True)
+	fechaTransaccion 		= models.DateTimeField()
+	
+	def __str__(self):
+		return str(self.id)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
+
+	
 class EsquemaTarifario(models.Model):
 
 	# No se cuantos digitos deberiamos poner
@@ -351,3 +368,5 @@ class TarifaHoraPico(EsquemaTarifario):
 
 	def tipo(self):
 		return("Tarifa diferenciada por hora pico")
+
+	
