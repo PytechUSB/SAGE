@@ -120,19 +120,23 @@ class BilleteraElectronica (models.Model):
 			self.save()
 			
 class AdministracionSageManager(models.Manager):
-	def create_AdministracionSage(self, monto = 0):
+	def create_AdministracionSage(self, porcentaje = 0):
 		if len(AdministracionSage.objects.all()) < 1:
-			administracionSage = self.create(montOperaciones = Decimal(monto))
+			administracionSage = self.create(porcentaje = Decimal(porcentaje))
 			administracionSage.save()
 	
 			
 class AdministracionSage(models.Model):
-	montOperaciones = models.DecimalField(max_digits = 3, decimal_places = 1, default= Decimal(0))
+	porcentaje = models.DecimalField(max_digits = 3, decimal_places = 1, default= Decimal(0))
 	
 	objects = AdministracionSageManager()
 	
 	def __str__(self):
-		return str(self.id) + ' ' + str(self.montOperaciones)
+		return str(self.id) + ' ' + str(self.porcentaje)
+	
+	def cambiar_porcentaje(self, porcentaje):
+		self.porcentaje = porcentaje
+		self.save()
 	
 class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)

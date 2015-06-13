@@ -42,7 +42,8 @@ from estacionamientos.forms import (
     authBilleteraForm,
     CancelaReservaForm,
     MoverReservaForm,
-    PuestosForm
+    PuestosForm,
+    AdministrarSAGEForm
 )
 
 from estacionamientos.models import (
@@ -1471,3 +1472,41 @@ def pago_mover(request, id_pago):
         { 'form' : form }
     )
     
+def administrar_sage(request):
+    administracion = AdministracionSage.objects.get(pk = 1)
+    form = AdministrarSAGEForm()
+    if request.method == 'POST':
+        # Creamos un formulario con los datos que recibimos
+        form = AdministrarSAGEForm(request.POST)
+         
+        # Si el formulario es valido, entonces creamos un objeto con
+        # el constructor del modelo
+        if form.is_valid():
+            porcentaje = form.cleaned_data['porcentaje']
+            if (porcentaje > Decimal('9.9')) or (porcentaje < 0):
+                return render(
+                    request, 
+                    'template-mensaje.html',
+                    { 'mensaje' : 'El porcentaje debe ser un número decimal entre 0 y 9.9'
+                    , 'color' : 'red' 
+                    }
+                )
+                
+            else: 
+                administracion.cambiar_porcentaje(porcentaje)
+                print(administracion.porcentaje)
+                return render(
+                    request, 
+                    'mensaje_cambio_porcentaje.html',
+                    { 'mensaje' : 'Porcentaje cambiado satisfactoriamente'
+                    , 'color' : 'green' 
+                    }
+                )
+            
+    return render(
+        request,
+        'administrar_sage.html',
+        { 'porcentaje' : administracion.porcentaje
+        , 'form' : form 
+        }
+    )

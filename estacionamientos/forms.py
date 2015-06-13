@@ -1000,3 +1000,25 @@ class MoverReservaForm(forms.Form):
             }
         )
     )
+
+class AdministrarSAGEForm(forms.Form):
+    porcentaje_validator = RegexValidator(
+        regex   = '[0-9](\.[0-9])*$',
+        message = 'El porcentaje debe ser un número entre 0.0 y 9.9'
+    )
+    
+    porcentaje = forms.DecimalField(
+        required   = True,
+        max_digits = 2,
+        decimal_places = 1,
+        max_value = 9.9,
+        label      = "Porcentaje de cobro",
+        validators = [porcentaje_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'      : 'form-control'
+            , 'placeholder' : 'Porcentaje de cobro'
+            , 'pattern'     : porcentaje_validator.regex.pattern
+            , 'message'     : porcentaje_validator.message
+            }
+        )
+    )
