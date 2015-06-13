@@ -1273,14 +1273,25 @@ def mover_reserva(request, id_pago):
                 request.session['mesfinal']     = finalReserva.month
                 request.session['diafinal']     = finalReserva.day
                 
-                if monto < pago.monto: 
-                    diferenciaMonto = Decimal(pago.monto - monto)
+                
+                administracion = AdministracionSage.objects.get(pk = 1)
+                if pago.tarjetaTipo != 'Billetera Electronica':
+                    monto_debitar = administracion.calcular_monto(x)
+                else:
+                    if pago.facturaMovida != None:
+                        monto_debitar = administracion.calcular_monto(x)
+                    else:
+                        monto_debitar = 0
+                
+                if (monto + monto_debitar) < pago.monto: 
+                    diferenciaMonto = Decimal(pago.monto - (monto + monto_debitar))
                     request.session['monto'] = float(diferenciaMonto)
                     return render(
                         request,
                         'confirmar-mover.html',
                         { 'id'      : pago.id
                         , 'monto'   : monto
+                        , 'monto_debitar' : monto_debitar
                         , 'montoAnterior' : pago.monto
                         , 'diferencia' : diferenciaMonto
                         , 'reserva' : reservaFinal
@@ -1291,13 +1302,14 @@ def mover_reserva(request, id_pago):
                     )
                         
                 else:
-                    diferenciaMonto = Decimal(monto - pago.monto)
+                    diferenciaMonto = Decimal((monto + monto_debitar) - pago.monto)
                     request.session['monto'] = float(diferenciaMonto)
                     return render(
                         request,
                         'confirmar-mover.html',
                         { 'id'      : pago.id
                         , 'monto'   : monto
+                        , 'monto_debitar' : monto_debitar
                         , 'montoAnterior' : pago.monto
                         , 'diferencia' : diferenciaMonto
                         , 'reserva' : reservaFinal
@@ -1335,6 +1347,7 @@ def recarga_mover(request, id_pago, id_billetera):
     except:
         raise Http404
     
+            
     estacionamiento = pago.reserva.estacionamiento
     montoARecargar = Decimal(request.session['monto']).quantize(Decimal('1.00'))
     pago_movido = pago_reserva_aux(request, pago.monto - montoARecargar, estacionamiento, idFacturaReservaMovida = id_pago)
@@ -1347,8 +1360,31 @@ def recarga_mover(request, id_pago, id_billetera):
         fechaTransaccion = datetime.now()    
     )
     cancelacion.save()
+    monto_reserva_movida = pago.monto - montoARecargar
+    
+    administracion = AdministracionSage.objects.get(pk = 1)
+    if pago.tarjetaTipo != 'Billetera Electronica':
+        monto_debitar = administracion.calcular_monto(monto_reserva_movida)
+    else:
+        if pago.facturaMovida != None:
+            monto_debitar = administracion.calcular_monto(monto_reserva_movida)
+        else:
+            monto_debitar = 0
+            
+    if ((pago.tarjetaTipo != 'Billetera Electronica') or 
+        (pago.tarjetaTipo == 'Billetera Electronica' and pago.facturaMovida != None)):
+        pago_op_especial = PagoOperacionesEspeciales(
+                        id = asigna_id_unico(),
+                        monto = monto_debitar,
+                        billetera = billetera,
+                        cancelacion = cancelacion,
+                        fechaTransaccion = datetime.now()
+        )
+        pago_op_especial.save()
+    
+    
     pago.fue_movido()
-    billetera.recargar_saldo(montoARecargar)
+    billetera.recargar_saldo(montoARecargar - monto_debitar)
     
     
     return render(
@@ -1357,7 +1393,8 @@ def recarga_mover(request, id_pago, id_billetera):
         { 'pago'    : pago_movido
         , 'id_billetera' : id_billetera
         , 'id_pago_anterior' : id_pago
-        , 'monto' : montoARecargar
+        , 'monto' : montoARecargar - monto_debitar
+        , 'monto_debitar': monto_debitar
         , 'color'   : 'green'
         , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
         }

@@ -265,12 +265,17 @@
                 </td></tr>
 
                 <tr><td><b><i class="fa fa-money"></i>
-                  Monto:
+                  Monto de la reserva:
                 </b></td></tr>
                 <tr><td>
                   BsF. {{pago.monto|floatformat:2|intcomma }}
                 </td></tr>
-                
+                 <tr><td><b><i class="fa fa-money"></i>
+                  Cargo por operaciones especiales:
+                </b></td></tr>
+                <tr><td>
+                  BsF. {{monto_debitar|floatformat:2|intcomma }}
+                </td></tr>
                 {% if id_billetera%} 
                 <tr><td><b><i class="fa fa-circle"></i>
                   ID de Billetera Recargada:
@@ -287,7 +292,7 @@
                 </td></tr>
                 
                 {% endif %}
-                
+              
               </tbody>
             </table>
             <div>

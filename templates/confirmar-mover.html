@@ -47,7 +47,18 @@
           <tr><td>
             {{reserva.vehiculoTipo}}
           </td></tr>
-
+		  <tr><td><b><i class="fa fa-money"></i>
+            Monto de la reserva:
+          </b></td></tr>
+          <tr><td>
+            {{montoAnterior}}
+          </td></tr>
+          <tr><td><b><i class="fa fa-money"></i>
+            Cargo por operaciones especiales:
+          </b></td></tr>
+          <tr><td>
+            {{monto_debitar|floatformat:2|intcomma }}
+          </td></tr>
           <tr><td><b><i class="fa fa-money"></i>
             {{ tituloMonto }}
           </b></td></tr>
