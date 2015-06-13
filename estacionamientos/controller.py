@@ -19,11 +19,11 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre,horizonte=
 		return (False, 'La reserva debe estar dentro del horizonte de reservacion')
 	if apertura.hour==0 and apertura.minute==0 \
 		and cierre.hour==23 and cierre.minute==59:
-		seven_days=timedelta(days=7)
-		if finReserva-inicioReserva<=seven_days :
+		horizontehours=timedelta(hours=horizonte)
+		if finReserva-inicioReserva<=horizontehours:
 			return (True,'')
 		else:
-			return(False,'Se puede reservar un puesto por un maximo de 7 dias.')
+			return(False,'Se puede reservar un puesto por el maximo del horizonte de reservacion.')
 	else:
 		hora_inicio = time(hour = inicioReserva.hour, minute = inicioReserva.minute)
 		hora_final  = time(hour = finReserva.hour   , minute = finReserva.minute)
