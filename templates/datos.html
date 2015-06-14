@@ -168,19 +168,45 @@
 {% endif %}	
 
 {% include "validator.js.html" with form=formPuestos %}
- {% block scripts %}
-  
-<script type="text/javascript">
-    function popup(mylink, windowname) {
-      if (! window.focus)
-        return true;
-      var href;
-      if (typeof(mylink) == 'string')
-        href=mylink;
-      else
-        href=mylink.href;
-      window.open(href, windowname, 'width=600,height=400,scrollbars=yes');
-      return false;
-    }
-  </script>
+{% block scripts %}
+	<script type="text/javascript">
+	    function popup(mylink, windowname) {
+	      if (! window.focus)
+	        return true;
+	      var href;
+	      if (typeof(mylink) == 'string')
+	        href=mylink;
+	      else
+	        href=mylink.href;
+	      window.open(href, windowname, 'width=600,height=400,scrollbars=yes');
+	      return false;
+	    }
+	</script>
+	<script>
+	function imprimirHorizonte(value) {
+	    dias=parseInt(value/24)
+	    horas=value%24
+	    if (value == 0) {
+	   	 $( "#horizonteParam" ).val("No se admiten reservas");
+	   	}
+	   	else if (horas == 0) {
+	   	 if (dias==1) $( "#horizonteParam" ).val( dias + " dia" );
+	   	 else $( "#horizonteParam" ).val( dias + " dias" );
+	   	}
+	   	else if (value > 24) {
+	   	 if (dias==1) {
+	   	 	if (horas==1) $( "#horizonteParam" ).val( dias + " dia y " + horas + " hora" );
+	   	 	else $( "#horizonteParam" ).val( dias + " dia y " + horas + " horas" );
+	   	 }
+	   	 else {
+	   	 	if (horas==1) $( "#horizonteParam" ).val( dias + " dias y " + value%24 + " hora" );
+	   	 	else $( "#horizonteParam" ).val( dias + " dias y " + horas + " horas" );
+	   	 }
+	   	}
+	   	else {
+	   	 if (horas==1) $( "#horizonteParam" ).val( horas + " hora" );
+	   	 else $( "#horizonteParam" ).val( horas + " horas" );
+	   	}
+	};
+	</script>
 {% endblock %}
