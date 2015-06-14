@@ -218,6 +218,17 @@ class Pago(models.Model):
 		
 		return False
 
+	def factura_inicial_pagada_billetera(self):
+		aux = self
+		while(aux.facturaMovida != None):
+			aux = aux.facturaMovida
+			
+		if aux.tarjetaTipo == 'Billetera Electronica':
+			return False
+		
+		else:
+			return True
+
 class Recargas(models.Model):
 	id				 = models.IntegerField(primary_key = True)
 	fechaTransaccion = models.DateTimeField()

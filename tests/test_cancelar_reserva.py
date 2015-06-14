@@ -79,21 +79,21 @@ def crear_pago(h_inicio, h_fin, monto):
     r = crear_reserva(h_inicio, h_fin, e)
     crear_factura(r, monto)
 
-def cancelar_reservacion(id_pago, id_billetera, tiempo = datetime.now() + timedelta(seconds = 60)):
+def cancelar_reservacion(id_pago, id_billetera, tiempo = datetime.now() + timedelta(seconds = 60), monto_debitar = 0):
     try:
         pago = Pago.objects.get(pk = id_pago)
-        _billetera = BilleteraElectronica.objects.get(pk = id_billetera)
+        billetera = BilleteraElectronica.objects.get(pk = id_billetera)
         if ((pago.validar_cancelacion(tiempo)) and 
-            (_billetera.validar_recarga(pago.monto))):
+            (billetera.validar_recarga(pago.monto))):
             c = Cancelaciones(
                   pagoCancelado = pago,
-                  billetera = _billetera,
+                  billetera = billetera,
                   id = asigna_id_unico(),
                   monto = pago.monto,
                   fechaTransaccion = datetime.now()            
             )
             pago.cancelar_reserva()
-            _billetera.recargar_saldo(pago.monto)
+            billetera.recargar_saldo(pago.monto)
             c.save()
     except:
         pass

@@ -1116,7 +1116,8 @@ def cancelar_reserva(request, id_pago, id_billetera):
         raise Http404
     
     administracion = AdministracionSage.objects.get(pk = 1)
-    if pago.tarjetaTipo != 'Billetera Electronica':
+    aplicaCargo = pago.factura_inicial_pagada_billetera()
+    if (aplicaCargo):
         monto_debitar = administracion.calcular_monto(pago.monto)
     else:
         monto_debitar = 0
@@ -1133,7 +1134,7 @@ def cancelar_reserva(request, id_pago, id_billetera):
                             fechaTransaccion = datetime.now()
             )
             cancelacion.save()
-            if pago.tarjetaTipo != 'Billetera Electronica':
+            if (aplicaCargo):
                 pago_op_especial = PagoOperacionesEspeciales(
                                     id = asigna_id_unico(),
                                     monto = monto_debitar,
@@ -1427,6 +1428,7 @@ def pago_mover(request, id_pago):
             { 'pago'    : pago_movido
             , 'id_pago_anterior' : id_pago
             , 'monto_debitar' : monto_debitar
+            , 'monto_total' : pago_movido.monto + monto_debitar
             , 'color'   : 'green'
             , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
             }
