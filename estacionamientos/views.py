@@ -1276,16 +1276,17 @@ def mover_reserva(request, id_pago):
                 
                 administracion = AdministracionSage.objects.get(pk = 1)
                 if pago.tarjetaTipo != 'Billetera Electronica':
-                    monto_debitar = administracion.calcular_monto(x)
+                    monto_debitar = administracion.calcular_monto(monto)
                 else:
                     if pago.facturaMovida != None:
-                        monto_debitar = administracion.calcular_monto(x)
+                        monto_debitar = administracion.calcular_monto(monto)
                     else:
                         monto_debitar = 0
                 
                 if (monto + monto_debitar) < pago.monto: 
-                    diferenciaMonto = Decimal(pago.monto - (monto + monto_debitar))
+                    diferenciaMonto = Decimal(pago.monto - monto)
                     request.session['monto'] = float(diferenciaMonto)
+                    request.session['cargoOperacionesEspeciales'] = float(monto_debitar)
                     return render(
                         request,
                         'confirmar-mover.html',
@@ -1293,7 +1294,7 @@ def mover_reserva(request, id_pago):
                         , 'monto'   : monto
                         , 'monto_debitar' : monto_debitar
                         , 'montoAnterior' : pago.monto
-                        , 'diferencia' : diferenciaMonto
+                        , 'diferencia' : diferenciaMonto - monto_debitar
                         , 'reserva' : reservaFinal
                         , 'color'   : 'green'
                         , 'mensaje' : 'Existe un puesto disponible'
@@ -1302,8 +1303,9 @@ def mover_reserva(request, id_pago):
                     )
                         
                 else:
-                    diferenciaMonto = Decimal((monto + monto_debitar) - pago.monto)
+                    diferenciaMonto = Decimal(monto - pago.monto)
                     request.session['monto'] = float(diferenciaMonto)
+                    request.session['cargoOperacionesEspeciales'] = float(monto_debitar)
                     return render(
                         request,
                         'confirmar-mover.html',
@@ -1311,7 +1313,7 @@ def mover_reserva(request, id_pago):
                         , 'monto'   : monto
                         , 'monto_debitar' : monto_debitar
                         , 'montoAnterior' : pago.monto
-                        , 'diferencia' : diferenciaMonto
+                        , 'diferencia' : diferenciaMonto + monto_debitar
                         , 'reserva' : reservaFinal
                         , 'color'   : 'green'
                         , 'mensaje' : 'Existe un puesto disponible'
@@ -1350,6 +1352,7 @@ def recarga_mover(request, id_pago, id_billetera):
             
     estacionamiento = pago.reserva.estacionamiento
     montoARecargar = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+    monto_debitar = Decimal(request.session['cargoOperacionesEspeciales']).quantize(Decimal('1.00'))
     pago_movido = pago_reserva_aux(request, pago.monto - montoARecargar, estacionamiento, idFacturaReservaMovida = id_pago)
     pago_movido.save()
     cancelacion = Cancelaciones(
@@ -1360,17 +1363,7 @@ def recarga_mover(request, id_pago, id_billetera):
         fechaTransaccion = datetime.now()    
     )
     cancelacion.save()
-    monto_reserva_movida = pago.monto - montoARecargar
     
-    administracion = AdministracionSage.objects.get(pk = 1)
-    if pago.tarjetaTipo != 'Billetera Electronica':
-        monto_debitar = administracion.calcular_monto(monto_reserva_movida)
-    else:
-        if pago.facturaMovida != None:
-            monto_debitar = administracion.calcular_monto(monto_reserva_movida)
-        else:
-            monto_debitar = 0
-            
     if ((pago.tarjetaTipo != 'Billetera Electronica') or 
         (pago.tarjetaTipo == 'Billetera Electronica' and pago.facturaMovida != None)):
         pago_op_especial = PagoOperacionesEspeciales(
