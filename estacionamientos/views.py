@@ -280,7 +280,7 @@ def estacionamiento_detail(request, _id):
                     'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa_M,
                     'tarifaFeriados2'   : estacionamiento.tarifaFeriados.tarifa2_M
                 })
-        formTarifaM = TarifasForm(data=form_data_tarifa_moto)
+            formTarifaM = TarifasForm(data=form_data_tarifa_moto)
 
         if estacionamiento.capacidad_C > 0:
             form_data_tarifa_camion = {
@@ -292,7 +292,7 @@ def estacionamiento_detail(request, _id):
                     'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa_C,
                     'tarifaFeriados2'   : estacionamiento.tarifaFeriados.tarifa2_C
                 })
-        formTarifaC = TarifasForm(data=form_data_tarifa_camion)
+            formTarifaC = TarifasForm(data=form_data_tarifa_camion)
 
         if estacionamiento.capacidad_D > 0:
             form_data_tarifa_discapacitado = {
@@ -304,7 +304,7 @@ def estacionamiento_detail(request, _id):
                     'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa_D,
                     'tarifaFeriados2'   : estacionamiento.tarifaFeriados.tarifa2_D
                 })
-        formTarifaD = TarifasForm(data=form_data_tarifa_discapacitado)
+            formTarifaD = TarifasForm(data=form_data_tarifa_discapacitado)
         ##########################################################
         
 
