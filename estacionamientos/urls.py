@@ -28,5 +28,6 @@ urlpatterns = patterns('',
     url(r'^(?P<id_pago>\d+)/mover_reserva$', views.mover_reserva, name = 'mover_reserva'),
     url(r'^(?P<id_pago>\d+)/(?P<id_billetera>\d+)/cancelar_reserva$', views.cancelar_reserva, name = 'cancelar_reserva'),
     url(r'^(?P<id_pago>\d+)/(?P<id_billetera>\d+)/recarga_mover$', views.recarga_mover, name = 'recarga_mover'),
-    url(r'^(?P<id_pago>\d+)/pago_mover$', views.pago_mover, name = 'pago_mover')
+    url(r'^(?P<id_pago>\d+)/pago_mover$', views.pago_mover, name = 'pago_mover'),
+    url(r'^(?P<_id>\d+)/cambio_pin$', views.cambio_pin, name = 'cambio_pin'),
 )

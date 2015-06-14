@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}
+  SAGE - Cambio de PIN de Billetera Electronica
+{% endblock %}
+
+
+{% block menu %}{% endblock %}
+
+{% block innerContents %}
+
+<div class="col-sm-10">
+    <div class="panel panel-default">
+        <div class="panel-heading"> 
+          <div class="panel-title">
+           <i class="fa fa-key pull-left"></i>
+     <h3>  Cambio de PIN de la Billetera Electronica
+    </h3>
+    </div>
+    </div>
+    <hr>
+    <div class="col-md-4">
+        <form
+          method="post"
+          class="form form-vertical"
+        >
+          {% csrf_token %}
+          <div class="control-group">
+            <div class="controls">
+              <p>
+                {{ form.Pin }}
+                <span
+                  class='error'
+                  id='{{form.pin.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.pin.errors }}      
+            <p>
+                {{ form.nuevo_Pin1 }}
+                <span
+                  class='error'
+                  id='{{form.nuevo_Pin1.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.nuevo_Pin1.errors }}
+               <p>
+                {{ form.nuevo_Pin2 }}
+                <span
+                  class='error'
+                  id='{{form.nuevo_Pin2.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.nuevo_Pin2.errors }}
+          <input
+            type="submit"
+            value="Cambiar PIN"
+            class="btn btn-primary"
+          >
+          <input
+            type="button"
+            value="Cancelar"
+            onclick="self.close()"
+            class="btn btn-primary"
+          >
+          <p></p>
+        </form>
+      </div>
+{% endblock %}       
+ 
