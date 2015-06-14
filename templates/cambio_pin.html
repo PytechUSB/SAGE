@@ -15,7 +15,7 @@
         <div class="panel-heading"> 
           <div class="panel-title">
            <i class="fa fa-key pull-left"></i>
-     <h3>  Cambio de PIN de la Billetera Electronica
+     <h3>  Cambio de PIN Billetera Electronica
     </h3>
     </div>
     </div>
@@ -55,6 +55,7 @@
                 ></span>
               </p>
               {{ form.nuevo_Pin2.errors }}
+         <div align ="center">
           <input
             type="submit"
             value="Cambiar PIN"
@@ -66,8 +67,23 @@
             onclick="self.close()"
             class="btn btn-primary"
           >
+           </div>
           <p></p>
         </form>
       </div>
 {% endblock %}       
- 
+ {% block scripts %}
+
+
+<script>
+
+		$('document').ready(function() {
+			
+			window.resizeTo(450,500);
+			
+		});
+		
+</script>
+
+{% include "validator.js.html" %}
+{% endblock %}
