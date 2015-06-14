@@ -226,9 +226,9 @@ def estacionamiento_detail(request, _id):
     except ObjectDoesNotExist:
         raise Http404
 
-    formTarifaM = TarifasForm()
-    formTarifaC = TarifasForm()
-    formTarifaD = TarifasForm()
+    formTarifaM = TarifasForm(prefix='formTarifaM')
+    formTarifaC = TarifasForm(prefix='formTarifaC')
+    formTarifaD = TarifasForm(prefix='formTarifaD')
 
     form = EstacionamientoExtendedForm() 
 
@@ -353,7 +353,7 @@ def estacionamiento_detail(request, _id):
             tarifa2_M = None
             tarifaFeriados2_M = None
             if estacionamiento.capacidad_M > 0:
-                formTarifaM = TarifasForm(request.POST)
+                formTarifaM = TarifasForm(request.POST,prefix='formTarifaM')
 
                 if formTarifaM.is_valid():
                     tarifa_M  = formTarifaM.cleaned_data['tarifa']
@@ -367,7 +367,7 @@ def estacionamiento_detail(request, _id):
             tarifa2_C = None
             tarifaFeriados2_C = None
             if estacionamiento.capacidad_C > 0:
-                formTarifaC = TarifasForm(request.POST)
+                formTarifaC = TarifasForm(request.POST,prefix='formTarifaC')
 
                 if formTarifaC.is_valid():
                     tarifa_C  = formTarifaC.cleaned_data['tarifa']
@@ -381,7 +381,7 @@ def estacionamiento_detail(request, _id):
             tarifa2_D = None
             tarifaFeriados2_D = None
             if estacionamiento.capacidad_D > 0:
-                formTarifaD = TarifasForm(request.POST)
+                formTarifaD = TarifasForm(request.POST,prefix='formTarifaD')
 
                 if formTarifaD.is_valid():
                     tarifa_D  = formTarifaD.cleaned_data['tarifa']
