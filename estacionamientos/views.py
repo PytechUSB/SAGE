@@ -273,7 +273,7 @@ def estacionamiento_detail(request, _id):
                     'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa,
                     'tarifaFeriados2'   : estacionamiento.tarifaFeriados.tarifa2
                 })
-            formTarifaP = TarifasForm(data=form_data_tarifa_particular)
+            formTarifaP = TarifasForm(data=form_data_tarifa_particular,prefix='formTarifaP')
 
         if estacionamiento.capacidad_M > 0:
             form_data_tarifa_moto = {
@@ -285,7 +285,7 @@ def estacionamiento_detail(request, _id):
                     'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa_M,
                     'tarifaFeriados2'   : estacionamiento.tarifaFeriados.tarifa2_M
                 })
-            formTarifaM = TarifasForm(data=form_data_tarifa_moto)
+            formTarifaM = TarifasForm(data=form_data_tarifa_moto,prefix='formTarifaM')
 
         if estacionamiento.capacidad_C > 0:
             form_data_tarifa_camion = {
@@ -297,7 +297,7 @@ def estacionamiento_detail(request, _id):
                     'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa_C,
                     'tarifaFeriados2'   : estacionamiento.tarifaFeriados.tarifa2_C
                 })
-            formTarifaC = TarifasForm(data=form_data_tarifa_camion)
+            formTarifaC = TarifasForm(data=form_data_tarifa_camion,prefix='formTarifaC')
 
         if estacionamiento.capacidad_D > 0:
             form_data_tarifa_discapacitado = {
@@ -309,7 +309,7 @@ def estacionamiento_detail(request, _id):
                     'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa_D,
                     'tarifaFeriados2'   : estacionamiento.tarifaFeriados.tarifa2_D
                 })
-            formTarifaD = TarifasForm(data=form_data_tarifa_discapacitado)
+            formTarifaD = TarifasForm(data=form_data_tarifa_discapacitado,prefix='formTarifaD')
         ##########################################################
         
 
@@ -342,61 +342,61 @@ def estacionamiento_detail(request, _id):
 
             ########## Tarifas según los tipos de vehiculos ##########
             ##########################################################
-            tarifa_P = None
-            tarifaFeriados_P = None
-            tarifa2_P = None
-            tarifaFeriados2_P = None
             if estacionamiento.capacidad > 0:
                 formTarifaP = TarifasForm(request.POST,prefix='formTarifaP')
 
                 if formTarifaP.is_valid():
                     tarifa_P  = formTarifaP.cleaned_data['tarifa']
-                    print(tarifa_P)
                     tarifa2_P = formTarifaP.cleaned_data['tarifa2']
                     tarifaFeriados_P  = formTarifaP.cleaned_data['tarifaFeriados']
                     tarifaFeriados2_P = formTarifaP.cleaned_data['tarifaFeriados2']
+            else:
+                tarifa_P = None
+                tarifaFeriados_P = None
+                tarifa2_P = None
+                tarifaFeriados2_P = None
 
-            tarifa_M = None
-            tarifaFeriados_M = None
-            tarifa2_M = None
-            tarifaFeriados2_M = None
             if estacionamiento.capacidad_M > 0:
                 formTarifaM = TarifasForm(request.POST,prefix='formTarifaM')
 
                 if formTarifaM.is_valid():
                     tarifa_M  = formTarifaM.cleaned_data['tarifa']
-                    print(tarifa_M)
                     tarifa2_M = formTarifaM.cleaned_data['tarifa2']
                     tarifaFeriados_M  = formTarifaM.cleaned_data['tarifaFeriados']
                     tarifaFeriados2_M = formTarifaM.cleaned_data['tarifaFeriados2']
+            else:
+                tarifa_M = None
+                tarifaFeriados_M = None
+                tarifa2_M = None
+                tarifaFeriados2_M = None
 
-            tarifa_C = None
-            tarifaFeriados_C = None
-            tarifa2_C = None
-            tarifaFeriados2_C = None
             if estacionamiento.capacidad_C > 0:
                 formTarifaC = TarifasForm(request.POST,prefix='formTarifaC')
 
                 if formTarifaC.is_valid():
                     tarifa_C  = formTarifaC.cleaned_data['tarifa']
-                    print(tarifa_C)
                     tarifa2_C = formTarifaC.cleaned_data['tarifa2']
                     tarifaFeriados_C  = formTarifaC.cleaned_data['tarifaFeriados']
                     tarifaFeriados2_C = formTarifaC.cleaned_data['tarifaFeriados2']
+            else:
+                tarifa_C = None
+                tarifaFeriados_C = None
+                tarifa2_C = None
+                tarifaFeriados2_C = None
 
-            tarifa_D = None
-            tarifaFeriados_D = None
-            tarifa2_D = None
-            tarifaFeriados2_D = None
             if estacionamiento.capacidad_D > 0:
                 formTarifaD = TarifasForm(request.POST,prefix='formTarifaD')
 
                 if formTarifaD.is_valid():
                     tarifa_D  = formTarifaD.cleaned_data['tarifa']
-                    print(tarifa_D)
                     tarifa2_D = formTarifaD.cleaned_data['tarifa2']
                     tarifaFeriados_D  = formTarifaD.cleaned_data['tarifaFeriados']
                     tarifaFeriados2_D = formTarifaD.cleaned_data['tarifaFeriados2']
+            else:
+                tarifa_D = None
+                tarifaFeriados_D = None
+                tarifa2_D = None
+                tarifaFeriados2_D = None
             ##########################################################
 
             esquemaTarifa = eval(tipo)(
