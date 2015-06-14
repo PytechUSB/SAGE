@@ -348,6 +348,10 @@ def estacionamiento_detail(request, _id):
                 )
 
             ##########################################################
+            tarifa_M = None
+            tarifaFeriados_M = None
+            tarifa2_M = None
+            tarifaFeriados2_M = None
             if estacionamiento.capacidad_M > 0:
                 formTarifaM = TarifasForm(request.POST)
 
@@ -358,6 +362,10 @@ def estacionamiento_detail(request, _id):
                     tarifaFeriados_M  = formTarifaM.cleaned_data['tarifaFeriados']
                     tarifaFeriados2_M = formTarifaM.cleaned_data['tarifaFeriados2']
 
+            tarifa_C = None
+            tarifaFeriados_C = None
+            tarifa2_C = None
+            tarifaFeriados2_C = None
             if estacionamiento.capacidad_C > 0:
                 formTarifaC = TarifasForm(request.POST)
 
@@ -368,6 +376,10 @@ def estacionamiento_detail(request, _id):
                     tarifaFeriados_C  = formTarifaC.cleaned_data['tarifaFeriados']
                     tarifaFeriados2_C = formTarifaC.cleaned_data['tarifaFeriados2']
 
+            tarifa_D = None
+            tarifaFeriados_D = None
+            tarifa2_D = None
+            tarifaFeriados2_D = None
             if estacionamiento.capacidad_D > 0:
                 formTarifaD = TarifasForm(request.POST)
 
