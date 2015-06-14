@@ -89,6 +89,16 @@ class BilleteraElectronica (models.Model):
 	def __str__(self):
 		return str(self.id)
 	
+	def cambiar_pin(self,pin,nuevo_pin1,nuevo_pin2):
+		if self.PIN == pin:
+			if nuevo_pin1 == nuevo_pin2:
+				self.PIN = nuevo_pin1
+				return True
+			else:
+				return False
+		else:
+			return False
+	
 	def recargar_saldo(self, monto):
 		if self.validar_recarga(monto):
 			self.saldo += Decimal(monto)

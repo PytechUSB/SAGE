@@ -184,6 +184,10 @@
 	              id="id_volver"
 	              class="btn btn-primary"
                  >
+                 <a href="/estacionamientos/{{ billetera.id }}/cambio_pin" onClick="return popup(this, 'Cambio PIN')">
+              <button class="btn btn-primary">
+                Cambiar PIN
+              </button> </a>
           <p></p>
             </div>
      </div>
@@ -199,6 +203,7 @@
         
         
                 $('#id_mensaje').css("display", "none");
+                
         
            if({{billetera.saldo}} == 0){
                 $('#id_mensaje').css("display", "block");

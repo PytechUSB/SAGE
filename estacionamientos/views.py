@@ -43,7 +43,8 @@ from estacionamientos.forms import (
     CancelaReservaForm,
     MoverReservaForm,
     PuestosForm,
-    AdministrarSAGEForm
+    AdministrarSAGEForm,
+    cambioPinBilleteraForm
 )
 
 from estacionamientos.models import (
@@ -1591,5 +1592,54 @@ def administrar_sage(request):
         'administrar_sage.html',
         { 'porcentaje' : administracion.porcentaje
         , 'form' : form 
+        }
+    )
+    
+def cambio_pin(request, _id):
+    _id = int(_id)
+    try:
+        billeteraE = BilleteraElectronica.objects.get(pk = _id)
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    form = cambioPinBilleteraForm()
+    
+    # Si es POST, se verifica la información recibida
+    if request.method == 'POST':
+
+        try:
+            billeteraE = BilleteraElectronica.objects.get(pk = _id)
+        except ObjectDoesNotExist:
+            raise Http404
+        
+        form = cambioPinBilleteraForm(request.POST)
+             
+        # Si el formulario es valido, entonces creamos un objeto con
+        # el constructor del modelo
+        if form.is_valid():
+            if (billeteraE.cambiar_pin(form.cleaned_data["Pin"],form.cleaned_data["nuevo_Pin1"],form.cleaned_data["nuevo_Pin2"]) == False):
+                return render(
+                    request,
+                    'mensaje.html',
+                    {'color' : 'red'
+                    , 'mensajeFinal' : 'Autenticacion denegada intenetelo de nuevo'
+                    }
+                )
+                
+            else:
+                billeteraE.save()
+                return render(
+                    request,
+                    'mensaje.html',
+                    {'color' : 'green'
+                    , 'mensajeFinal' : 'Cambio de PIN realizado satisfactoriamente'
+                    }
+                )
+                           
+    return render(
+        request,
+        'cambio_pin.html', 
+        { 'form': form,
+          'billetera': billeteraE  
         }
     )

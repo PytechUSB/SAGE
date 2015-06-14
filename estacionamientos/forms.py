@@ -1023,3 +1023,52 @@ class AdministrarSAGEForm(forms.Form):
             }
         )
     )
+
+class cambioPinBilleteraForm(forms.Form):
+    PIN_validator = RegexValidator(
+        regex   = '^[0-9]{4}$',
+        message = 'Su PIN solo puede contener 4 caracteres numéricos.'
+    )
+    
+    Pin = forms.CharField(
+        required   = True,
+        max_length = MAXPIN,
+        label      = "Pin",
+        validators = [PIN_validator],
+        widget = forms.PasswordInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'PIN'
+            , 'pattern'     : PIN_validator.regex.pattern
+            , 'message'     : PIN_validator.message
+            }
+        )
+    )
+    
+    nuevo_Pin1 = forms.CharField(
+        required   = True,
+        max_length = MAXPIN,
+        label      = "Pin",
+        validators = [PIN_validator],
+        widget = forms.PasswordInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Introduzca su nuevo PIN'
+            , 'pattern'     : PIN_validator.regex.pattern
+            , 'message'     : PIN_validator.message
+            }
+        )
+    )
+    
+    nuevo_Pin2 = forms.CharField(
+        required   = True,
+        max_length = MAXPIN,
+        label      = "Pin",
+        validators = [PIN_validator],
+        widget = forms.PasswordInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Confirme su nuevo PIN'
+            , 'pattern'     : PIN_validator.regex.pattern
+            , 'message'     : PIN_validator.message
+            }
+        )
+    )
+    
