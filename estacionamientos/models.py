@@ -122,11 +122,12 @@ class BilleteraElectronica (models.Model):
 class AdministracionSageManager(models.Manager):
 	def create_AdministracionSage(self, porcentaje = 0):
 		if len(AdministracionSage.objects.all()) < 1:
-			administracionSage = self.create(porcentaje = Decimal(porcentaje))
+			administracionSage = self.create(id = 1, porcentaje = Decimal(porcentaje))
 			administracionSage.save()
 	
 			
 class AdministracionSage(models.Model):
+	id 	       = models.IntegerField(primary_key = True)
 	porcentaje = models.DecimalField(max_digits = 3, decimal_places = 1, default= Decimal(0))
 	
 	objects = AdministracionSageManager()
@@ -135,12 +136,14 @@ class AdministracionSage(models.Model):
 		return str(self.id) + ' ' + str(self.porcentaje)
 	
 	def cambiar_porcentaje(self, porcentaje):
-		self.porcentaje = porcentaje
-		self.save()
+		if porcentaje > 0 and porcentaje <= Decimal('9.9'):
+			self.porcentaje = porcentaje
+			self.save()
 	
 	def calcular_monto(self, monto_pago):
 		monto_debitar = Decimal((self.porcentaje * monto_pago)/100).quantize(Decimal('.01'))
-		return  monto_debitar
+		return  monto_debitar			
+
 		
 
 class Reserva(models.Model):

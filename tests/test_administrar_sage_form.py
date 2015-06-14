@@ -31,7 +31,7 @@ class AdministrarSAGEFormTestCase(TestCase):
     # malicia
     def testAdministrarSAGEForm_negativo(self):
         form_data = {
-                     'porcentaje': '-0.5'
+                     'porcentaje': -0.5
         }
         form = AdministrarSAGEForm(data = form_data)
         self.assertFalse(form.is_valid())

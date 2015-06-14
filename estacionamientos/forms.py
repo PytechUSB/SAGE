@@ -1012,6 +1012,7 @@ class AdministrarSAGEForm(forms.Form):
         max_digits = 2,
         decimal_places = 1,
         max_value = 9.9,
+        min_value = 0,
         label      = "Porcentaje de cobro",
         validators = [porcentaje_validator],
         widget = forms.TextInput(attrs =
