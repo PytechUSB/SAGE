@@ -4,10 +4,7 @@ from math import ceil, floor
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from decimal import Decimal, ROUND_DOWN
-from datetime import timedelta, datetime
-from django.db.models.fields import IntegerField
-from django.db.models.fields.related import ForeignKey
-from django.template.defaultfilters import default
+from datetime import timedelta
 SMAX = 10000
 
 class Propietario(models.Model):

@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 
-
 {% block title %}
   SAGE - Estacionamiento {{estacionamiento.nombre}}
 {% endblock %}
@@ -30,6 +29,7 @@
   $(function() {
  	$( "#slider" ).slider({
       value:"{{ estacionamiento.horizonte }}",
+      animate: "slow",
       min: 0,
       max: 360,
       step: 1,
@@ -39,6 +39,7 @@
       }
     });
     value=$("#slider").slider("value" );
+    // imprimirHorizonte esta en datos.html
     imprimirHorizonte(value);
    	horizonte.value=$( "#slider" ).slider("value");
   });
