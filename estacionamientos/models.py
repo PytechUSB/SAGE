@@ -4,10 +4,7 @@ from math import ceil, floor
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from decimal import Decimal, ROUND_DOWN
-from datetime import timedelta, datetime
-from django.db.models.fields import IntegerField
-from django.db.models.fields.related import ForeignKey
-from django.template.defaultfilters import default
+from datetime import timedelta
 SMAX = 10000
 
 class Propietario(models.Model):
@@ -59,6 +56,8 @@ class Estacionamiento(models.Model):
 	#capacidad para vehiculos de discapacitados
 	capacidad_D   = models.IntegerField(blank = True, null = True, default=0)
 
+	#Horizonte de reservación medido en horas
+	horizonte    = models.IntegerField(blank = True, default=168) # 7 dias
 	#retorna la capacidd del estacionamiento segun el tipo de vehiculo
 	def obtenerCapacidad(self, tipoDeVehiculo):
 		puestos = 0

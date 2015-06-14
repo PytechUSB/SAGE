@@ -66,11 +66,13 @@ from estacionamientos.models import (
 # Creacion de la unica instancia de la Administracion de SAGE
 AdministracionSage.objects.create_AdministracionSage()
 
+MAXPROPIETARIOS=6
+MAXESTACIONAMIENTOS=5
+
 # Vista para procesar los propietarios
 def propietario_all(request):
     propietarios = Propietario.objects.all()
     estacionamientos = Estacionamiento.objects.all()
-    
     
     # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
@@ -81,9 +83,8 @@ def propietario_all(request):
         # Creamos un formulario con los datos que recibimos
         form = PropietarioForm(request.POST)
 
-        # Parte de la entrega era limitar la cantidad maxima de
-        # estacionamientos a 5
-        if len(propietarios) >= 6:
+        # Maximos propietarios:6
+        if len(propietarios) >= MAXPROPIETARIOS:
             return render(
                 request, 'template-mensaje.html',
                 { 'color'   : 'red'
@@ -186,9 +187,8 @@ def estacionamientos_all(request):
         # Creamos un formulario con los datos que recibimos
         form = EstacionamientoForm(request.POST)
 
-        # Parte de la entrega era limitar la cantidad maxima de
-        # estacionamientos a 5
-        if len(estacionamientos) >= 5:
+        # Maximo de estacionamientos
+        if len(estacionamientos) >= MAXESTACIONAMIENTOS:
             return render(
                 request, 'template-mensaje.html',
                 { 'color'   : 'red'
@@ -232,7 +232,7 @@ def estacionamiento_detail(request, _id):
     except ObjectDoesNotExist:
         raise Http404
     
-    form = EstacionamientoExtendedForm() 
+    form = EstacionamientoExtendedForm()
     form_data_puestos={
             'particulares'  : estacionamiento.capacidad,
             'camiones'      : estacionamiento.capacidad_C,
@@ -250,7 +250,8 @@ def estacionamiento_detail(request, _id):
             'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
             'finTarifa2' : estacionamiento.tarifa.finEspecial,
             'esquema'    : estacionamiento.tarifa.__class__.__name__,
-            'feriados'   : estacionamiento.feriados
+            'feriados'   : estacionamiento.feriados,
+            'horizonte'   : estacionamiento.horizonte
         }
         if estacionamiento.tarifaFeriados:
             form_data.update({
@@ -282,6 +283,7 @@ def estacionamiento_detail(request, _id):
             finTarifaFeriados    = form.cleaned_data['finTarifaFeriados']
             tarifaFeriados2      = form.cleaned_data['tarifaFeriados2']
             tarifaFeriados       = form.cleaned_data['tarifaFeriados']
+            horizonte    = request.POST['horizonte']
             
             # debería funcionar con excepciones, y el mensaje debe ser mostrado
             # en el mismo formulario
@@ -314,13 +316,13 @@ def estacionamiento_detail(request, _id):
                     estacionamiento.tarifaFeriados.delete()
             esquemaTarifa.save()
             
-            # debería funcionar con excepciones
             estacionamiento.feriados = feriados
+            estacionamiento.horizonte = horizonte
             estacionamiento.tarifa   = esquemaTarifa
             estacionamiento.apertura = horaIn
             estacionamiento.cierre   = horaOut
-
             estacionamiento.save()
+            
     elif request.method == 'POST' and 'botonPuestos' in request.POST:
         form_data_puestos={
                 'particulares' : request.POST['particulares'],
@@ -329,6 +331,7 @@ def estacionamiento_detail(request, _id):
                 'discapacitados' : request.POST['discapacitados']
             }
         formPuestos=PuestosForm(data=form_data_puestos)
+        
         if formPuestos.is_valid():
             estacionamiento.capacidad = request.POST['particulares']
             estacionamiento.capacidad_C = request.POST['camiones']
@@ -337,6 +340,7 @@ def estacionamiento_detail(request, _id):
             estacionamiento.save()
         else:    
             try:
+                # '__all__' expone el error definido en el clean de PuestosForm
                 formPuestos.errors['__all__']
                 mensaje='Debe haber al menos un puesto.'
             except:
@@ -438,6 +442,7 @@ def estacionamiento_reserva(request, _id):
                 finalReserva,
                 estacionamiento.apertura,
                 estacionamiento.cierre,
+                estacionamiento.horizonte,
             )
 
             # Si no es valido devolvemos el request
@@ -766,6 +771,7 @@ def receive_sms(request):
         final_reserva,
         estacionamiento.apertura,
         estacionamiento.cierre,
+        estacionamiento.horizonte,
     )
     if m_validado[0]:
         '''reserva_sms = Reserva(
@@ -1224,7 +1230,8 @@ def mover_reserva(request, id_pago):
                 inicioReserva, 
                 finalReserva, 
                 estacionamiento.apertura, 
-                estacionamiento.cierre
+                estacionamiento.cierre,
+                estacionamiento.horizonte
             )
             
             if not horarioValidado[0]:

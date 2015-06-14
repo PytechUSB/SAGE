@@ -9,7 +9,12 @@
       Estacionamiento {{estacionamiento.nombre}}
     </h3>
     <hr>
-    <div class="col-md-4">
+    <p>
+	  <label for="amount">Horizonte de reservacion:</label>
+	   <input type="text" id="horizonteParam" readonly style="border:0; color:#0033AF; font-weight:bold;">
+	</p>
+	<hr>
+	<div class="col-md-4">
       {% include "datos.html" %}
     </div>
     <div class="col-md-4">
@@ -19,4 +24,11 @@
       {% include "reservar-form.html" %}
     </div>
   </div>
+  
+<script>
+  $(function() {
+    value="{{estacionamiento.horizonte}}";
+    imprimirHorizonte(value);
+  });
+</script>
 {% endblock %}
