@@ -1405,7 +1405,10 @@ def pago_mover(request, id_pago):
     if (estacionamiento.apertura is None):
         return HttpResponse(status = 403) # No esta permitido acceder a esta vista aun
     
-    if ((request.method == 'GET') and (request.session['monto'] == 0)):
+    monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+    monto_debitar = Decimal(request.session['cargoOperacionesEspeciales']).quantize(Decimal('1.00'))
+    
+    if ((request.method == 'GET') and (monto + monto_debitar == 0)):
         estacionamiento = pago.reserva.estacionamiento
         pago_movido = pago_reserva_aux(request, pago.monto, estacionamiento, idFacturaReservaMovida = id_pago)
         pago_movido.save()
@@ -1423,6 +1426,7 @@ def pago_mover(request, id_pago):
             'pago-mover.html',
             { 'pago'    : pago_movido
             , 'id_pago_anterior' : id_pago
+            , 'monto_debitar' : monto_debitar
             , 'color'   : 'green'
             , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
             }
@@ -1434,7 +1438,7 @@ def pago_mover(request, id_pago):
     if request.method == 'POST':
         form = PagoForm(request.POST)
         if form.is_valid():
-            monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+            #monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
             if (form.cleaned_data['tarjetaTipo'] == 'Billetera Electronica'):
                 billeteraE = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
                 
@@ -1447,7 +1451,7 @@ def pago_mover(request, id_pago):
                     )
                     
                 else:
-                    if(not billeteraE.validar_consumo(monto)):
+                    if(not billeteraE.validar_consumo(monto + monto_debitar)):
                         return render(
                             request, 'mensaje.html',
                             {'color' : 'red'
@@ -1456,6 +1460,8 @@ def pago_mover(request, id_pago):
                         ) 
                         
                     else:
+                        pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
+                        pago_movido.save()
                         cancelacion = Cancelaciones(
                             id = asigna_id_unico(),
                             pagoCancelado = pago,
@@ -1463,11 +1469,20 @@ def pago_mover(request, id_pago):
                             fechaTransaccion = datetime.now()    
                         )
                         cancelacion.save()
+                        if ((pago.tarjetaTipo != 'Billetera Electronica') or 
+                            (pago.tarjetaTipo == 'Billetera Electronica' and pago.facturaMovida != None)):
+                            pago_op_especial = PagoOperacionesEspeciales(
+                                            id = asigna_id_unico(),
+                                            monto = monto_debitar,
+                                            pago_movido = pago_movido,
+                                            billetera = billeteraE,
+                                            fechaTransaccion = datetime.now()
+                            )
+                            pago_op_especial.save()
+                            
                         pago.fue_movido()
                         estacionamiento = pago.reserva.estacionamiento
-                        pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
-                        pago_movido.save()
-                        billeteraE.consumir_saldo(monto)
+                        billeteraE.consumir_saldo(monto + monto_debitar)
                         
                         if (billeteraE.saldo == 0):
                             return render(
@@ -1475,6 +1490,8 @@ def pago_mover(request, id_pago):
                                 'pago-mover.html',
                                 { 'pago'    : pago_movido
                                 , 'id_pago_anterior' : id_pago
+                                , 'monto_debitar' : monto_debitar
+                                , 'monto_total' : pago_movido.monto + monto_debitar 
                                 , 'color'   : 'green'
                                 , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
                                 , 'color2'  : 'red'
@@ -1488,6 +1505,8 @@ def pago_mover(request, id_pago):
                                 'pago-mover.html',
                                 { 'pago'    : pago_movido
                                 , 'id_pago_anterior' : id_pago
+                                , 'monto_debitar' : monto_debitar
+                                , 'monto_total' : pago_movido.monto + monto_debitar 
                                 , 'color'   : 'green'
                                 , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
                                 }
@@ -1496,6 +1515,9 @@ def pago_mover(request, id_pago):
             
             
             else:
+                estacionamiento = pago.reserva.estacionamiento
+                pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
+                pago_movido.save()
                 cancelacion = Cancelaciones(
                     id = asigna_id_unico(),
                     pagoCancelado = pago,
@@ -1503,16 +1525,24 @@ def pago_mover(request, id_pago):
                     fechaTransaccion = datetime.now()    
                 )
                 cancelacion.save()
+                if ((pago.tarjetaTipo != 'Billetera Electronica') or 
+                            (pago.tarjetaTipo == 'Billetera Electronica' and pago.facturaMovida != None)):
+                            pago_op_especial = PagoOperacionesEspeciales(
+                                            id = asigna_id_unico(),
+                                            monto = monto_debitar,
+                                            pago_movido = pago_movido,
+                                            fechaTransaccion = datetime.now()
+                            )
+                            pago_op_especial.save()
                 pago.fue_movido()
-                estacionamiento = pago.reserva.estacionamiento
-                pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
-                pago_movido.save()
                 
                 return render(
                     request,
                     'pago-mover.html',
                     { 'pago'    : pago_movido
                     , 'id_pago_anterior' : id_pago
+                    , 'monto_debitar' : monto_debitar
+                    , 'monto_total' : pago_movido.monto + monto_debitar 
                     , 'color'   : 'green'
                     , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
                     }

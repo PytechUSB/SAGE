@@ -264,7 +264,7 @@ class PagoOperacionesEspeciales(models.Model):
 	id 						= models.IntegerField(primary_key = True)
 	monto 					= models.DecimalField(decimal_places = 2, max_digits = 256)
 	billetera 	 			= models.ForeignKey(BilleteraElectronica, blank = True, null = True)
-	pago_mover				= models.ForeignKey(Pago, blank = True, null = True)
+	pago_movido				= models.ForeignKey(Pago, blank = True, null = True)
 	cancelacion				= models.ForeignKey(Cancelaciones, blank = True, null = True)
 	fechaTransaccion 		= models.DateTimeField()
 	
