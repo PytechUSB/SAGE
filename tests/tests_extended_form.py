@@ -30,7 +30,6 @@ class ExtendedFormTestCase(TestCase):
     def test_estacionamiento_extended_form_tres_campos(self):
         form_data = { 'horarioin': time(hour = 6,  minute = 0),
                       'horarioout': time(hour = 19,  minute = 0),
-                      'tarifa': '12'
                     }
         form = EstacionamientoExtendedForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -49,7 +48,6 @@ class ExtendedFormTestCase(TestCase):
     def test_estacionamiento_extended_form_hora_inicio_igual_hora_cierre(self):
         form_data = { 'horarioin': time(hour = 6,  minute = 0),
                       'horarioout': time(hour = 6,  minute = 0),
-                      'tarifa': '12',
                       'esquema':'TarifaHora'
                     }
         form = EstacionamientoExtendedForm(data = form_data)
@@ -59,7 +57,6 @@ class ExtendedFormTestCase(TestCase):
     def test_estacionamiento_extended_form_string_hora_inicio(self):
         form_data = { 'horarioin': 'holaa',
                       'horarioout': time(hour = 19,  minute = 0),
-                      'tarifa': '12',
                       'esquema':'TarifaHora'
                     }
         form = EstacionamientoExtendedForm(data = form_data)
@@ -69,8 +66,8 @@ class ExtendedFormTestCase(TestCase):
     def test_estacionamiento_extended_form_none_en_tarifa(self):
         form_data = { 'horarioin': time( hour = 6,  minute = 0),
                       'horarioout': time(hour = 19,  minute = 0),
-                      'tarifa': None,
-                      'esquema':'TarifaHora'
+                      'esquema': None,
+                      'esquemaFeriados':'TarifaHora'
                     }
         form = EstacionamientoExtendedForm(data = form_data)
         self.assertFalse(form.is_valid())
