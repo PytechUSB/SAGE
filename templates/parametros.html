@@ -13,44 +13,99 @@
     {% endif %}
 
     {% if estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana con feriados" %}
-      <tr><td><b>Vehiculos Pariculares</b></td></tr>
-      <tr><td><b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
-      <tr><td>BsF. {{estacionamiento.tarifa}}</td></tr>
-      <tr><td><b><i class="fa fa-money"></i> Tarifa fin de semana:</b></td></tr>
-      <tr><td>BsF. {{estacionamiento.tarifa.tarifa2}}</td></tr>
+      <!--PARTICULARES-->
+      {% if estacionamiento.capacidad > 0 %}
+        <tr><td><b>Pariculares:</b></td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa}}</td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa fin de semana:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa2}}</td></tr>
+      {% endif %}
+      <!--MOTOS-->
+      {% if estacionamiento.capacidad_M > 0 %}
+        <tr><td><b>Motos:</b></td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa_M}}</td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa fin de semana:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa2_M}}</td></tr>
+      {% endif %}
+      <!--CAMIONES-->
+      {% if estacionamiento.capacidad_C > 0 %}
+        <tr><td><b>Camiones:</b></td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa_C}}</td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa fin de semana:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa2_C}}</td></tr>
+      {% endif %}
+      <!--DISCAPACITADOS-->
+      {% if estacionamiento.capacidad_D > 0 %}
+        <tr><td><b>Discapacitados:</b></td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa_D}}</td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa fin de semana:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa2_D}}</td></tr>
+      {% endif %}
 
     {% elif estacionamiento.tarifa.tipo == "Tarifa diferenciada por hora pico" %}
       <tr><td><b><i class="fa fa-clock-o"></i> Inicio tarifa especial:</b></td></tr>
       <tr><td>{{estacionamiento.tarifa.inicioEspecial}}</td></tr>
       <tr><td><b><i class="fa fa-clock-o"></i> Fin tarifa especial:</b></td></tr>
       <tr><td>{{estacionamiento.tarifa.finEspecial}}</td></tr>
-      <tr><td><b>Pariculares</b></td></tr>
-      <tr><td><b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
-      <tr><td>BsF. {{estacionamiento.tarifa}}</td></tr>
-      <tr><td><b><i class="fa fa-money"></i> Tarifa especial:</b></td></tr>
-      <tr><td>BsF. {{estacionamiento.tarifa.tarifa2}}</td></tr>
+      <!--PARTICULARES-->
+      {% if estacionamiento.capacidad > 0 %}
+        <tr><td><b>Pariculares:</b></td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa}}</td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa especial:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa2}}</td></tr>
+      {% endif %}
+      <!--MOTOS-->
       {% if estacionamiento.capacidad_M > 0 %}
-        <tr><td><b>Motos</b></td></tr>
-        <tr><td><b><i class="fa fa-money"></i> Tarifa especial:</b></td></tr>
-        <tr><td>BsF. {{estacionamiento.tarifa.tarifa2_M}}</td></tr>
+        <tr><td><b>Motos:</b></td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa_M}}</td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa especial:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa2_M}}</td></tr>
+      {% endif %}
+      <!--CAMIONES-->
+      {% if estacionamiento.capacidad_C > 0 %}
+        <tr><td><b>Camiones:</b></td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa_C}}</td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa especial:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa2_C}}</td></tr>
+      {% endif %}
+      <!--DISCAPACITDOS-->
+      {% if estacionamiento.capacidad_D > 0 %}
+        <tr><td><b>Discapacitados</b></td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa_D}}</td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa especial:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa2_D}}</td></tr>
       {% endif %}
 
     {% elif estacionamiento.tarifa %}
-      <tr><td><b>Particulares</b></td></tr>
-      <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa:</b></td></tr>
-      <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa|floatformat:2|intcomma}}</td></tr>
+      <!--PARTICULARES-->
+      {% if estacionamiento.capacidad > 0 %}
+        <tr><td><b>Particulares:</b></td></tr>
+        <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa:</b></td></tr>
+        <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa|floatformat:2|intcomma}}</td></tr>
+      {% endif %}
+      <!--MOTOS-->
       {% if estacionamiento.capacidad_M > 0 %}
-        <tr><td><b>Motos</b></td></tr>
+        <tr><td><b>Motos:</b></td></tr>
         <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa:</b></td></tr>
         <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa_M|floatformat:2|intcomma}}</td></tr>
       {% endif %}
+      <!--CAMIONES-->
       {% if estacionamiento.capacidad_C > 0 %}
-        <tr><td><b>Camiones</b></td></tr>
+        <tr><td><b>Camiones:</b></td></tr>
         <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa:</b></td></tr>
         <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa_C|floatformat:2|intcomma}}</td></tr>
       {% endif %}
+      <!--DISCAPACITADOS-->
       {% if estacionamiento.capacidad_D > 0 %}
-        <tr><td><b>Discapacitados</b></td></tr>
+        <tr><td><b>Discapacitados:</b></td></tr>
         <tr><td>&nbsp <b><i class="fa fa-money"></i> Tarifa:</b></td></tr>
         <tr><td>&nbsp BsF. {{estacionamiento.tarifa.tarifa_D|floatformat:2|intcomma}}</td></tr>
       {% endif %}

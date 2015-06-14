@@ -24,6 +24,21 @@
         </div>
       {% endfor %}
 
+      {% if estacionamiento.capacidad > 0 %}
+        <p>Tarifa para particulares:</p>
+        {% csrf_token %}     
+        {% for field in formTarifaP %}
+          <div class="control-group">
+            <div class="controls">
+              {{ field }}
+              <span class='error' id='{{field.name}}_error' aria-live="polite">
+                {{ field.errors }}
+              </span>
+              <p>
+            </div>
+          </div>
+        {% endfor %}  
+      {% endif %}
 
       {% if estacionamiento.capacidad_M > 0 %}
         <p>Tarifa para motos:</p>
@@ -42,7 +57,7 @@
       {% endif %}
 
       {% if estacionamiento.capacidad_C > 0 %}
-        <p>Tarifa para comiones:</p>
+        <p>Tarifa para camiones:</p>
         {% csrf_token %}     
         {% for field in formTarifaC %}
           <div class="control-group">
@@ -88,7 +103,7 @@
     <input type="checkbox" value="No" id="check_feriados" onchange="formFeriados(this)">&nbsp;Tarifa días feriados<br>
     <label></label>
         <div class="controls" align ="center">
-          <button type="submit" class="btn btn-primary" onclick="getDates()" name="botonSubmit">
+          <button type="submit" class="btn btn-primary" onclick="getDates()" name="botonSubmit_E">
             Parametrizar Estacionamiento
           </button>
         </div>
