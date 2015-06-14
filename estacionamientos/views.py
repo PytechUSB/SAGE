@@ -59,11 +59,13 @@ from estacionamientos.models import (
     TarifaHoraPico, 
     Cancelaciones)
 
+MAXPROPIETARIOS=6
+MAXESTACIONAMIENTOS=5
+
 # Vista para procesar los propietarios
 def propietario_all(request):
     propietarios = Propietario.objects.all()
     estacionamientos = Estacionamiento.objects.all()
-    
     
     # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
@@ -74,9 +76,8 @@ def propietario_all(request):
         # Creamos un formulario con los datos que recibimos
         form = PropietarioForm(request.POST)
 
-        # Parte de la entrega era limitar la cantidad maxima de
-        # estacionamientos a 5
-        if len(propietarios) >= 6:
+        # Maximos propietarios:6
+        if len(propietarios) >= MAXPROPIETARIOS:
             return render(
                 request, 'template-mensaje.html',
                 { 'color'   : 'red'
@@ -179,9 +180,8 @@ def estacionamientos_all(request):
         # Creamos un formulario con los datos que recibimos
         form = EstacionamientoForm(request.POST)
 
-        # Parte de la entrega era limitar la cantidad maxima de
-        # estacionamientos a 5
-        if len(estacionamientos) >= 5:
+        # Maximo de estacionamientos
+        if len(estacionamientos) >= MAXESTACIONAMIENTOS:
             return render(
                 request, 'template-mensaje.html',
                 { 'color'   : 'red'
@@ -324,6 +324,7 @@ def estacionamiento_detail(request, _id):
                 'discapacitados' : request.POST['discapacitados']
             }
         formPuestos=PuestosForm(data=form_data_puestos)
+        
         if formPuestos.is_valid():
             estacionamiento.capacidad = request.POST['particulares']
             estacionamiento.capacidad_C = request.POST['camiones']
@@ -332,6 +333,7 @@ def estacionamiento_detail(request, _id):
             estacionamiento.save()
         else:    
             try:
+                # '__all__' expone el error definido en el clean de PuestosForm
                 formPuestos.errors['__all__']
                 mensaje='Debe haber al menos un puesto.'
             except:
