@@ -232,7 +232,7 @@ def estacionamiento_detail(request, _id):
     formTarifaD = TarifasForm(prefix='formTarifaD')
 
     form = EstacionamientoExtendedForm() 
-
+    
     form_data_puestos={
             'particulares'  : estacionamiento.capacidad,
             'camiones'      : estacionamiento.capacidad_C,
@@ -248,7 +248,8 @@ def estacionamiento_detail(request, _id):
             'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
             'finTarifa2' : estacionamiento.tarifa.finEspecial,
             'esquema'    : estacionamiento.tarifa.__class__.__name__,
-            'feriados'   : estacionamiento.feriados
+            'feriados'   : estacionamiento.feriados,
+            'horizonte'   : estacionamiento.horizonte
             
         }
         if estacionamiento.tarifaFeriados:
@@ -317,15 +318,16 @@ def estacionamiento_detail(request, _id):
         form = EstacionamientoExtendedForm(request.POST)
         # Si el formulario
         if form.is_valid():
-            horaIn  = form.cleaned_data['horarioin']
-            horaOut = form.cleaned_data['horarioout']
-            tipo    = form.cleaned_data['esquema']
-            inicioTarifa2   = form.cleaned_data['inicioTarifa2']
-            finTarifa2  = form.cleaned_data['finTarifa2']
-            feriados    = form.cleaned_data['feriados']
-            tipo2       = form.cleaned_data['esquemaFeriados']
+            horaIn               = form.cleaned_data['horarioin']
+            horaOut              = form.cleaned_data['horarioout']
+            tipo                 = form.cleaned_data['esquema']
+            inicioTarifa2        = form.cleaned_data['inicioTarifa2']
+            finTarifa2           = form.cleaned_data['finTarifa2']
+            feriados             = form.cleaned_data['feriados']
+            tipo2                = form.cleaned_data['esquemaFeriados']
             inicioTarifaFeriados = form.cleaned_data['inicioTarifaFeriados']
             finTarifaFeriados    = form.cleaned_data['finTarifaFeriados']
+            horizonte            = request.POST['horizonte']
 
             # debería funcionar con excepciones, y el mensaje debe ser mostrado
             # en el mismo formulario
@@ -430,10 +432,11 @@ def estacionamiento_detail(request, _id):
             esquemaTarifa.save()
             
             # debería funcionar con excepciones
-            estacionamiento.feriados = feriados
-            estacionamiento.tarifa   = esquemaTarifa
-            estacionamiento.apertura = horaIn
-            estacionamiento.cierre   = horaOut
+            estacionamiento.feriados  = feriados
+            estacionamiento.tarifa    = esquemaTarifa
+            estacionamiento.apertura  = horaIn
+            estacionamiento.horizonte = horizonte
+            estacionamiento.cierre    = horaOut
 
             estacionamiento.save()     
 
@@ -559,6 +562,7 @@ def estacionamiento_reserva(request, _id):
                 finalReserva,
                 estacionamiento.apertura,
                 estacionamiento.cierre,
+                estacionamiento.horizonte,
             )
 
             # Si no es valido devolvemos el request
@@ -887,6 +891,7 @@ def receive_sms(request):
         final_reserva,
         estacionamiento.apertura,
         estacionamiento.cierre,
+        estacionamiento.horizonte,
     )
     if m_validado[0]:
         '''reserva_sms = Reserva(
@@ -1322,7 +1327,8 @@ def mover_reserva(request, id_pago):
                 inicioReserva, 
                 finalReserva, 
                 estacionamiento.apertura, 
-                estacionamiento.cierre
+                estacionamiento.cierre,
+                estacionamiento.horizonte
             )
             
             if not horarioValidado[0]:

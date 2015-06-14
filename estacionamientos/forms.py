@@ -304,7 +304,7 @@ class PuestosForm(forms.Form):
         return cleaned_data   
 
 class TarifasForm(forms.Form):
-
+    
     tarifa_validator = RegexValidator(
         regex   = '^([0-9]+(\.[0-9]+)?)$',
         message = 'Sólo debe contener dígitos.'
@@ -401,6 +401,11 @@ class EstacionamientoExtendedForm(forms.Form):
         initial  = '2015-05-01,2015-06-24,2015-07-05,2015-07-24,2015-10-12,2015-12-25',
         widget   = forms.HiddenInput()
     )
+    
+    horizonte = forms.CharField(
+        required = False,
+        widget   = forms.HiddenInput()
+    )
 
     esquema = forms.ChoiceField(
         required = True,
@@ -465,6 +470,8 @@ class EstacionamientoExtendedForm(forms.Form):
             }
         )
     )
+    
+    
 
 class ReservaForm(forms.Form):
     

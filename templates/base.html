@@ -42,5 +42,33 @@
     
     {% block scripts %}
 	{% endblock %}
+	
+	<script>
+	function imprimirHorizonte(value) {
+	    dias=parseInt(value/24)
+	    horas=value%24
+	    if (value == 0) {
+	   	 $( "#horizonteParam" ).val("No se admiten reservas");
+	   	}
+	   	else if (horas == 0) {
+	   	 if (dias==1) $( "#horizonteParam" ).val( dias + " dia" );
+	   	 else $( "#horizonteParam" ).val( dias + " dias" );
+	   	}
+	   	else if (value > 24) {
+	   	 if (dias==1) {
+	   	 	if (horas==1) $( "#horizonteParam" ).val( dias + " dia y " + horas + " hora" );
+	   	 	else $( "#horizonteParam" ).val( dias + " dia y " + horas + " horas" );
+	   	 }
+	   	 else {
+	   	 	if (horas==1) $( "#horizonteParam" ).val( dias + " dias y " + value%24 + " hora" );
+	   	 	else $( "#horizonteParam" ).val( dias + " dias y " + horas + " horas" );
+	   	 }
+	   	}
+	   	else {
+	   	 if (horas==1) $( "#horizonteParam" ).val( horas + " hora" );
+	   	 else $( "#horizonteParam" ).val( horas + " horas" );
+	   	}
+	};
+	</script>
   </body>
 </html>
