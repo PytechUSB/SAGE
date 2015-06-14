@@ -1441,7 +1441,6 @@ def pago_mover(request, id_pago):
     if request.method == 'POST':
         form = PagoForm(request.POST)
         if form.is_valid():
-            #monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
             if (form.cleaned_data['tarjetaTipo'] == 'Billetera Electronica'):
                 billeteraE = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
                 
