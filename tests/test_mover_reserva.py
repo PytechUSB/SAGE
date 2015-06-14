@@ -13,7 +13,8 @@ from estacionamientos.models import (
     BilleteraElectronica, 
     Propietario, 
     Estacionamiento,
-    Reserva
+    Reserva,
+    PagoOperacionesEspeciales
 )
 from estacionamientos.controller import asigna_id_unico
 from datetime import datetime
@@ -138,6 +139,20 @@ class MoverReservaTestCase(TestCase):
         crear_pago(inicio, fin, monto, e)
         crear_billetera()
         recarga_mover_reserva(1, inicio, fin, diferencia, 1, e)
+        billetera = BilleteraElectronica.objects.get(pk = 1)
+        self.assertEqual(billetera.saldo, diferencia)
+    
+    # malicia  
+    def testMoverReservaAlPasado(self):
+        p = crear_propietario()
+        e = crear_estacionamiento(p)
+        monto = Decimal('0.01')
+        diferencia = 0
+        inicio = datetime.now() + timedelta(days = 1)
+        fin = datetime.now() + timedelta(days = 1, hours = 1)
+        crear_pago(inicio, fin, monto, e)
+        crear_billetera()
+        recarga_mover_reserva(1, datetime.now() - timedelta(seconds = 1), fin, diferencia, 1, e)
         billetera = BilleteraElectronica.objects.get(pk = 1)
         self.assertEqual(billetera.saldo, diferencia)
         

@@ -2,7 +2,8 @@
 from datetime import datetime, timedelta, time
 from decimal import Decimal
 from collections import OrderedDict
-from estacionamientos.models import Propietario, Estacionamiento, Reserva, Pago, BilleteraElectronica, Recargas,Cancelaciones
+from estacionamientos.models import Propietario, Estacionamiento, Reserva, Pago, BilleteraElectronica, Recargas,Cancelaciones,\
+	PagoOperacionesEspeciales
 
 # chequeo de horarios de extended
 def HorarioEstacionamiento(HoraInicio, HoraFin):
@@ -171,7 +172,8 @@ def asigna_id_unico():
 	num_pagos_reservas = len(Pago.objects.all())
 	num_recargas = len(Recargas.objects.all())
 	num_cancelaciones = len(Cancelaciones.objects.all())
-	return (1 + num_pagos_reservas + num_recargas + num_cancelaciones)
+	num_opEspeciales = len(PagoOperacionesEspeciales.objects.all())
+	return (1 + num_pagos_reservas + num_recargas + num_cancelaciones + num_opEspeciales)
 
 def buscar_historial_billetera(identificador):
 	historial = []

@@ -529,11 +529,11 @@ class PagoForm(forms.Form):
     nombre = forms.CharField(
         required   = True,
         max_length=MAXNOMBRE,
-        label      = "Nombre del Tarjetahabiente",
+        label      = "Nombre del Usuario",
         validators = [card_name_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Nombre del Tarjetahabiente'
+            , 'placeholder' : 'Nombre del Usuario'
             , 'pattern'     : card_name_validator.regex.pattern
             , 'message'     : card_name_validator.message
             }
@@ -543,11 +543,11 @@ class PagoForm(forms.Form):
     apellido = forms.CharField(
         required   = True,
         max_length=MAXNOMBRE,
-        label      = "Apellido del Tarjetahabiente",
+        label      = "Apellido del Usuario",
         validators = [card_surname_validator],
         widget = forms.TextInput(attrs =
             { 'class'      : 'form-control'
-            , 'placeholder' : 'Apellido del Tarjetahabiente'
+            , 'placeholder' : 'Apellido del Usuario'
             , 'pattern'     : card_surname_validator.regex.pattern
             , 'message'     : card_surname_validator.message
             }
@@ -850,11 +850,11 @@ class BilleteraPagoForm(forms.Form):
     nombre = forms.CharField(
         required   = True,
         max_length=MAXNOMBRE,
-        label      = "Nombre del Tarjetahabiente",
+        label      = "Nombre del Usuario",
         validators = [card_name_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Nombre del Tarjetahabiente'
+            , 'placeholder' : 'Nombre del Usuario'
             , 'pattern'     : card_name_validator.regex.pattern
             , 'message'     : card_name_validator.message
             }
@@ -864,11 +864,11 @@ class BilleteraPagoForm(forms.Form):
     apellido = forms.CharField(
         required   = True,
         max_length=MAXNOMBRE,
-        label      = "Apellido del Tarjetahabiente",
+        label      = "Apellido del Usuario",
         validators = [card_surname_validator],
         widget = forms.TextInput(attrs =
             { 'class'      : 'form-control'
-            , 'placeholder' : 'Apellido del Tarjetahabiente'
+            , 'placeholder' : 'Apellido del Usuario'
             , 'pattern'     : card_surname_validator.regex.pattern
             , 'message'     : card_surname_validator.message
             }
