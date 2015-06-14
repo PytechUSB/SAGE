@@ -28,18 +28,7 @@
 <script>
   $(function() {
     value="{{estacionamiento.horizonte}}";
-    if (value == 0) {
-   	 $( "#horizonteReserva" ).val("No se admiten reservas");
-   	}
-   	else if (value % 24 == 0) {
-   	 $( "#horizonteReserva" ).val( parseInt(value/24) + " dias" );
-   	}
-   	else if (value > 24) {
-   	 $( "#horizonteReserva" ).val( parseInt(value/24) + " dias y " + value%24 + " horas" );
-   	}
-   	else {
-   	 $( "#horizonteReserva" ).val( value%24 + " horas" );
-   	}
+    imprimirHorizonte(value);
   });
 </script>
 {% endblock %}

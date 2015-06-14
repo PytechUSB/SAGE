@@ -72,104 +72,68 @@
     document.getElementById('calendar_feriados').style.display = 'block';
     tarifaFeriados.style.display = '';
     esquemaFeriados.style.display = '';
- 	if (esquemaFeriados.value == "TarifaHoraPico") {
-	    inicioTarifaFeriados.style.display='';
-	    inicioTarifaFeriados.placeholder = "Inicio horario pico"
-	    finTarifaFeriados.style.display='';
-	    finTarifaFeriados.placeholder = "Fin horario pico"
-	    tarifaFeriados2.style.display = '';
-	    tarifaFeriados2.placeholder="Tarifa pico";
-	  } else if (esquemaFeriados.value == "TarifaFinDeSemana") {
-	    inicioTarifaFeriados.style.display='none';
-	    inicioTarifaFeriados.value = ""
-	    finTarifaFeriados.style.display='none';
-	    finTarifaFeriados.value = ""
-	    tarifaFeriados2.style.display = '';
-	    tarifaFeriados2.placeholder="Tarifa fin de semana";
-	  } else {
-	    inicioTarifaFeriados.style.display='none';
-	    inicioTarifaFeriados.value = ""
-	    finTarifaFeriados.style.display='none';
-	    finTarifaFeriados.value = ""
-	    tarifaFeriados2.style.display='none';
-	    tarifaFeriados2.value = ""
-	  }
+ 	verificarTarifaFeriados();
   }
-  if (esquema.value == "TarifaHoraPico") {
-    inicio.style.display='';
-    inicio.placeholder = "Inicio horario pico"
-    fin.style.display='';
-    fin.placeholder = "Fin horario pico"
-    tarifa2.style.display = '';
-    tarifa2.placeholder="Tarifa pico";
-  } else if (esquema.value == "TarifaFinDeSemana") {
-    inicio.style.display='none';
-    inicio.value = ""
-    fin.style.display='none';
-    fin.value = ""
-    tarifa2.style.display = '';
-    tarifa2.placeholder="Tarifa fin de semana";
-  } else {
-    inicio.style.display='none';
-    inicio.value = ""
-    fin.style.display='none';
-    fin.value = ""
-    tarifa2.style.display='none';
-    tarifa2.value = ""
-  }
-  
+  verificarTarifa();
   if (esquema) {
     esquema.onchange=function() {
-      if (this.value == "TarifaHoraPico") {
-        inicio.style.display='';
-        inicio.placeholder = "Inicio horario pico"
-        fin.style.display='';
-        fin.placeholder = "Fin horario pico"
-        tarifa2.style.display = '';
-        tarifa2.placeholder="Tarifa pico";
-      } else if (this.value == "TarifaFinDeSemana") {
-        inicio.style.display='none';
-        inicio.value = ""
-        fin.style.display='none';
-        fin.value = ""
-        tarifa2.style.display = '';
-        tarifa2.placeholder="Tarifa fin de semana";
-      } else {
-        inicio.style.display='none';
-        inicio.value = ""
-        fin.style.display='none';
-        fin.value = ""
-        tarifa2.style.display='none';
-        tarifa2.value = ""
-      }
+      verificarTarifa();
     }
   }
   if (esquemaFeriados) {
     esquemaFeriados.onchange=function() {
-      if (this.value == "TarifaHoraPico") {
-        inicioTarifaFeriados.style.display='';
-        inicioTarifaFeriados.placeholder = "Inicio horario pico"
-        finTarifaFeriados.style.display='';
-        finTarifaFeriados.placeholder = "Fin horario pico"
-        tarifaFeriados2.style.display = '';
-        tarifaFeriados2.placeholder="Tarifa pico";
-      } else if (this.value == "TarifaFinDeSemana") {
-        inicioTarifaFeriados.style.display='none';
-        inicioTarifaFeriados.value = ""
-        finTarifaFeriados.style.display='none';
-        finTarifaFeriados.value = ""
-        tarifaFeriados2.style.display = '';
-        tarifaFeriados2.placeholder="Tarifa fin de semana";
-      } else {
-        inicioTarifaFeriados.style.display='none';
-        inicioTarifaFeriados.value = ""
-        finTarifaFeriados.style.display='none';
-        finTarifaFeriados.value = ""
-        tarifaFeriados2.style.display='none';
-        tarifaFeriados2.value = ""
-      }
+      verificarTarifaFeriados();
     }
   }
+// Funciones para verificar los esquemas tarifarios (para no repetir codigo)
+function verificarTarifa() {
+	if (esquema.value == "TarifaHoraPico") {
+        inicio.style.display='';
+        inicio.placeholder = "Inicio horario pico";
+        fin.style.display='';
+        fin.placeholder = "Fin horario pico";
+        tarifa2.style.display = '';
+        tarifa2.placeholder="Tarifa pico";
+    } else if (esquema.value == "TarifaFinDeSemana") {
+        inicio.style.display='none';
+        inicio.value = "";
+        fin.style.display='none';
+        fin.value = "";
+        tarifa2.style.display = '';
+        tarifa2.placeholder="Tarifa fin de semana";
+    } else {
+        inicio.style.display='none';
+        inicio.value = "";
+        fin.style.display='none';
+        fin.value = "";
+        tarifa2.style.display='none';
+        tarifa2.value = "";
+    }
+};
+function verificarTarifaFeriados() {
+	if (esquemaFeriados.value == "TarifaHoraPico") {
+	    inicioTarifaFeriados.style.display='';
+	    inicioTarifaFeriados.placeholder = "Inicio horario pico";
+	    finTarifaFeriados.style.display='';
+	    finTarifaFeriados.placeholder = "Fin horario pico";
+	    tarifaFeriados2.style.display = '';
+	    tarifaFeriados2.placeholder="Tarifa pico";
+	} else if (esquemaFeriados.value == "TarifaFinDeSemana") {
+	    inicioTarifaFeriados.style.display='none';
+	    inicioTarifaFeriados.value = "";
+	    finTarifaFeriados.style.display='none';
+	    finTarifaFeriados.value = "";
+	    tarifaFeriados2.style.display = '';
+	    tarifaFeriados2.placeholder="Tarifa fin de semana";
+	} else {
+	    inicioTarifaFeriados.style.display='none';
+	    inicioTarifaFeriados.value = "";
+	    finTarifaFeriados.style.display='none';
+	    finTarifaFeriados.value = "";
+	    tarifaFeriados2.style.display='none';
+	    tarifaFeriados2.value = "";
+	}
+};
 </script>
 
 {% block scripts %}
@@ -216,6 +180,5 @@
         tarifaFeriados.value 			     = "";
       }
     };
-  </script>	
-  
+  </script>
 {% endblock %}

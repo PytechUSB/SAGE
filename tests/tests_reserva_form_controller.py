@@ -170,8 +170,8 @@ class ReservaFormControllerTestCase(TestCase):
     # borde
     def test_Horizonte1Hora(self):
         hoy=datetime.now()
-        HoraApertura=time(15,0)
-        HoraCierre=time(18,0)
+        HoraApertura=time(0,0)
+        HoraCierre=time(23,59)
         ReservaInicio=hoy
         ReservaFin=hoy + timedelta(hours=1)
         x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre,horizonte=1)

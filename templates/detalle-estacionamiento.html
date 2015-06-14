@@ -34,36 +34,15 @@
       max: 360,
       step: 1,
       slide: function( event, ui ) {
-	    if (ui.value == 0) {
-	   	 $( "#horizonteParam" ).val("No se admiten reservas");
-	   	}
-   		else if (ui.value % 24 == 0) {
-       	 $( "#horizonteParam" ).val( parseInt(ui.value/24) + " dias" );
-       	}
-       	else if (ui.value > 24) {
-       	 $( "#horizonteParam" ).val( parseInt(ui.value/24) + " dias y " + ui.value%24 + " horas" );
-       	}
-       	else {
-       	 $( "#horizonteParam" ).val( ui.value%24 + " horas" );
-       	}
+	    imprimirHorizonte(ui.value);
    		horizonte.value=ui.value;
       }
     });
     value=$("#slider").slider("value" );
-    if (value == 0) {
-   	 $( "#horizonteParam" ).val("No se admiten reservas");
-   	}
-   	else if (value % 24 == 0) {
-   	 $( "#horizonteParam" ).val( parseInt(value/24) + " dias" );
-   	}
-   	else if (value > 24) {
-   	 $( "#horizonteParam" ).val( parseInt(value/24) + " dias y " + value%24 + " horas" );
-   	}
-   	else {
-   	 $( "#horizonteParam" ).val( value%24 + " horas" );
-   	}
+    imprimirHorizonte(value);
    	horizonte.value=$( "#slider" ).slider("value");
   });
 </script>
+
 {% endblock %}
 
