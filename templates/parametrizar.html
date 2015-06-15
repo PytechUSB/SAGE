@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %}
+  SAGE - Estacionamiento {{estacionamiento.nombre}}
+{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Estacionamiento {{estacionamiento.nombre}}
+    </h3>
+    <hr>  
+    <p>
+      <label for="amount">Horizonte de reservacion:</label>
+      <input type="text" id="horizonteParam" readonly style="border:0; color:#0033AF; font-weight:bold;">
+    </p>
+    <div id="slider"></div>
+    <hr>
+    <div class="parametrosForm" ><div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="panel-title">
+          <i class="glyphicon glyphicon-wrench pull-right"></i>
+          <h4>
+            Parametrizar
+          </h4>
+        </div>
+      </div>
+      <div class="panel-body">
+        <form action="." method="post" class="form form-vertical">
+        
+          {% csrf_token %}     
+          {% for field in form %}
+            <div class="control-group">
+              <div class="controls">
+                {{ field }}
+                <span class='error' id='{{field.name}}_error' aria-live="polite">
+                  {{ field.errors }}
+                </span>
+                <p>
+              </div>
+            </div>
+          {% endfor %}
+
+          <div align="center">
+            <div class="tarifas">
+              <p>Tarifa para particulares:</p>
+              {% csrf_token %}     
+              {% for field in formTarifaP %}
+                <div class="control-group">
+                  <div class="controls">
+                    {{ field }}
+                    <span class='error' id='{{field.name}}_error' aria-live="polite">
+                      {{ field.errors }}
+                    </span>
+                    <p>
+                  </div>
+                </div>
+              {% endfor %}  
+            </div>
+            <div class="tarifas">
+              <p>Tarifa para motos:</p>
+              {% csrf_token %}     
+              {% for field in formTarifaM %}
+                <div class="control-group">
+                  <div class="controls">
+                    {{ field }}
+                    <span class='error' id='{{field.name}}_error' aria-live="polite">
+                      {{ field.errors }}
+                    </span>
+                    <p>
+                  </div>
+                </div>
+              {% endfor %}  
+            </div>
+            <div class="tarifas">
+              <p>Tarifa para camiones:</p>
+              {% csrf_token %}     
+              {% for field in formTarifaC %}
+                <div class="control-group">
+                  <div class="controls">
+                    {{ field }}
+                    <span class='error' id='{{field.name}}_error' aria-live="polite">
+                      {{ field.errors }}
+                    </span>
+                    <p>
+                  </div>
+                </div>
+              {% endfor %}  
+            </div>
+            <div class="tarifas">
+              <p>Tarifa para discapacitados:</p>
+              {% csrf_token %}     
+              {% for field in formTarifaD %}
+                <div class="control-group">
+                  <div class="controls">
+                    {{ field }}
+                    <span class='error' id='{{field.name}}_error' aria-live="polite">
+                      {{ field.errors }}
+                    </span>
+                    <p>
+                  </div>
+                </div>
+              {% endfor %}  
+            </div>
+          </div>
+          <div class="control-group" align ="center">
+            <!-- Calendario -->
+            <div id="calendar_feriados" style="display: none">
+              <i class="fa fa-calendar" id="calendar" onclick="calendar()"></i> &nbsp;
+              <span role="text" id="multi_date_picker"></span>
+            </div>
+            <br>
+            <!--Checkbox para tarifa en dias feriados-->
+            <input type="checkbox" value="No" id="check_feriados" onchange="formFeriados(this)">&nbsp;Tarifa días feriados<br><br>
+            <div class="controls" align ="center">
+              <button type="submit" class="btn btn-primary" onclick="getDates()" name="botonSubmit_E">
+                Parametrizar Estacionamiento
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div></div>
+  </div>
+
+  {% include "validator.js.html" %}
+
+  {% block scripts %}
+  <script>
+    $(function() {
+    $( "#slider" ).slider({
+        value:"{{ estacionamiento.horizonte }}",
+        animate: "slow",
+        min: 0,
+        max: 360,
+        step: 1,
+        slide: function( event, ui ) {
+        imprimirHorizonte(ui.value);
+        horizonte.value=ui.value;
+        }
+      });
+      value=$("#slider").slider("value" );
+      // imprimirHorizonte esta en datos.html
+      imprimirHorizonte(value);
+      horizonte.value=$( "#slider" ).slider("value");
+    });
+  </script>
+
+  <script type="text/javascript">
+    esquema         = document.getElementById('id_esquema');
+    esquemaFeriados = document.getElementById('id_esquemaFeriados');
+    inicio          = document.getElementById('id_inicioTarifa2');
+    fin             = document.getElementById('id_finTarifa2');
+
+    //tarifas
+    tarifa1_P  = document.getElementById('id_formTarifaP-tarifa');
+    tarifa2_P  = document.getElementById('id_formTarifaP-tarifa2');
+    tarifa1_M  = document.getElementById('id_formTarifaM-tarifa');
+    tarifa2_M  = document.getElementById('id_formTarifaM-tarifa2');
+    tarifa1_C  = document.getElementById('id_formTarifaC-tarifa');
+    tarifa2_C  = document.getElementById('id_formTarifaC-tarifa2');
+    tarifa1_D  = document.getElementById('id_formTarifaD-tarifa');
+    tarifa2_D  = document.getElementById('id_formTarifaD-tarifa2');
+    
+    //Feriados
+    feriados              = document.getElementById('id_feriados');
+    inicioTarifaFeriados  = document.getElementById('id_inicioTarifaFeriados');
+    finTarifaFeriados     = document.getElementById('id_finTarifaFeriados');
+
+    //tarifas para dias feriados
+    tarifaFeriados_P    = document.getElementById('id_formTarifaP-tarifaFeriados');
+    tarifaFeriados2_P   = document.getElementById('id_formTarifaP-tarifaFeriados2');
+    tarifaFeriados_M    = document.getElementById('id_formTarifaM-tarifaFeriados');
+    tarifaFeriados2_M   = document.getElementById('id_formTarifaM-tarifaFeriados2');
+    tarifaFeriados_C    = document.getElementById('id_formTarifaC-tarifaFeriados');
+    tarifaFeriados2_C   = document.getElementById('id_formTarifaC-tarifaFeriados2');
+    tarifaFeriados_D    = document.getElementById('id_formTarifaD-tarifaFeriados');
+    tarifaFeriados2_D   = document.getElementById('id_formTarifaD-tarifaFeriados2');
+    
+    // Para el horizonte de reservacion
+    horizonte        = document.getElementById('id_horizonte');
+    
+    //inicializar feriados
+    inicioTarifaFeriados.style.display = 'none';
+    finTarifaFeriados.style.display    = 'none';
+    esquemaFeriados.style.display      = 'none';
+    tarifaFeriados_P.style.display     = 'none';
+    tarifaFeriados2_P.style.display    = 'none';
+    tarifaFeriados_M.style.display     = 'none';
+    tarifaFeriados2_M.style.display    = 'none';
+    tarifaFeriados_C.style.display     = 'none';
+    tarifaFeriados2_C.style.display    = 'none';
+    tarifaFeriados_D.style.display     = 'none';
+    tarifaFeriados2_D.style.display    = 'none';
+
+    if (tarifaFeriados.value != ""){
+      document.getElementById("check_feriados").checked = true;
+      document.getElementById('calendar_feriados').style.display = 'block';
+      tarifaFeriados.style.display  = '';
+      esquemaFeriados.style.display = '';
+      verificarTarifaFeriados();
+    }
+    verificarTarifa();
+    
+    if (esquema) {
+      esquema.onchange=function() {
+        verificarTarifa();
+      }
+    }
+    if (esquemaFeriados) {
+      esquemaFeriados.onchange=function() {
+        verificarTarifaFeriados();
+      }
+    }
+  // Funciones para verificar los esquemas tarifarios (para no repetir codigo)
+  function verificarTarifa() {
+    if (esquema.value == "TarifaHoraPico") {
+          inicio.style.display  ='';
+          inicio.placeholder    = "Inicio horario pico";
+          fin.style.display     ='';
+          fin.placeholder       = "Fin horario pico";
+          //tarifas
+          tarifa2_P.style.display = '';
+          tarifa2_P.placeholder   ="Tarifa pico";
+          tarifa2_M.style.display = '';
+          tarifa2_M.placeholder   ="Tarifa pico";
+          tarifa2_C.style.display = '';
+          tarifa2_C.placeholder   ="Tarifa pico";
+          tarifa2_D.style.display = '';
+          tarifa2_D.placeholder   ="Tarifa pico";
+      } else if (esquema.value == "TarifaFinDeSemana") {
+          inicio.style.display    ='none';
+          inicio.value            = "";
+          fin.style.display       ='none';
+          fin.value               = "";
+          //tarifas
+          tarifa2_P.style.display = '';
+          tarifa2_P.placeholder   ="Tarifa fin de semana";
+          tarifa2_M.style.display = '';
+          tarifa2_M.placeholder   ="Tarifa fin de semana";
+          tarifa2_C.style.display = '';
+          tarifa2_C.placeholder   ="Tarifa fin de semana";
+          tarifa2_D.style.display = '';
+          tarifa2_D.placeholder   ="Tarifa fin de semana";
+      } else {
+          inicio.style.display  ='none';
+          inicio.value          = "";
+          fin.style.display     ='none';
+          fin.value             = "";
+          //tarifas
+          tarifa2_P.style.display ='none';
+          tarifa2_P.value         = "";
+          tarifa2_D.style.display ='none';
+          tarifa2_D.value         = "";
+          tarifa2_C.style.display ='none';
+          tarifa2_C.value         = "";
+          tarifa2_D.style.display ='none';
+          tarifa2_D.value         = "";
+      }
+  };
+  function verificarTarifaFeriados() {
+    if (esquemaFeriados.value == "TarifaHoraPico") {
+        inicioTarifaFeriados.style.display  ='';
+        inicioTarifaFeriados.placeholder    = "Inicio horario pico";
+        finTarifaFeriados.style.display     ='';
+        finTarifaFeriados.placeholder       = "Fin horario pico";
+        //tarifas
+        tarifaFeriados2_P.style.display   = '';
+        tarifaFeriados2_P.placeholder     ="Tarifa pico";
+        tarifaFeriados2_M.style.display   = '';
+        tarifaFeriados2_M.placeholder     ="Tarifa pico";
+        tarifaFeriados2_C.style.display   = '';
+        tarifaFeriados2_C.placeholder     ="Tarifa pico";
+        tarifaFeriados2_D.style.display   = '';
+        tarifaFeriados2_D.placeholder     ="Tarifa pico";
+    } else if (esquemaFeriados.value == "TarifaFinDeSemana") {
+        inicioTarifaFeriados.style.display='none';
+        inicioTarifaFeriados.value        = "";
+        finTarifaFeriados.style.display   ='none';
+        finTarifaFeriados.value           = "";
+        //tarifas
+        tarifaFeriados2_P.style.display = '';
+        tarifaFeriados2_P.placeholder   ="Tarifa fin de semana";
+        tarifaFeriados2_M.style.display = '';
+        tarifaFeriados2_M.placeholder   ="Tarifa fin de semana";
+        tarifaFeriados2_C.style.display = '';
+        tarifaFeriados2_C.placeholder   ="Tarifa fin de semana";
+        tarifaFeriados2_D.style.display = '';
+        tarifaFeriados2_D.placeholder   ="Tarifa fin de semana";
+    } else {
+        inicioTarifaFeriados.style.display  ='none';
+        inicioTarifaFeriados.value          = "";
+        finTarifaFeriados.style.display     ='none';
+        finTarifaFeriados.value             = "";
+        //tarifas
+        tarifaFeriados2_P.style.display  ='none';
+        tarifaFeriados2_P.value          = "";
+        tarifaFeriados2_M.style.display  ='none';
+        tarifaFeriados2_M.value          = "";
+        tarifaFeriados2_C.style.display  ='none';
+        tarifaFeriados2_C.value          = "";
+        tarifaFeriados2_D.style.display  ='none';
+        tarifaFeriados2_D.value          = "";
+    }
+  };
+
+    <!--OPCION PARA AGREGAR UNA TARIFA PARA DIAS FERIADOS-->
+      var show=false;
+      var dates=feriados.value.split(",");
+      function calendar() {
+        show=!show;
+        if (show){
+             dates=feriados.value.split(",");
+          $('#multi_date_picker').show();
+          if (dates.length>1) {
+            $('#multi_date_picker').multiDatesPicker({
+              monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+              dayNamesMin: ['D','L','M','X','J','V','S'],
+              dateFormat: "yy-mm-dd", 
+              addDates: dates
+            });
+          } else $('#multi_date_picker').multiDatesPicker({
+              dateFormat: "yy-mm-dd"
+            });
+        } else {
+          $('#multi_date_picker').hide();
+        }
+      };
+      function getDates() {
+          val=$('#multi_date_picker').multiDatesPicker('getDates');
+          if (val!='') feriados.value = val;
+      };
+      function formFeriados(element) {
+        if (element.checked){
+          document.getElementById('calendar_feriados').style.display = 'block';
+          esquemaFeriados.style.display = '';
+          //tarifas        
+          tarifaFeriados_P.style.display  = '';
+          tarifaFeriados_M.style.display  = '';
+          tarifaFeriados_C.style.display  = '';
+          tarifaFeriados_D.style.display  = '';
+        } else {
+          document.getElementById('calendar_feriados').style.display = 'none';
+          esquemaFeriados.style.display      = 'none';
+          esquemaFeriados.value              = 'TarifaHora';
+          inicioTarifaFeriados.style.display = 'none';
+          finTarifaFeriados.style.display    = 'none';
+          //tarifas
+          tarifaFeriados_P.style.display       = 'none';
+          tarifaFeriados2_P.style.display      = 'none';
+          tarifaFeriados_P.value               = "";
+          tarifaFeriados_M.style.display       = 'none';
+          tarifaFeriados2_M.style.display      = 'none';
+          tarifaFeriados_M.value               = "";
+          tarifaFeriados_C.style.display       = 'none';
+          tarifaFeriados2_C.style.display      = 'none';
+          tarifaFeriados_C.value               = "";
+          tarifaFeriados_D.style.display       = 'none';
+          tarifaFeriados2_D.style.display      = 'none';
+          tarifaFeriados_D.value               = "";
+        }
+      };
+    </script>
+  {% endblock %}
+{% endblock %}
