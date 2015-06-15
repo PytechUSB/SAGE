@@ -39,7 +39,7 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre,horizonte=
 			return (False, 'No puede haber reservas entre dos dias distintos')
 		return (True,'')
 
-def calcularMonto(idEstacionamiento, hIn, hOut):
+def calcularMonto(idEstacionamiento, hIn, hOut,tipoDeVehiculo='Particular'):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
 	monto  = 0
 	inicio = hIn
@@ -51,9 +51,9 @@ def calcularMonto(idEstacionamiento, hIn, hOut):
 	#calcula el monto segun el esquema y el dia
 	while inicio<hOut:
 		if(e.tarifaFeriados and (str(inicio.date()) in e.feriados)):
-			monto+=e.tarifaFeriados.calcularPrecio(inicio,final)
+			monto+=e.tarifaFeriados.calcularPrecio(inicio,final,tipoDeVehiculo)
 		else:
-			monto+=e.tarifa.calcularPrecio(inicio,final)
+			monto+=e.tarifa.calcularPrecio(inicio,final,tipoDeVehiculo)
 
 		inicio=final
 		if(final.date() == hOut.date()):

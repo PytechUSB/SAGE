@@ -253,7 +253,24 @@ class EsquemaTarifario(models.Model):
     tarifa_D         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
     tarifa2_D        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
 
-    
+    #devuelve las tarifas segun el tipo de vehiculo
+    def obtenerTarifa(self, tipoDeVehiculo):
+        tarifa  = 0
+        tarifa2 = 0
+        if tipoDeVehiculo == "Particular":
+            tarifa  = tarifa
+            tarifa2 = tarifa2
+        elif tipoDeVehiculo == "Moto":
+            tarifa  = tarifa_M
+            tarifa2 = tarifa2_M
+        elif tipoDeVehiculo == "Camion":
+            tarifa  = tarifa_C
+            tarifa2 = tarifa2_C
+        elif tipoDeVehiculo == "Discapacitado":
+            tarifa  = tarifa_D
+            tarifa2 = tarifa2_D
+        return (tarifa,tarifa2) 
+
     class Meta:
         abstract = True
     def __str__(self):
@@ -261,43 +278,48 @@ class EsquemaTarifario(models.Model):
 
 
 class TarifaHora(EsquemaTarifario):
-    def calcularPrecio(self,horaInicio,horaFinal):
+    def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
+        tarifa,tarifa2 = self.obtenerTarifa(tipoDeVehiculo)
         a = horaFinal-horaInicio
         a = a.days*24+a.seconds/3600
         a = ceil(a) #  De las horas se calcula el techo de ellas
-        return(Decimal(self.tarifa*a).quantize(Decimal('1.00')))
+
+        return(Decimal(tarifa*a).quantize(Decimal('1.00')))
     def tipo(self):
         return("Por Hora")
 
 class TarifaMinuto(EsquemaTarifario):
-    def calcularPrecio(self,horaInicio,horaFinal):
+    def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
+        tarifa,tarifa2 = self.obtenerTarifa(tipoDeVehiculo)
         minutes = horaFinal-horaInicio
         minutes = minutes.days*24*60+minutes.seconds/60
-        return (Decimal(minutes)*Decimal(self.tarifa/60)).quantize(Decimal('1.00'))
+        return (Decimal(minutes)*Decimal(tarifa/60)).quantize(Decimal('1.00'))
     def tipo(self):
         return("Por Minuto")
 
 class TarifaHorayFraccion(EsquemaTarifario):
-    def calcularPrecio(self,horaInicio,horaFinal):
+    def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
+        tarifa,tarifa2 = self.obtenerTarifa(tipoDeVehiculo)
         time = horaFinal-horaInicio
         time = time.days*24*3600+time.seconds
         if(time>3600):
-            valor = (floor(time/3600)*self.tarifa)
+            valor = (floor(time/3600)*tarifa)
             if((time%3600)==0):
                 pass
             elif((time%3600)>1800):
-                valor += self.tarifa
+                valor += tarifa
             else:
-                valor += self.tarifa/2
+                valor += tarifa/2
         else:
-            valor = self.tarifa
+            valor = tarifa
         return(Decimal(valor).quantize(Decimal('1.00')))
 
     def tipo(self):
         return("Por Hora y Fraccion")
 
 class TarifaFinDeSemana(EsquemaTarifario):
-    def calcularPrecio(self,inicio,final):
+    def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
+        tarifa,tarifa2 = self.obtenerTarifa(tipoDeVehiculo)
         minutosNormales    = 0
         minutosFinDeSemana = 0
         tiempoActual       = inicio
@@ -315,15 +337,16 @@ class TarifaFinDeSemana(EsquemaTarifario):
                 minutosFinDeSemana += 1
             tiempoActual += minuto
         return Decimal(
-            minutosNormales*self.tarifa/60 +
-            minutosFinDeSemana*self.tarifa2/60
+            minutosNormales*tarifa/60 +
+            minutosFinDeSemana*tarifa2/60
         ).quantize(Decimal('1.00'))
 
     def tipo(self):
         return("Tarifa diferenciada para fines de semana")
 
 class TarifaHoraPico(EsquemaTarifario):
-    def calcularPrecio(self,reservaInicio,reservaFinal):
+    def calcularPrecio(self,reservaInicio,reservaFinal,tipoDeVehiculo):
+        tarifa,tarifa2 = self.obtenerTarifa(tipoDeVehiculo)
         minutosPico  = 0
         minutosValle = 0
         tiempoActual = reservaInicio
@@ -336,8 +359,8 @@ class TarifaHoraPico(EsquemaTarifario):
                 minutosValle += 1
             tiempoActual += minuto
         return Decimal(
-            minutosPico*self.tarifa2/60 +
-            minutosValle*self.tarifa/60
+            minutosPico*tarifa2/60 +
+            minutosValle*tarifa/60
         ).quantize(Decimal('1.00'))
 
     def tipo(self):

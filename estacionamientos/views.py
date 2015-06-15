@@ -595,7 +595,7 @@ def estacionamiento_reserva(request, _id):
                 )
 
                 #calcula el monto a pagar
-                monto = Decimal(calcularMonto(estacionamiento.id, inicioReserva, finalReserva))
+                monto = Decimal(calcularMonto(estacionamiento.id, inicioReserva, finalReserva, vehiculoTipo))
                 request.session['monto'] = float(monto)
                                 
                 request.session['vehiculoTipo']        = vehiculoTipo
