@@ -285,7 +285,7 @@ class EsquemaTarifario(models.Model):
         return str(self.tarifa)
 
 class TarifaHora(EsquemaTarifario):
-    def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo='Particular'):
+    def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
         tarifa = self.obtenerTarifa1(tipoDeVehiculo)
         a = horaFinal-horaInicio
         a = a.days*24+a.seconds/3600
@@ -296,7 +296,7 @@ class TarifaHora(EsquemaTarifario):
         return("Por Hora")
 
 class TarifaMinuto(EsquemaTarifario):
-    def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo='Particular'):
+    def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
         tarifa = self.obtenerTarifa1(tipoDeVehiculo)
         minutes = horaFinal-horaInicio
         minutes = minutes.days*24*60+minutes.seconds/60
@@ -305,7 +305,7 @@ class TarifaMinuto(EsquemaTarifario):
         return("Por Minuto")
 
 class TarifaHorayFraccion(EsquemaTarifario):
-    def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo='Particular'):
+    def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
         tarifa = self.obtenerTarifa1(tipoDeVehiculo)
         time = horaFinal-horaInicio
         time = time.days*24*3600+time.seconds
@@ -325,7 +325,7 @@ class TarifaHorayFraccion(EsquemaTarifario):
         return("Por Hora y Fraccion")
 
 class TarifaFinDeSemana(EsquemaTarifario):
-    def calcularPrecio(self,inicio,final,tipoDeVehiculo='Particular'):
+    def calcularPrecio(self,inicio,final,tipoDeVehiculo):
         tarifa = self.obtenerTarifa1(tipoDeVehiculo)
         tarifa2 = self.obtenerTarifa2(tipoDeVehiculo)
         minutosNormales    = 0
@@ -353,7 +353,7 @@ class TarifaFinDeSemana(EsquemaTarifario):
         return("Tarifa diferenciada para fines de semana")
 
 class TarifaHoraPico(EsquemaTarifario):
-    def calcularPrecio(self,reservaInicio,reservaFinal,tipoDeVehiculo='Particular'):
+    def calcularPrecio(self,reservaInicio,reservaFinal,tipoDeVehiculo):
         tarifa = self.obtenerTarifa1(tipoDeVehiculo)
         tarifa2 = self.obtenerTarifa2(tipoDeVehiculo)
         minutosPico  = 0
