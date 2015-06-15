@@ -218,6 +218,62 @@ def estacionamientos_all(request):
         }
     )
 
+def estacionamiento_puestos(request, _id):
+    _id = int(_id)
+    # Verificamos que el objeto exista antes de continuar
+    try:
+        estacionamiento = Estacionamiento.objects.get(id=_id)
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    form_data_puestos={
+            'particulares'  : estacionamiento.capacidad,
+            'camiones'      : estacionamiento.capacidad_C,
+            'motos'         : estacionamiento.capacidad_M,
+            'discapacitados': estacionamiento.capacidad_D
+            }
+    formPuestos = PuestosForm(data=form_data_puestos)
+    
+    if request.method == 'POST' and 'botonPuestos' in request.POST:
+        form_data_puestos={
+                'particulares' : request.POST['particulares'],
+                'camiones'     : request.POST['camiones'],
+                'motos'        : request.POST['motos'],
+                'discapacitados' : request.POST['discapacitados']
+            }
+        formPuestos=PuestosForm(data=form_data_puestos)
+        
+        if formPuestos.is_valid():
+            estacionamiento.capacidad = request.POST['particulares']
+            estacionamiento.capacidad_C = request.POST['camiones']
+            estacionamiento.capacidad_M = request.POST['motos']
+            estacionamiento.capacidad_D = request.POST['discapacitados']
+            estacionamiento.save()
+        else:    
+            try:
+                # '__all__' expone el error definido en el clean de PuestosForm
+                formPuestos.errors['__all__']
+                mensaje='Debe haber al menos un puesto.'
+            except:
+                mensaje='Todos los campos son obligatorios'
+            return render(
+                request,
+                'detalle-estacionamiento.html',
+                { 'form': form
+                , 'formPuestos': formPuestos
+                , 'estacionamiento': estacionamiento
+                , 'errorDialog' : mensaje
+                }
+            )
+    estacionamiento = Estacionamiento.objects.get(id=_id)    
+    return render(
+        request,
+        'detalle-estacionamiento.html',
+        { 'formPuestos': formPuestos,
+          'estacionamiento': estacionamiento
+        }
+    )
+
 def estacionamiento_detail(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
@@ -232,15 +288,7 @@ def estacionamiento_detail(request, _id):
     formTarifaD = TarifasForm(prefix='formTarifaD')
 
     form = EstacionamientoExtendedForm() 
-    
-    form_data_puestos={
-            'particulares'  : estacionamiento.capacidad,
-            'camiones'      : estacionamiento.capacidad_C,
-            'motos'         : estacionamiento.capacidad_M,
-            'discapacitados': estacionamiento.capacidad_D
-            }
-    formPuestos = PuestosForm(data=form_data_puestos)
-    
+        
     if estacionamiento.tarifa:
         form_data = {
             'horarioin'  : estacionamiento.apertura,
@@ -311,7 +359,6 @@ def estacionamiento_detail(request, _id):
                 })
             formTarifaD = TarifasForm(data=form_data_tarifa_discapacitado,prefix='formTarifaD')
         ##########################################################
-        
 
     if request.method == 'POST' and 'botonSubmit_E' in request.POST:
         # Leemos el formulario
@@ -440,44 +487,11 @@ def estacionamiento_detail(request, _id):
 
             estacionamiento.save()     
 
-
-    elif request.method == 'POST' and 'botonPuestos' in request.POST:
-        form_data_puestos={
-                'particulares' : request.POST['particulares'],
-                'camiones'     : request.POST['camiones'],
-                'motos'        : request.POST['motos'],
-                'discapacitados' : request.POST['discapacitados']
-            }
-        formPuestos=PuestosForm(data=form_data_puestos)
-        
-        if formPuestos.is_valid():
-            estacionamiento.capacidad = request.POST['particulares']
-            estacionamiento.capacidad_C = request.POST['camiones']
-            estacionamiento.capacidad_M = request.POST['motos']
-            estacionamiento.capacidad_D = request.POST['discapacitados']
-            estacionamiento.save()
-        else:    
-            try:
-                # '__all__' expone el error definido en el clean de PuestosForm
-                formPuestos.errors['__all__']
-                mensaje='Debe haber al menos un puesto.'
-            except:
-                mensaje='Todos los campos son obligatorios'
-            return render(
-                request,
-                'detalle-estacionamiento.html',
-                { 'form': form
-                , 'formPuestos': formPuestos
-                , 'estacionamiento': estacionamiento
-                , 'errorDialog' : mensaje
-                }
-            )
     estacionamiento = Estacionamiento.objects.get(id=_id)    
     return render(
         request,
-        'detalle-estacionamiento.html',
+        'parametrizar.html',
         { 'form': form,
-          'formPuestos': formPuestos,
           'formTarifaP': formTarifaP,
           'formTarifaM': formTarifaM,
           'formTarifaC': formTarifaC,

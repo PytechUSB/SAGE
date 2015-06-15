@@ -8,12 +8,12 @@
     <h3><i class="fa fa-bus"></i>
       Estacionamiento {{estacionamiento.nombre}}
     </h3>
-    <hr>	
+    <hr>  
     <p>
-	  <label for="amount">Horizonte de reservacion:</label>
-	   <input type="text" id="horizonteParam" readonly style="border:0; color:#0033AF; font-weight:bold;">
-	</p>
-	<div id="slider"></div>
+    <label for="amount">Horizonte de reservacion:</label>
+     <input type="text" id="horizonteParam" readonly style="border:0; color:#0033AF; font-weight:bold;">
+  </p>
+  <div id="slider"></div>
     <hr>
     <div class="col-md-4">
       {% include "datos.html" with mostrarBoton=True %}
@@ -27,23 +27,22 @@
   </div>
 <script>
   $(function() {
- 	$( "#slider" ).slider({
+  $( "#slider" ).slider({
       value:"{{ estacionamiento.horizonte }}",
       animate: "slow",
       min: 0,
       max: 360,
       step: 1,
       slide: function( event, ui ) {
-	    imprimirHorizonte(ui.value);
-   		horizonte.value=ui.value;
+      imprimirHorizonte(ui.value);
+      horizonte.value=ui.value;
       }
     });
     value=$("#slider").slider("value" );
     // imprimirHorizonte esta en datos.html
     imprimirHorizonte(value);
-   	horizonte.value=$( "#slider" ).slider("value");
+    horizonte.value=$( "#slider" ).slider("value");
   });
 </script>
 
 {% endblock %}
-
