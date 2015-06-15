@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta, time
 from decimal import Decimal
 from collections import OrderedDict
-from estacionamientos.models import Propietario, Estacionamiento, Reserva, Pago, BilleteraElectronica, Recargas,Cancelaciones
+from estacionamientos.models import Estacionamiento, Pago, BilleteraElectronica, Recargas,Cancelaciones
 
 # chequeo de horarios de extended
 def HorarioEstacionamiento(HoraInicio, HoraFin):

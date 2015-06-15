@@ -3,7 +3,6 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.forms.widgets import SplitDateTimeWidget
 from estacionamientos.models import Propietario
-from decimal import Decimal
 
 # Límites para los campos  
 MAXNOMBRE=100

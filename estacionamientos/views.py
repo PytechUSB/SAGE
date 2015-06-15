@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 import urllib
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.dateparse import parse_datetime
@@ -53,12 +53,8 @@ from estacionamientos.models import (
     Recargas,
     Reserva,
     Pago,
-    TarifaHora,
-    TarifaMinuto,
-    TarifaHorayFraccion,
-    TarifaFinDeSemana,
-    TarifaHoraPico, 
-    Cancelaciones)
+    Cancelaciones
+)
 
 MAXPROPIETARIOS=6
 MAXESTACIONAMIENTOS=5
@@ -259,8 +255,7 @@ def estacionamiento_puestos(request, _id):
             return render(
                 request,
                 'detalle-estacionamiento.html',
-                { 'form': form
-                , 'formPuestos': formPuestos
+                { 'formPuestos': formPuestos
                 , 'estacionamiento': estacionamiento
                 , 'errorDialog' : mensaje
                 }
