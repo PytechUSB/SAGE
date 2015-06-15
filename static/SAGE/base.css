@@ -21,6 +21,11 @@ footer {
   background-color:#efefef;
 }
 
+.tarifas{
+  display: inline-block;
+  margin: 0 auto;
+}
+
 .boton{
   color: #292929;
 }
