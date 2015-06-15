@@ -240,6 +240,14 @@ class EsquemaTarifario(models.Model):
 	inicioEspecial = models.TimeField(blank = True, null = True)
 	finEspecial    = models.TimeField(blank = True, null = True)
 	
+	#Tarifas especiales por tipo de vehiculo
+	tarifa_Camiones         = models.DecimalField(null = True,max_digits=20, decimal_places=2)
+	tarifa2_Camiones        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
+	tarifa_Motos	        = models.DecimalField(null = True,max_digits=20, decimal_places=2)
+	tarifa2_Motos	        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
+	tarifa_Discapacitados   = models.DecimalField(null = True,max_digits=20, decimal_places=2)
+	tarifa2_Discapacitados  = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
+	
 	class Meta:
 		abstract = True
 	def __str__(self):

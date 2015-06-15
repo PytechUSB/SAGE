@@ -356,7 +356,13 @@ def estacionamiento_detail(request, _id):
         , 'estacionamiento': estacionamiento
         }
     )
-
+    
+def estacionamiento_tarifa_especial(request, _tipo):
+    # estacionamientos = Estacionamiento.objects.all()
+    _tipo = str(_tipo)
+    # Verificamos que el objeto exista antes de continuar
+    raise Http404
+    
 def estacionamiento_edit(request, _id):
     # estacionamientos = Estacionamiento.objects.all()
     _id = int(_id)
