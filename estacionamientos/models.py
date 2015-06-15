@@ -257,26 +257,26 @@ class EsquemaTarifario(models.Model):
     def obtenerTarifa1(self, tipoDeVehiculo):
         tarifa  = 0
         if tipoDeVehiculo == "Particular":
-            tarifa  = tarifa
+            tarifa  = self.tarifa
         elif tipoDeVehiculo == "Moto":
-            tarifa  = tarifa_M
+            tarifa  = self.tarifa_M
         elif tipoDeVehiculo == "Camion":
-            tarifa  = tarifa_C
+            tarifa  = self.tarifa_C
         elif tipoDeVehiculo == "Discapacitado":
-            tarifa  = tarifa_D
+            tarifa  = self.tarifa_D
         return tarifa 
 
     #devuelve las tarifas segun el tipo de vehiculo
     def obtenerTarifa2(self, tipoDeVehiculo):
         tarifa2 = 0
         if tipoDeVehiculo == "Particular":
-            tarifa2 = tarifa2
+            tarifa2 = self.tarifa2
         elif tipoDeVehiculo == "Moto":
-            tarifa2 = tarifa2_M
+            tarifa2 = self.tarifa2_M
         elif tipoDeVehiculo == "Camion":
-            tarifa2 = tarifa2_C
+            tarifa2 = self.tarifa2_C
         elif tipoDeVehiculo == "Discapacitado":
-            tarifa2 = tarifa2_D
+            tarifa2 = self.tarifa2_D
         return tarifa2
    
     class Meta:
@@ -325,7 +325,7 @@ class TarifaHorayFraccion(EsquemaTarifario):
         return("Por Hora y Fraccion")
 
 class TarifaFinDeSemana(EsquemaTarifario):
-    def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo='Particular'):
+    def calcularPrecio(self,inicio,final,tipoDeVehiculo='Particular'):
         tarifa = self.obtenerTarifa1(tipoDeVehiculo)
         tarifa2 = self.obtenerTarifa2(tipoDeVehiculo)
         minutosNormales    = 0
