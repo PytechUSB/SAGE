@@ -1637,7 +1637,7 @@ def cambio_pin(request, _id):
                 )
                 
             else:
-                billeteraE.save()
+                billeteraE.cambiar_pin(form.cleaned_data["nuevo_Pin1"])
                 return render(
                     request,
                     'mensaje.html',

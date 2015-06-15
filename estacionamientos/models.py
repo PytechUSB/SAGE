@@ -88,15 +88,19 @@ class BilleteraElectronica (models.Model):
 	def __str__(self):
 		return str(self.id)
 	
-	def cambiar_pin(self,pin,nuevo_pin1,nuevo_pin2):
+	def validar_cambio_pin(self, pin, nuevo_pin1, nuevo_pin2):
 		if self.PIN == pin:
 			if nuevo_pin1 == nuevo_pin2:
-				self.PIN = nuevo_pin1
 				return (True, '')
 			else:
 				return (False, 'Los Pines no coinciden intentelo de nuevo')
 		else:
 			return (False, 'Autenticacion denegada intentelo de nuevo')
+	
+	def cambiar_pin(self, nuevo_pin):
+		self.PIN = nuevo_pin
+		self.save()
+		
 	
 	def recargar_saldo(self, monto):
 		if self.validar_recarga(monto):
