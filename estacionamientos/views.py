@@ -1623,12 +1623,16 @@ def cambio_pin(request, _id):
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
         if form.is_valid():
-            if (billeteraE.cambiar_pin(form.cleaned_data["Pin"],form.cleaned_data["nuevo_Pin1"],form.cleaned_data["nuevo_Pin2"]) == False):
+            pines_validados = billeteraE.cambiar_pin(
+                form.cleaned_data["Pin"],form.cleaned_data["nuevo_Pin1"],
+                form.cleaned_data["nuevo_Pin2"]
+            )
+            if (not pines_validados[0]):
                 return render(
                     request,
                     'mensaje.html',
                     {'color' : 'red'
-                    , 'mensajeFinal' : 'Autenticacion denegada intenetelo de nuevo'
+                    , 'mensajeFinal' : pines_validados[1]
                     }
                 )
                 
