@@ -21,6 +21,8 @@
 	   	{% endif %}
     </div>
     <div class="col-md-8">
+      <form action="." method="post" class="form form-vertical">
+      {% csrf_token %}     
       {% if estacionamiento.capacidad_C %}
       <table width="80%">
 	      <thead>
@@ -147,6 +149,37 @@
 	 	</button>
 	  </div>
     </div>
+    </form>
   </div>
+
+<!-- Validadores de los campos --> 
+{% include "validator.js.html" with form=formCamiones %}
+{% include "validator.js.html" with form=formMotos %}
+{% include "validator.js.html" with form=formDisc %}
+{% include "validator.js.html" with form=formFeriadosCamiones %}
+{% include "validator.js.html" with form=formFeriadosMotos %}
+{% include "validator.js.html" with form=formFeriadosDisc %}
+<script>
+	var esquemaFeriados = "{{ estacionamiento.tarifaFeriados }}";
+	var tipoFeriados="{{estacionamiento.tarifaFeriados.tipo}}";
+	var tipo="{{estacionamiento.tarifa.tipo}}";
+	var esquemas=["Por Hora","Por Minuto","Por Hora y Fraccion"];
+	if (!esquemaFeriados) {
+		// Escondemos los feriados
+		trampa("tarifa",1);
+		trampa("tarifa2",1);
+	}
+	if (esquemas.indexOf(tipo)!=-1) trampa("tarifa2",0);
+	if (esquemas.indexOf(tipoFeriados)!=-1) trampa("tarifa2",1);
+	
+// nombre: nombre del elemento a esconder, ["tarifa","tarifa2"]
+// inicio: 0 para tarifas normales, 1 para tarifas feriadas
+function trampa(nombre,inicio) {
+	var tarifas = document.getElementsByName(nombre);
+	for (inicio; inicio < tarifas.length; inicio+=2) 
+	    tarifas[inicio].style.display = 'none';
+};
+</script>
+
 {% endblock %}
 

@@ -421,24 +421,26 @@ class EstacionamientoExtendedForm(forms.Form):
     inicioTarifa2 = forms.TimeField(
         required = False,
         label    = 'Inicio Horario Especial',
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Horario Inicio Reserva'
+        widget   = forms.TimeInput(attrs =
+            { 'class':'form-control'
+            , 'placeholder' : 'Horario Apertura'
             , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
             , 'message'     : 'La entrada debe ser una hora válida.'
-            }
+            }, 
+            format='%H:%M'
         )
     )
 
     finTarifa2 = forms.TimeField(
         required = False,
         label    = 'Fin Horario Especial',
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Horario Fin Reserva'
+        widget   = forms.TimeInput(attrs =
+            { 'class':'form-control'
+            , 'placeholder' : 'Horario Apertura'
             , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
             , 'message'     : 'La entrada debe ser una hora válida.'
-            }
+            }, 
+            format='%H:%M'
         )
     )
     
@@ -477,24 +479,26 @@ class EstacionamientoExtendedForm(forms.Form):
     inicioTarifaFeriados = forms.TimeField(
         required = False,
         label    = 'Inicio Horario Especial',
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Horario Inicio Reserva'
+        widget   = forms.TimeInput(attrs =
+            { 'class':'form-control'
+            , 'placeholder' : 'Horario Apertura'
             , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
             , 'message'     : 'La entrada debe ser una hora válida.'
-            }
+            }, 
+            format='%H:%M'
         )
     )
 
     finTarifaFeriados = forms.TimeField(
         required = False,
         label    = 'Fin Horario Especial',
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Horario Fin Reserva'
+        widget   = forms.TimeInput(attrs =
+            { 'class':'form-control'
+            , 'placeholder' : 'Horario Apertura'
             , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
             , 'message'     : 'La entrada debe ser una hora válida.'
-            }
+            }, 
+            format='%H:%M'
         )
     )
     

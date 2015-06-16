@@ -367,7 +367,7 @@ def estacionamiento_tarifa_especial(request, _id):
         estacionamiento = Estacionamiento.objects.get(id=_id)
     except ObjectDoesNotExist:
         raise Http404
-        
+    
     #Forms para dias regulares
     formCamiones=TarifasForm()
     formMotos=TarifasForm()
