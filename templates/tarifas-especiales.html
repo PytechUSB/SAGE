@@ -148,5 +148,28 @@
 	  </div>
     </div>
   </div>
+<p id="demo"></p>
+<script>
+	var esquemaFeriados = "{{ estacionamiento.tarifaFeriados }}";
+	var tipoFeriados="{{estacionamiento.tarifaFeriados.tipo}}";
+	var tipo="{{estacionamiento.tarifa.tipo}}";
+	var esquemas=["Por Hora","Por Minuto","Por Hora y Fraccion"];
+	if (!esquemaFeriados) {
+		// Escondemos los feriados
+		trampa("tarifa",1);
+		trampa("tarifa2",1);
+	}
+	if (esquemas.indexOf(tipo)!=-1) trampa("tarifa2",0);
+	if (esquemas.indexOf(tipoFeriados)!=-1) trampa("tarifa2",1);
+	
+// nombre: nombre del elemento a esconder, ["tarifa","tarifa2"]
+// inicio: 0 para tarifas normales, 1 para tarifas feriadas
+function trampa(nombre,inicio) {
+	var tarifas = document.getElementsByName(nombre);
+	for (inicio; inicio < tarifas.length; inicio+=2) 
+	    tarifas[inicio].style.display = 'none';
+};
+</script>
+
 {% endblock %}
 
