@@ -34,18 +34,49 @@
         </div>
         <div class="panel-body">
           <form action="." method="post" class="form form-vertical">
-            {% csrf_token %}     
-            {% for field in form %}
-              <div class="control-group">
+            <div class="control-group">
                 <div class="controls">
-                  {{ field }}
+                  {{ form.tarifa }}
                   <span class='error' id='{{field.name}}_error' aria-live="polite">
                     {{ field.errors }}
                   </span>
                   <p>
                 </div>
               </div>
-            {% endfor %}
+            {% if estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifa.tipo == "Tarifa diferenciada por hora pico" %}
+              <div class="control-group">
+                <div class="controls">
+                  {{ form.tarifa2 }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% endif %}
+            {% if estacionamiento.tarifaFeriados %}
+              <div class="control-group">
+                <div class="controls">
+                  {{ form.tarifaFeriados }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% endif %}
+            {% if estacionamiento.tarifaFeriados.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifaFeriados.tipo == "Tarifa diferenciada por hora pico" %}
+              <div class="control-group">
+                <div class="controls">
+                  {{ form.tarifaFeriados2 }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% endif %}
+
             <div class="control-group" align ="center">
               <div class="controls" align ="center">
                 <button type="submit" class="btn btn-primary" onclick="getDates()" name="botonSubmit">
@@ -63,28 +94,10 @@
 
     </div>
   </div>
-<script>
-  $(function() {
-  $( "#slider" ).slider({
-      value:"{{ estacionamiento.horizonte }}",
-      animate: "slow",
-      min: 0,
-      max: 360,
-      step: 1,
-      slide: function( event, ui ) {
-      imprimirHorizonte(ui.value);
-      horizonte.value=ui.value;
-      }
-    });
-    value=$("#slider").slider("value" );
-    // imprimirHorizonte esta en datos.html
-    imprimirHorizonte(value);
-    horizonte.value=$( "#slider" ).slider("value");
-  });
-</script>
 
 {% endblock %}
 
+{% include "validator.js.html" %}
 
 
 
