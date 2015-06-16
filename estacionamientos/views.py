@@ -357,7 +357,7 @@ def estacionamiento_detail(request, _id):
         }
     )
     
-def estacionamiento_tarifa_especial(request, _tipo):
+def estacionamiento_tarifa_especial(request, _id,_tipo):
     # estacionamientos = Estacionamiento.objects.all()
     _tipo = str(_tipo)
     # Verificamos que el objeto exista antes de continuar
