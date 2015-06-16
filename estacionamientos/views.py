@@ -42,8 +42,9 @@ from estacionamientos.forms import (
     authBilleteraForm,
     CancelaReservaForm,
     MoverReservaForm,
-    PuestosForm
-, TarifasForm)
+    PuestosForm, 
+    TarifasForm
+    )
 
 from estacionamientos.models import (
     Propietario,
@@ -52,7 +53,13 @@ from estacionamientos.models import (
     Recargas,
     Reserva,
     Pago,
-    Cancelaciones)
+    Cancelaciones,
+    TarifaHora,
+    TarifaMinuto,
+    TarifaHorayFraccion,
+    TarifaFinDeSemana,
+    TarifaHoraPico
+    )
 
 MAXPROPIETARIOS=6
 MAXESTACIONAMIENTOS=5
