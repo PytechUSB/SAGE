@@ -9,7 +9,7 @@ from estacionamientos.models import Propietario, Estacionamiento, Reserva, Pago,
 def HorarioEstacionamiento(HoraInicio, HoraFin):
 	return HoraFin > HoraInicio
 
-def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre,horizonte=168):
+def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre, horizonte = 168, mover = False):
 	inicioReserva=inicioReserva.replace(second=0,microsecond=0)
 	finReserva=finReserva.replace(second=0,microsecond=0)
 	if inicioReserva >= finReserva:
@@ -18,17 +18,31 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre,horizonte=
 		return (False, 'El tiempo de reserva debe ser al menos de 1 hora.')
 	if inicioReserva < datetime.now().replace(second=0,microsecond=0):
 		return (False, 'La reserva no puede tener lugar en el pasado.')
+	
 	if apertura.hour==0 and apertura.minute==0 \
 		and cierre.hour==23 and cierre.minute==59:
 		fifteen_days=timedelta(days=15)
 		if finReserva-inicioReserva<=fifteen_days:
-			if finReserva > datetime.now().replace(second=0,microsecond=0)+timedelta(hours=horizonte):
-				return (False, 'La reserva debe estar dentro del horizonte de reservacion.')
-			return (True,'')
+			if not mover:
+				if finReserva > datetime.now().replace(second=0,microsecond=0)+timedelta(hours=horizonte):
+					return (False, 'La reserva debe estar dentro del horizonte de reservacion.')
+				return (True,'')
+			
+			elif mover:
+				if porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte) < 50:
+					return (False, 'Una mayor proporcion de la reserva debe estar dentro del horizonte de reservacion.')
+				return (True,'')
 		else:
 			return(False,'Se puede reservar un puesto por un maximo de 15 dias dependiendo horizonte de reservacion.')
-	if finReserva > datetime.now().replace(second=0,microsecond=0)+timedelta(hours=horizonte):
+		
+	if finReserva > datetime.now().replace(second=0,microsecond=0)+timedelta(hours=horizonte) and not mover:
 		return (False, 'La reserva debe estar dentro del horizonte de reservacion.')
+	
+	
+	if finReserva > datetime.now().replace(second=0,microsecond=0)+timedelta(hours=horizonte) and mover:
+		if porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte) < 50:
+			return (False, 'Una mayor proporcion de la reserva debe estar dentro del horizonte de reservacion.')
+	
 	else:
 		hora_inicio = time(hour = inicioReserva.hour, minute = inicioReserva.minute)
 		hora_final  = time(hour = finReserva.hour   , minute = finReserva.minute)
@@ -39,6 +53,19 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre,horizonte=
 		if inicioReserva.date()!=finReserva.date():
 			return (False, 'No puede haber reservas entre dos dias distintos')
 		return (True,'')
+	
+	
+def porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte):
+	total_reserva = (finReserva - inicioReserva).seconds
+	horizonte = datetime.now().replace(second = 0, microsecond = 0) + timedelta(hours = horizonte)
+	if inicioReserva < horizonte:
+		reservaEnHorizonte = (horizonte - inicioReserva).seconds
+		porcentaje = Decimal((reservaEnHorizonte * 100) / total_reserva).quantize(Decimal('1.0'))
+		return porcentaje
+	
+	else:
+		return 0
+	
 
 def calcularMonto(idEstacionamiento, hIn, hOut):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)

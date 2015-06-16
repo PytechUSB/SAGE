@@ -36,16 +36,7 @@ def crear_estacionamiento(_propietario):
     )
     e.save()
     return e
-    
-def crear_reserva(h_inicio, h_fin, _estacionamiento):
-    r = Reserva(
-            estacionamiento = _estacionamiento,
-            inicioReserva = h_inicio,
-            finalReserva = h_fin    
-    )
-    r.save()
-    return r
-    
+
 def crear_billetera(monto = 0):
     r = BilleteraElectronica(
             nombre = "Daniel",
@@ -56,6 +47,15 @@ def crear_billetera(monto = 0):
             saldo = monto                 
     )
     r.save()
+    
+def crear_reserva(h_inicio, h_fin, _estacionamiento):
+    r = Reserva(
+            estacionamiento = _estacionamiento,
+            inicioReserva = h_inicio,
+            finalReserva = h_fin    
+    )
+    r.save()
+    return r
     
 def crear_factura(_reserva, monto):
     pago = Pago(
