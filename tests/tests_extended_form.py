@@ -51,7 +51,7 @@ class ExtendedFormTestCase(TestCase):
                       'esquema':'TarifaHora'
                     }
         form = EstacionamientoExtendedForm(data = form_data)
-        self.assertTrue(form.is_valid())
+        self.assertFalse(form.is_valid())
 
     # malicia
     def test_estacionamiento_extended_form_string_hora_inicio(self):

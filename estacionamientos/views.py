@@ -42,9 +42,8 @@ from estacionamientos.forms import (
     authBilleteraForm,
     CancelaReservaForm,
     MoverReservaForm,
-    PuestosForm,
-    TarifasForm
-)
+    PuestosForm
+, TarifasForm)
 
 from estacionamientos.models import (
     Propietario,
@@ -53,8 +52,7 @@ from estacionamientos.models import (
     Recargas,
     Reserva,
     Pago,
-    Cancelaciones
-)
+    Cancelaciones)
 
 MAXPROPIETARIOS=6
 MAXESTACIONAMIENTOS=5
@@ -235,6 +233,8 @@ def estacionamiento_detail(request, _id):
         form_data = {
             'horarioin'  : estacionamiento.apertura,
             'horarioout' : estacionamiento.cierre,
+            'tarifa'     : estacionamiento.tarifa.tarifa,
+            'tarifa2'    : estacionamiento.tarifa.tarifa2,
             'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
             'finTarifa2' : estacionamiento.tarifa.finEspecial,
             'esquema'    : estacionamiento.tarifa.__class__.__name__,
@@ -243,6 +243,8 @@ def estacionamiento_detail(request, _id):
         }
         if estacionamiento.tarifaFeriados:
             form_data.update({
+                'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa,
+                'tarifaFeriados2'   : estacionamiento.tarifaFeriados.tarifa2,
                 'inicioTarifaFeriados2' : estacionamiento.tarifaFeriados.inicioEspecial,
                 'finTarifaFeriados2' : estacionamiento.tarifaFeriados.finEspecial,
                 'esquemaFeriados'    : estacionamiento.tarifaFeriados.__class__.__name__
@@ -258,13 +260,17 @@ def estacionamiento_detail(request, _id):
         if form.is_valid():
             horaIn  = form.cleaned_data['horarioin']
             horaOut = form.cleaned_data['horarioout']
+            tarifa  = form.cleaned_data['tarifa']
             tipo    = form.cleaned_data['esquema']
             inicioTarifa2   = form.cleaned_data['inicioTarifa2']
             finTarifa2  = form.cleaned_data['finTarifa2']
+            tarifa2     = form.cleaned_data['tarifa2']
             feriados    = form.cleaned_data['feriados']
             tipo2       = form.cleaned_data['esquemaFeriados']
             inicioTarifaFeriados = form.cleaned_data['inicioTarifaFeriados']
             finTarifaFeriados    = form.cleaned_data['finTarifaFeriados']
+            tarifaFeriados2      = form.cleaned_data['tarifaFeriados2']
+            tarifaFeriados       = form.cleaned_data['tarifaFeriados']
             horizonte    = request.POST['horizonte']
             
             # debería funcionar con excepciones, y el mensaje debe ser mostrado
@@ -279,15 +285,17 @@ def estacionamiento_detail(request, _id):
                 )
 
             esquemaTarifa = eval(tipo)(
+                tarifa      = tarifa,
+                tarifa2     = tarifa2,
                 inicioEspecial  = inicioTarifa2,
-                finEspecial     = finTarifa2,
-                tarifa = 0
+                finEspecial     = finTarifa2
             )
-            if (estacionamiento.tarifaFeriados is not None):
+            if (tarifaFeriados is not None):
                 esquemaTarifaFeriados = eval(tipo2)(
+                    tarifa      = tarifaFeriados,
+                    tarifa2     = tarifaFeriados2,
                     inicioEspecial = inicioTarifaFeriados,
-                    finEspecial    = finTarifaFeriados,
-                    tarifa = 0
+                    finEspecial    = finTarifaFeriados
                 )
                 esquemaTarifaFeriados.save()
                 estacionamiento.tarifaFeriados = esquemaTarifaFeriados
@@ -343,7 +351,39 @@ def estacionamiento_detail(request, _id):
         , 'estacionamiento': estacionamiento
         }
     )
-
+    
+def estacionamiento_tarifa_especial(request, _id):
+    _id = int(_id)
+    
+    # Verificamos que el objeto exista antes de continuar
+    try:
+        estacionamiento = Estacionamiento.objects.get(id=_id)
+    except ObjectDoesNotExist:
+        raise Http404
+        
+    #Forms para dias regulares
+    formCamiones=TarifasForm()
+    formMotos=TarifasForm()
+    formDisc=TarifasForm()
+    
+    #Forms para dias feriados
+    formFeriadosCamiones=TarifasForm()
+    formFeriadosMotos=TarifasForm()
+    formFeriadosDisc=TarifasForm()
+    
+    return render(
+                    request,
+                    'tarifas-especiales.html',
+                    { 'estacionamiento'         : estacionamiento
+                    , 'formCamiones'            : formCamiones
+                    , 'formMotos'               : formMotos
+                    , 'formDisc'                : formDisc
+                    , 'formFeriadosCamiones'    : formFeriadosCamiones
+                    , 'formFeriadosMotos'       : formFeriadosMotos
+                    , 'formFeriadosDisc'        : formFeriadosDisc
+                    }
+                )
+    
 def estacionamiento_edit(request, _id):
     # estacionamientos = Estacionamiento.objects.all()
     _id = int(_id)
@@ -367,7 +407,7 @@ def estacionamiento_edit(request, _id):
                     )
             except:
                 return render(
-                    request, 'Propietario/cambiarpropietario.html',
+                    request, 'Propietario/cambiar-propietario.html',
                     { 'color'   : 'red'
                     , 'estacionamiento': estacionamiento
                     , 'mensajeR' : 'No existe tal propietario'
@@ -389,7 +429,7 @@ def estacionamiento_edit(request, _id):
         , 'estacionamiento': estacionamiento
         }
     )
-    
+
 def estacionamiento_reserva(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
@@ -444,7 +484,7 @@ def estacionamiento_reserva(request, _id):
                 )
 
                 #calcula el monto a pagar
-                monto = Decimal(calcularMonto(estacionamiento.id, inicioReserva, finalReserva, vehiculoTipo))
+                monto = Decimal(calcularMonto(estacionamiento.id, inicioReserva, finalReserva))
                 request.session['monto'] = float(monto)
                                 
                 request.session['vehiculoTipo']        = vehiculoTipo
@@ -1459,4 +1499,3 @@ def pago_mover(request, id_pago):
         'pago-mover.html',
         { 'form' : form }
     )
-    

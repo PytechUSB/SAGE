@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}
+  SAGE - Estacionamiento {{estacionamiento.nombre}}
+{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Estacionamiento {{estacionamiento.nombre}}
+    </h3>
+    <hr>	
+    <p>
+    <div class="col-md-4">
+		<label>Esquema tarifario:</label>
+		<p style="border:0; color:#0033AF; font-weight:bold;">{{ estacionamiento.tarifa.tipo }}</p>
+	    <hr>
+		{% if estacionamiento.tarifaFeriados %}
+  		  	<label>Esquema tarifario para dias feriados:</label>
+			<p style="border:0; color:#0033AF; font-weight:bold;">{{ estacionamiento.tarifaFeriados.tipo }}</p>
+	   		<hr>
+	   	{% endif %}
+    </div>
+    <div class="col-md-8">
+      {% if estacionamiento.capacidad_C %}
+      <table width="80%">
+	      <thead>
+	      	<tr><b><i class="fa fa-truck"></i> Tarifas especiales para camiones:</b></tr>
+	      </thead>
+	      <tbody>
+	      	<tr>
+	      		<td>
+	      		  {% for field in formCamiones %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      		<td>
+	      		  {% if estacionamiento.tarifaFeriados %}
+	      		  {% for field in formFeriadosCamiones %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+			      {% endif %}
+      			</td>
+	      	</tr
+	      </tbody>
+      </table>
+      <hr>
+      {% endif %}
+      {% if estacionamiento.capacidad_M %}
+      <table width="80%">
+	      <thead>
+	      	<tr><b><i class="fa fa-motorcycle"></i> Tarifas especiales para motos:</b></tr>
+	      </thead>
+	      <tbody>
+	      	<tr>
+	      		<td>
+	      		  {% for field in formMotos %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      		<td>
+	      		  {% if estacionamiento.tarifaFeriados %}
+	      		  {% for field in formFeriadosMotos %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+			      {% endif %}
+      			</td>
+	      	</tr
+	      </tbody>
+      </table>
+      <hr>
+      {% endif %}
+      {% if estacionamiento.capacidad_D %}
+      <table width="80%">
+	      <thead>
+	      	<tr><b><i class="fa fa-wheelchair"></i> Tarifas especiales para discapacitados:</b></tr>
+	      </thead>
+	      <tbody>
+	      	<tr>
+	      		<td>
+	      		  {% for field in formDisc %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      		<td>
+	      		  {% if estacionamiento.tarifaFeriados %}
+	      		  {% for field in formFeriadosDisc %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+			      {% endif %}
+      			</td>
+	      	</tr
+	      </tbody>
+      </table>
+	  <hr>
+      {% endif %}
+	  <div class="controls" align ="center">
+		<button type="submit" class="btn btn-primary">
+	    Cambiar tarifas especiales
+	 	</button>
+	  </div>
+    </div>
+  </div>
+{% endblock %}
+

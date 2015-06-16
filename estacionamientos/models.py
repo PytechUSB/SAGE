@@ -233,12 +233,12 @@ class Cancelaciones(models.Model):
         return "Cancelacion"
 
 class EsquemaTarifario(models.Model):
-
+    
     inicioEspecial = models.TimeField(blank = True, null = True)
     finEspecial    = models.TimeField(blank = True, null = True)
-
+    
     # Para Particulares
-    tarifa         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
+    tarifa         = models.DecimalField(max_digits=20, decimal_places=2)
     tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
     
     # Para Motos
