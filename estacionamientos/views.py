@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 from estacionamientos.controller import (
     HorarioEstacionamiento,
     validarHorarioReserva,
+    validarHorarioReservaMover,
     marzullo,
     calcularMonto,
     get_client_ip,
@@ -1227,13 +1228,12 @@ def mover_reserva(request, id_pago):
             variacionTiempo = reserva.finalReserva - reserva.inicioReserva
             finalReserva = inicioReserva + variacionTiempo
             vehiculoTipo = reserva.vehiculoTipo
-            horarioValidado = validarHorarioReserva(
+            horarioValidado = validarHorarioReservaMover(
                 inicioReserva, 
                 finalReserva, 
                 estacionamiento.apertura, 
                 estacionamiento.cierre,
-                estacionamiento.horizonte,
-                mover = True
+                estacionamiento.horizonte
             )
             
             if not horarioValidado[0]:
