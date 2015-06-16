@@ -97,9 +97,10 @@ class BilleteraElectronica (models.Model):
 		else:
 			return (False, 'Autenticacion denegada intentelo de nuevo')
 	
-	def cambiar_pin(self, nuevo_pin):
-		self.PIN = nuevo_pin
-		self.save()
+	def cambiar_pin(self, pin, nuevo_pin1, nuevo_pin2):
+		if self.validar_cambio_pin(pin, nuevo_pin1, nuevo_pin2)[0]:
+			self.PIN = nuevo_pin1
+			self.save()
 		
 	
 	def recargar_saldo(self, monto):
