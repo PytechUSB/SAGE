@@ -240,17 +240,14 @@ class EsquemaTarifario(models.Model):
     # Para Particulares
     tarifa         = models.DecimalField(max_digits=20, decimal_places=2)
     tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
-    
     # Para Motos
-    tarifa_M         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
+    tarifa_M         = models.DecimalField(null = True,max_digits=20, decimal_places=2)
     tarifa2_M        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
-
     # Para Camiones
-    tarifa_C         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
+    tarifa_C         = models.DecimalField(null = True,max_digits=20, decimal_places=2)
     tarifa2_C        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
-
     # Para Discapacitados
-    tarifa_D         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
+    tarifa_D         = models.DecimalField(null = True,max_digits=20, decimal_places=2)
     tarifa2_D        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
 
     #devuelve las tarifas regulares segun el tipo de vehiculo
