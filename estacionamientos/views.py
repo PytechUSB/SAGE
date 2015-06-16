@@ -268,8 +268,209 @@ def estacionamiento_puestos(request, _id):
           'estacionamiento': estacionamiento
         }
     )
+def estacionamiento_camiones(request, _id):
+    _id = int(_id)
+    # Verificamos que el objeto exista antes de continuar
+    try:
+        estacionamiento = Estacionamiento.objects.get(id=_id)
+    except ObjectDoesNotExist:
+        raise Http404
+
+    esquema = estacionamiento.tarifa
+    esquemaFeriados = estacionamiento.tarifaFeriados
+
+    form = TarifasForm()
+
+    if estacionamiento.capacidad_C > 0 and esquema != None:
+        form_data_tarifa_camion = {
+            'tarifa'     : esquema.tarifa_C,
+            'tarifa2'    : esquema.tarifa2_C
+        }
+        if estacionamiento.tarifaFeriados:
+            form_data_tarifa_camion.update({
+                'tarifaFeriados'    : esquemaFeriados.tarifa_C,
+                'tarifaFeriados2'   : esquemaFeriados.tarifa2_C
+            })
+        form = TarifasForm(data=form_data_tarifa_camion)
+
+    if request.method == 'POST' and 'botonSubmit' in request.POST:
+            if estacionamiento.capacidad_C > 0:
+                form = TarifasForm(request.POST)
+
+                if form.is_valid():
+                    tarifa_C  = form.cleaned_data['tarifa']
+                    tarifa2_C = form.cleaned_data['tarifa2']
+                    tarifaFeriados_C  = form.cleaned_data['tarifaFeriados']
+                    tarifaFeriados2_C = form.cleaned_data['tarifaFeriados2']
+            else:
+                tarifa_C = None
+                tarifaFeriados_C = None
+                tarifa2_C = None
+                tarifaFeriados2_C = None
+
+            esquema.tarifa = tarifa_C 
+            esquema.tarifa2 = tarifa2_C 
+            esquema.tarifaFeriados = tarifaFeriados_C  
+            esquema.tarifaFeriados2 = tarifaFeriados2_C
+
+            if (estacionamiento.tarifaFeriados is not None):
+                esquema.tarifa = tarifa_C 
+                esquemaFeriados.tarifa2 = tarifa2_C 
+                esquemaFeriados.tarifaFeriados = tarifaFeriados_C  
+                esquemaFeriados.tarifaFeriados2 = tarifaFeriados2_C
+                esquemaFeriados.save()
+
+                estacionamiento.tarifaFeriados = esquemaFeriados
+            else:
+                if (estacionamiento.tarifaFeriados is not None):
+                    estacionamiento.tarifaFeriados.delete()
+            esquema.save()
+
+            estacionamiento.tarifa  = esquema
+
+            estacionamiento.save()     
+
+    estacionamiento = Estacionamiento.objects.get(id=_id)    
+    return render(
+        request,
+        'Tarifas/camiones.html',
+        { 
+          'form': form,
+          'estacionamiento': estacionamiento
+        }
+    )
 
 def estacionamiento_detail(request, _id):
+    _id = int(_id)
+    # Verificamos que el objeto exista antes de continuar
+    try:
+        estacionamiento = Estacionamiento.objects.get(id=_id)
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    form = EstacionamientoExtendedForm()
+    form_data_puestos={
+            'particulares'  : estacionamiento.capacidad,
+            'camiones'      : estacionamiento.capacidad_C,
+            'motos'         : estacionamiento.capacidad_M,
+            'discapacitados': estacionamiento.capacidad_D
+            }
+    formPuestos = PuestosForm(data=form_data_puestos)
+    
+    if estacionamiento.tarifa:
+        form_data = {
+            'horarioin'  : estacionamiento.apertura,
+            'horarioout' : estacionamiento.cierre,
+            'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
+            'finTarifa2' : estacionamiento.tarifa.finEspecial,
+            'esquema'    : estacionamiento.tarifa.__class__.__name__,
+            'feriados'   : estacionamiento.feriados,
+            'horizonte'   : estacionamiento.horizonte
+        }
+        if estacionamiento.tarifaFeriados:
+            form_data.update({
+                'inicioTarifaFeriados2' : estacionamiento.tarifaFeriados.inicioEspecial,
+                'finTarifaFeriados2' : estacionamiento.tarifaFeriados.finEspecial,
+                'esquemaFeriados'    : estacionamiento.tarifaFeriados.__class__.__name__
+            })
+            
+            
+        form = EstacionamientoExtendedForm(data=form_data)
+
+    if request.method == 'POST' and 'botonSubmit' in request.POST:
+        # Leemos el formulario
+        form = EstacionamientoExtendedForm(request.POST)
+        # Si el formulario
+        if form.is_valid():
+            horaIn  = form.cleaned_data['horarioin']
+            horaOut = form.cleaned_data['horarioout']
+            tipo    = form.cleaned_data['esquema']
+            inicioTarifa2   = form.cleaned_data['inicioTarifa2']
+            finTarifa2  = form.cleaned_data['finTarifa2']
+            feriados    = form.cleaned_data['feriados']
+            tipo2       = form.cleaned_data['esquemaFeriados']
+            inicioTarifaFeriados = form.cleaned_data['inicioTarifaFeriados']
+            finTarifaFeriados    = form.cleaned_data['finTarifaFeriados']
+            horizonte    = request.POST['horizonte']
+            
+            # debería funcionar con excepciones, y el mensaje debe ser mostrado
+            # en el mismo formulario
+            if not HorarioEstacionamiento(horaIn, horaOut):
+                return render(
+                    request,
+                    'template-mensaje.html',
+                    { 'color':'red'
+                    , 'mensaje': 'El horario de apertura debe ser menor al horario de cierre'
+                    }
+                )
+
+            esquemaTarifa = eval(tipo)(
+                inicioEspecial  = inicioTarifa2,
+                finEspecial     = finTarifa2,
+                tarifa = 0
+            )
+            if (estacionamiento.tarifaFeriados is not None):
+                esquemaTarifaFeriados = eval(tipo2)(
+                    inicioEspecial = inicioTarifaFeriados,
+                    finEspecial    = finTarifaFeriados,
+                    tarifa = 0
+                )
+                esquemaTarifaFeriados.save()
+                estacionamiento.tarifaFeriados = esquemaTarifaFeriados
+            else:
+                if (estacionamiento.tarifaFeriados is not None):
+                    estacionamiento.tarifaFeriados.delete()
+            esquemaTarifa.save()
+            
+            estacionamiento.feriados = feriados
+            estacionamiento.horizonte = horizonte
+            estacionamiento.tarifa   = esquemaTarifa
+            estacionamiento.apertura = horaIn
+            estacionamiento.cierre   = horaOut
+            estacionamiento.save()
+            
+    elif request.method == 'POST' and 'botonPuestos' in request.POST:
+        form_data_puestos={
+                'particulares' : request.POST['particulares'],
+                'camiones'     : request.POST['camiones'],
+                'motos'        : request.POST['motos'],
+                'discapacitados' : request.POST['discapacitados']
+            }
+        formPuestos=PuestosForm(data=form_data_puestos)
+        
+        if formPuestos.is_valid():
+            estacionamiento.capacidad = request.POST['particulares']
+            estacionamiento.capacidad_C = request.POST['camiones']
+            estacionamiento.capacidad_M = request.POST['motos']
+            estacionamiento.capacidad_D = request.POST['discapacitados']
+            estacionamiento.save()
+        else:    
+            try:
+                # '__all__' expone el error definido en el clean de PuestosForm
+                formPuestos.errors['__all__']
+                mensaje='Debe haber al menos un puesto.'
+            except:
+                mensaje='Todos los campos son obligatorios'
+            return render(
+                request,
+                'detalle-estacionamiento.html',
+                { 'form': form
+                , 'formPuestos': formPuestos
+                , 'estacionamiento': estacionamiento
+                , 'errorDialog' : mensaje
+                }
+            )
+    estacionamiento = Estacionamiento.objects.get(id=_id)    
+    return render(
+        request,
+        'detalle-estacionamiento.html',
+        { 'form': form
+        , 'formPuestos': formPuestos
+        , 'estacionamiento': estacionamiento
+        }
+    )
+
+def estacionamiento_detail2(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
     try:

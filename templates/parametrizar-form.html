@@ -9,17 +9,169 @@
       </h4>
     </div>
   </div>
-
   <div class="panel-body">
-    
+    <form action="." method="post" class="form form-vertical">
+      {% csrf_token %}     
+      {% for field in form %}
+        <div class="control-group">
+          <div class="controls">
+            {{ field }}
+            <span class='error' id='{{field.name}}_error' aria-live="polite">
+              {{ field.errors }}
+            </span>
+            <p>
+          </div>
+        </div>
+      {% endfor %}
+      <div class="control-group" align ="center">
+        <!-- Calendario -->
+        <div id="calendar_feriados" style="display: none">
+          <i class="fa fa-calendar" id="calendar" onclick="calendar()"></i> &nbsp;
+          <span role="text" id="multi_date_picker"></span>
+        </div>
+        <br>
+        <!--Checkbox para tarifa en dias feriados-->
+        <input type="checkbox" value="No" id="check_feriados" onchange="formFeriados(this)">&nbsp;Tarifa días feriados<br>
+        <label></label>
+        <div class="controls" align ="center">
+          <button type="submit" class="btn btn-primary" onclick="getDates()" name="botonSubmit">
+            Parametrizar Estacionamiento
+          </button>
+        </div>
+      </div>
+    </form>
     <p>
     <!-- OPCION AGREGAR PROPIETARIOS -->  
-    <a href="parametrizar" class="boton" >
+    <!--a href="parametrizar" class="boton" >
       <div class="controls" align ="center">
         <button type="button" >Parametrizar</button>
       </div>
-    </a>
+    </a--><br>
+    <!-- meter tarifas --> 
+    {% if estacionamiento.tarifa %} {% endif %} 
+    <p>Este boton deberia aparecer cuando ya se metieron las capacidades y el horario</p>
+      <a href="tarifa-camion" class="boton" >
+        <div class="controls" align ="center">
+          <button type="button">Gestionar Tarifas</button>
+        </div>
+      </a>
+    
   </div>
 </div>
-
 {% include "validator.js.html" %}
+
+<script type="text/javascript">
+  esquema       = document.getElementById('id_esquema');
+  esquemaFeriados = document.getElementById('id_esquemaFeriados');
+  inicio        = document.getElementById('id_inicioTarifa2');
+  fin           = document.getElementById('id_finTarifa2');
+  //Feriados
+  feriados        = document.getElementById('id_feriados');
+  inicioTarifaFeriados  = document.getElementById('id_inicioTarifaFeriados');
+  finTarifaFeriados     = document.getElementById('id_finTarifaFeriados');
+  
+  // Para el horizonte de reservacion
+  horizonte        = document.getElementById('id_horizonte');
+  
+  inicioTarifaFeriados.style.display = 'none';
+  finTarifaFeriados.style.display = 'none';
+  esquemaFeriados.style.display = 'none';
+
+  /*if (esquemaFeriados.value != 'none'){
+    document.getElementById("check_feriados").checked = true;
+    document.getElementById('calendar_feriados').style.display = 'block';
+    esquemaFeriados.style.display = '';
+    verificarTarifaFeriados();
+  }*/
+  verificarTarifa();
+  if (esquema) {
+    esquema.onchange=function() {
+      verificarTarifa();
+    }
+  }
+  if (esquemaFeriados) {
+    esquemaFeriados.onchange=function() {
+      verificarTarifaFeriados();
+    }
+  }
+// Funciones para verificar los esquemas tarifarios (para no repetir codigo)
+function verificarTarifa() {
+  if (esquema.value == "TarifaHoraPico") {
+        inicio.style.display='';
+        inicio.placeholder = "Inicio horario pico";
+        fin.style.display='';
+        fin.placeholder = "Fin horario pico";
+    } else if (esquema.value == "TarifaFinDeSemana") {
+        inicio.style.display='none';
+        inicio.value = "";
+        fin.style.display='none';
+        fin.value = "";
+    } else {
+        inicio.style.display='none';
+        inicio.value = "";
+        fin.style.display='none';
+        fin.value = "";
+    }
+};
+function verificarTarifaFeriados() {
+  if (esquemaFeriados.value == "TarifaHoraPico") {
+      inicioTarifaFeriados.style.display='';
+      inicioTarifaFeriados.placeholder = "Inicio horario pico";
+      finTarifaFeriados.style.display='';
+      finTarifaFeriados.placeholder = "Fin horario pico";
+  } else if (esquemaFeriados.value == "TarifaFinDeSemana") {
+      inicioTarifaFeriados.style.display='none';
+      inicioTarifaFeriados.value = "";
+      finTarifaFeriados.style.display='none';
+      finTarifaFeriados.value = "";
+  } else {
+      inicioTarifaFeriados.style.display='none';
+      inicioTarifaFeriados.value = "";
+      finTarifaFeriados.style.display='none';
+      finTarifaFeriados.value = "";
+  }
+};
+</script>
+
+{% block scripts %}
+<!--OPCION PARA AGREGAR UNA TARIFA PARA DIAS FERIADOS-->
+  <script type="text/javascript">
+    var show=false;
+    var dates=feriados.value.split(",");
+    function calendar() {
+      show=!show;
+      if (show){
+           dates=feriados.value.split(",");
+        $('#multi_date_picker').show();
+        if (dates.length>1) {
+          $('#multi_date_picker').multiDatesPicker({
+            monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+            dayNamesMin: ['D','L','M','X','J','V','S'],
+            dateFormat: "yy-mm-dd", 
+            addDates: dates
+          });
+        } else $('#multi_date_picker').multiDatesPicker({
+            dateFormat: "yy-mm-dd"
+          });
+      } else {
+        $('#multi_date_picker').hide();
+      }
+    };
+    function getDates() {
+        val=$('#multi_date_picker').multiDatesPicker('getDates');
+        if (val!='') feriados.value = val;
+    };
+    function formFeriados(element) {
+      if (element.checked){
+        document.getElementById('calendar_feriados').style.display = 'block';
+        esquemaFeriados.style.display = '';
+      } else {
+        document.getElementById('calendar_feriados').style.display = 'none';
+        esquemaFeriados.style.display      = 'none';
+        esquemaFeriados.value          = 'TarifaHora';
+        inicioTarifaFeriados.style.display   = 'none';
+        finTarifaFeriados.style.display      = 'none';
+      }
+    };
+  </script>
+{% endblock %}
