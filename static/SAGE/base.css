@@ -21,16 +21,6 @@ footer {
   background-color:#efefef;
 }
 
-.tarifas{
-  display: inline-block;
-  margin: 0 auto;
-}
-.parametrosForm{
-  min-width: 300px;
-  width: 80%;
-  margin: 0 auto;
-}
-
 .boton{
   color: #292929;
 }

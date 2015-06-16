@@ -416,6 +416,52 @@ def estacionamiento_detail(request, _id):
         }
     )
 
+def estacionamiento_edit(request, _id):
+    # estacionamientos = Estacionamiento.objects.all()
+    _id = int(_id)
+    # Verificamos que el objeto exista antes de continuar
+    try:
+        estacionamiento = Estacionamiento.objects.get(id=_id)
+    except ObjectDoesNotExist:
+        raise Http404
+
+    form = CedulaForm()
+    if request.method == 'POST':
+        form = CedulaForm(request.POST)
+        if form.is_valid():
+
+            cedula = form.cleaned_data['cedula']
+            cedulaTipo = form.cleaned_data['cedulaTipo']
+            try:
+                propietario = Propietario.objects.get(cedula=cedula, cedulaTipo=cedulaTipo)
+                Estacionamiento.objects.filter(id=_id).update(
+                    propietario=propietario
+                    )
+            except:
+                return render(
+                    request, 'Propietario/cambiarpropietario.html',
+                    { 'color'   : 'red'
+                    , 'estacionamiento': estacionamiento
+                    , 'mensajeR' : 'No existe tal propietario'
+                    }
+                )
+            return render(
+                    request, 'Propietario/cambiar-propietario.html',
+                    { 'color'   : 'green'
+                    , 'estacionamiento': estacionamiento
+                    , 'mensajeG' : 'Se ha cambiado exitosamente'
+                    }
+                )
+            
+            
+    return render(
+        request,
+        'Propietario/cambiar-propietario.html',
+        { 'form': form
+        , 'estacionamiento': estacionamiento
+        }
+    )
+    
 def estacionamiento_reserva(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
