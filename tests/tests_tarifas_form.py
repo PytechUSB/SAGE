@@ -96,3 +96,21 @@ class TarifasFormTestCase(TestCase):
         }
         form = TarifasForm(data = form_data)
         self.assertFalse(form.is_valid())
+
+    #numeros negativos en el primer campo
+    def test_tarifa_negativo(self):
+        form_data = {
+            'tarifa': -2,
+            'tarifa2': 10
+        }
+        form = TarifasForm(data = form_data)
+        self.assertFalse(form.is_valid())
+
+    #numeros negativos en el segundo campo
+    def test_tarifa2_negativo(self):
+        form_data = {
+            'tarifa': 2,
+            'tarifa2': -10
+        }
+        form = TarifasForm(data = form_data)
+        self.assertFalse(form.is_valid())
