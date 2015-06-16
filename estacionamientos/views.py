@@ -429,6 +429,129 @@ def estacionamiento_particulares(request, _id):
         }
     )
 
+def estacionamiento_tarifas(request, _id):
+    _id = int(_id)
+    # Verificamos que el objeto exista antes de continuar
+    try:
+        estacionamiento = Estacionamiento.objects.get(id=_id)
+    except ObjectDoesNotExist:
+        raise Http404
+
+    esquema = estacionamiento.tarifa
+    esquemaFeriados = estacionamiento.tarifaFeriados
+
+    formP = TarifasForm(prefix='foromP')
+    formM = TarifasForm(prefix='foromM')
+
+    if estacionamiento.capacidad > 0 and esquema != None:
+        form_data_tarifa_particular = {
+            'tarifa'     : esquema.tarifa,
+            'tarifa2'    : esquema.tarifa2
+        }
+        if estacionamiento.tarifaFeriados:
+            form_data_tarifa_particular.update({
+                'tarifaFeriados'    : esquemaFeriados.tarifa,
+                'tarifaFeriados2'   : esquemaFeriados.tarifa2
+            })
+        formP = TarifasForm(data=form_data_tarifa_particular,prefix='foromP')
+
+    if estacionamiento.capacidad_M > 0 and esquema != None:
+        form_data_tarifa_particular = {
+            'tarifa'     : esquema.tarifa_M,
+            'tarifa2'    : esquema.tarifa2_M
+        }
+        if estacionamiento.tarifaFeriados:
+            form_data_tarifa_particular.update({
+                'tarifaFeriados'    : esquemaFeriados.tarifa_M,
+                'tarifaFeriados2'   : esquemaFeriados.tarifa2_M
+            })
+        formM = TarifasForm(data=form_data_tarifa_particular,prefix='foromM')
+
+    if request.method == 'POST' and 'botonSubmit_P' in request.POST:
+            if estacionamiento.capacidad > 0:
+                formP = TarifasForm(request.POST,prefix='foromP')
+
+                if formP.is_valid():
+                    tarifa_P  = formP.cleaned_data['tarifa']
+                    tarifa2_P = formP.cleaned_data['tarifa2']
+                    tarifaFeriados_P  = formP.cleaned_data['tarifaFeriados']
+                    tarifaFeriados2_P = formP.cleaned_data['tarifaFeriados2']
+            else:
+                tarifa_P = None
+                tarifaFeriados_P = None
+                tarifa2_P = None
+                tarifaFeriados2_P = None
+
+            esquema.tarifa = tarifa_P 
+            esquema.tarifa2 = tarifa2_P 
+            esquema.tarifaFeriados = tarifaFeriados_P  
+            esquema.tarifaFeriados2 = tarifaFeriados2_P
+
+            if (estacionamiento.tarifaFeriados is not None):
+                esquema.tarifa = tarifa_P 
+                esquemaFeriados.tarifa2 = tarifa2_P 
+                esquemaFeriados.tarifaFeriados = tarifaFeriados_P  
+                esquemaFeriados.tarifaFeriados2 = tarifaFeriados2_P
+                esquemaFeriados.save()
+
+                estacionamiento.tarifaFeriados = esquemaFeriados
+            else:
+                if (estacionamiento.tarifaFeriados is not None):
+                    estacionamiento.tarifaFeriados.delete()
+            esquema.save()
+
+            estacionamiento.tarifa  = esquema
+
+            estacionamiento.save()     
+
+    elif request.method == 'POST' and 'botonSubmit_M' in request.POST:
+            if estacionamiento.capacidad_M > 0:
+                formM = TarifasForm(request.POST)
+
+                if formM.is_valid():
+                    tarifa  = formM.cleaned_data['tarifa']
+                    tarifa2 = formM.cleaned_data['tarifa2']
+                    tarifaFeriados  = formM.cleaned_data['tarifaFeriados']
+                    tarifaFeriados2 = formM.cleaned_data['tarifaFeriados2']
+            else:
+                tarifa = None
+                tarifaFeriados = None
+                tarifa2 = None
+                tarifaFeriados2 = None
+
+            esquema.tarifa = tarifa 
+            esquema.tarifa2 = tarifa2 
+            esquema.tarifaFeriados = tarifaFeriados  
+            esquema.tarifaFeriados2 = tarifaFeriados2
+
+            if (estacionamiento.tarifaFeriados is not None):
+                esquema.tarifa = tarifa 
+                esquemaFeriados.tarifa2 = tarifa2 
+                esquemaFeriados.tarifaFeriados = tarifaFeriados  
+                esquemaFeriados.tarifaFeriados2 = tarifaFeriados2
+                esquemaFeriados.save()
+
+                estacionamiento.tarifaFeriados = esquemaFeriados
+            else:
+                if (estacionamiento.tarifaFeriados is not None):
+                    estacionamiento.tarifaFeriados.delete()
+            esquema.save()
+
+            estacionamiento.tarifa  = esquema
+
+            estacionamiento.save()     
+
+    estacionamiento = Estacionamiento.objects.get(id=_id)    
+    return render(
+        request,
+        'tarifas.html',
+        { 
+          'formP': formP,
+          'formM': formM,
+          'estacionamiento': estacionamiento
+        }
+    )
+
 def estacionamiento_detail(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar

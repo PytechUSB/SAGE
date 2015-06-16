@@ -14,6 +14,49 @@ i {
   font-size:18px;
 }
 
+
+.slides_tarifas {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    background: black;
+}
+.slides_tarifas * {
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+.slides_tarifas input { display: none; }
+.slide_tarifa{
+    opacity: 0;
+    display: block;
+    position: absolute;    
+}
+.slide_tarifa { 
+    width: 100%;
+    text-align: center;
+    padding: 0px;
+    position: absolute; 
+}
+.slide_tarifa label {
+    /*display: none;
+    opacity: 0;*/
+    cursor: pointer;
+}
+input:checked + .slide_tarifa {
+    opacity: 1;
+}
+input:checked + .slide_tarifa .nav label { display: block; }
+.slide_tarifa{ 
+    clear: both;
+}
+
+
+
+
 footer {
   margin-top:20px;
   padding-top:20px;

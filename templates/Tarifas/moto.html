@@ -1,0 +1,58 @@
+  {% csrf_token %}
+  <div class="panel-body">
+          <form action="." method="post" class="form form-vertical">
+            <div class="control-group">
+                <div class="controls">
+                  {{ formM.tarifa }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% if estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifa.tipo == "Tarifa diferenciada por hora pico" %}
+              <div class="control-group">
+                <div class="controls">
+                  {{ formM.tarifa2 }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% endif %}
+            {% if estacionamiento.tarifaFeriados %}
+              <div class="control-group">
+                <div class="controls">
+                  {{ formM.tarifaFeriados }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% endif %}
+            {% if estacionamiento.tarifaFeriados.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifaFeriados.tipo == "Tarifa diferenciada por hora pico" %}
+              <div class="control-group">
+                <div class="controls">
+                  {{ formM.tarifaFeriados2 }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% endif %}
+
+            <div class="control-group" align ="center">
+              <div class="controls" align ="center">
+                <button type="submit" class="btn btn-primary" onclick="getDates()" name="botonSubmit_M">
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+    
+      {% include "validator.js.html" %}
