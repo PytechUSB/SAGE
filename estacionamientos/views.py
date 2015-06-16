@@ -369,15 +369,23 @@ def estacionamiento_tarifa_especial(request, _id):
         raise Http404
     
     #Forms para dias regulares
-    formCamiones=TarifasForm()
-    formMotos=TarifasForm()
-    formDisc=TarifasForm()
+    formCamiones=TarifasForm(prefix='formCamiones')
+    formMotos=TarifasForm(prefix='formMotos')
+    formDisc=TarifasForm(prefix='formDisc')
     
     #Forms para dias feriados
-    formFeriadosCamiones=TarifasForm()
-    formFeriadosMotos=TarifasForm()
-    formFeriadosDisc=TarifasForm()
+    formFeriadosCamiones=TarifasForm(prefix='formFeriadosCamiones')
+    formFeriadosMotos=TarifasForm(prefix='formFeriadosMotos')
+    formFeriadosDisc=TarifasForm(prefix='formFeriadosDisc')
     
+    if request.method == 'POST':
+        if estacionamiento.capacidad > 0:
+            formMotos = TarifasForm(request.POST,prefix='formMotos')
+            if formMotos.is_valid():
+                tarifa_M  = formMotos.cleaned_data['tarifa']
+                tarifa2_M = formMotos.cleaned_data['tarifa2']
+                    
+                    
     return render(
                     request,
                     'tarifas-especiales.html',
