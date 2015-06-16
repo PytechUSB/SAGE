@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}
+  SAGE - Estacionamiento {{estacionamiento.nombre}}
+{% endblock %}
+{% block innerContents%}
+  <meta charset="utf-8">  
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Estacionamiento {{estacionamiento.nombre}}
+    </h3>
+    <hr>  
+    <p>
+    <label for="amount">Horizonte de reservacion:</label>
+     <input type="text" id="horizonteParam" readonly style="border:0; color:#0033AF; font-weight:bold;">
+  </p>
+  <div id="slider"></div>
+    <hr>
+    <div class="col-md-4">
+      {% include "datos.html" with mostrarBoton=True %}
+    </div>
+    <div class="col-md-4">
+      {% include "parametros.html" %}
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <i class="glyphicon glyphicon-wrench pull-right"></i>
+            <h4>
+              Tarifas para particulares
+            </h4>
+          </div>
+        </div>
+        <div class="panel-body">
+          <form action="." method="post" class="form form-vertical">
+            <div class="control-group">
+                <div class="controls">
+                  {{ form.tarifa }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% if estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifa.tipo == "Tarifa diferenciada por hora pico" %}
+              <div class="control-group">
+                <div class="controls">
+                  {{ form.tarifa2 }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% endif %}
+            {% if estacionamiento.tarifaFeriados %}
+              <div class="control-group">
+                <div class="controls">
+                  {{ form.tarifaFeriados }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% endif %}
+            {% if estacionamiento.tarifaFeriados.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifaFeriados.tipo == "Tarifa diferenciada por hora pico" %}
+              <div class="control-group">
+                <div class="controls">
+                  {{ form.tarifaFeriados2 }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            {% endif %}
+
+            <div class="control-group" align ="center">
+              <div class="controls" align ="center">
+                <button type="submit" class="btn btn-primary" onclick="getDates()" name="botonSubmit">
+                  Guardar
+                </button>
+              </div>
+            </div>
+            <p>Al guardarse deberia aparecer un boton siguiente</p>
+          </form>
+          <p>
+          <a href="tarifa-moto" class="boton" >
+            <div class="controls" align ="center">
+              <button type="button">Siguiente</button>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      {% include "validator.js.html" %}
+
+    </div>
+  </div>
+
+{% endblock %}
+
+{% include "validator.js.html" %}
