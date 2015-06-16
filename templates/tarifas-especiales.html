@@ -10,40 +10,129 @@
     </h3>
     <hr>	
     <p>
-	  <label for="amount">Horizonte de reservacion:</label>
-	   <input type="text" id="horizonteParam" readonly style="border:0; color:#0033AF; font-weight:bold;">
-	</p>
-	<div id="slider"></div>
-    <hr>
     <div class="col-md-4">
-      {% include "datos.html" with mostrarBoton=True %}
+		<label for="amount">Esquema tarifario:</label>
+		<p style="border:0; color:#0033AF; font-weight:bold;">{{ estacionamiento.tarifa.tipo }}</p>
+	    <hr>
+		<label for="amount">Esquema tarifario para dias feriados:</label>
+		<p style="border:0; color:#0033AF; font-weight:bold;">{{ estacionamiento.tarifaFeriados.tipo }}</p>
+	    <hr>
     </div>
-    <div class="col-md-4">
-      {% include "parametros.html" %}
-    </div>
-    <div class="col-md-4">
-      {% include "parametrizar-form.html" %}
+    <div class="col-md-8">
+      <table width="80%">
+	      <thead>
+	      	<tr><b><i class="fa fa-truck"></i> Tarifas especiales para camiones:</b></tr>
+	      </thead>
+	      <tbody>
+	      	<tr>
+	      		<td>
+	      		  {% for field in formCamiones %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      		<td>
+	      		  {% for field in formFeriadosCamiones %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      	</tr
+	      </tbody>
+      </table>
+      <hr>
+      <table width="80%">
+	      <thead>
+	      	<tr><b><i class="fa fa-motorcycle"></i> Tarifas especiales para motos:</b></tr>
+	      </thead>
+	      <tbody>
+	      	<tr>
+	      		<td>
+	      		  {% for field in formMotos %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      		<td>
+	      		  {% for field in formFeriadosMotos %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      	</tr
+	      </tbody>
+      </table>
+      <hr>
+      <table width="80%">
+	      <thead>
+	      	<tr><b><i class="fa fa-wheelchair"></i> Tarifas especiales para discapacitados:</b></tr>
+	      </thead>
+	      <tbody>
+	      	<tr>
+	      		<td>
+	      		  {% for field in formDisc %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      		<td>
+	      		  {% for field in formFeriadosDisc %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      	</tr
+	      </tbody>
+      </table>
+	  <hr>
+	  <div class="controls" align ="center">
+		<button type="submit" class="btn btn-primary">
+	    Cambiar tarifas especiales
+	 	</button>
+	  </div>
     </div>
   </div>
-<script>
-  $(function() {
- 	$( "#slider" ).slider({
-      value:"{{ estacionamiento.horizonte }}",
-      animate: "slow",
-      min: 0,
-      max: 360,
-      step: 1,
-      slide: function( event, ui ) {
-	    imprimirHorizonte(ui.value);
-   		horizonte.value=ui.value;
-      }
-    });
-    value=$("#slider").slider("value" );
-    // imprimirHorizonte esta en datos.html
-    imprimirHorizonte(value);
-   	horizonte.value=$( "#slider" ).slider("value");
-  });
-</script>
-
 {% endblock %}
 

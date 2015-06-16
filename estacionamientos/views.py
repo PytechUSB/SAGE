@@ -365,19 +365,27 @@ def estacionamiento_tarifa_especial(request, _id):
         estacionamiento = Estacionamiento.objects.get(id=_id)
     except ObjectDoesNotExist:
         raise Http404
-    
-    
+        
+    #Forms para dias regulares
     formCamiones=TarifasForm()
     formMotos=TarifasForm()
-    formDiscapacitados=TarifasForm()
+    formDisc=TarifasForm()
+    
+    #Forms para dias feriados
+    formFeriadosCamiones=TarifasForm()
+    formFeriadosMotos=TarifasForm()
+    formFeriadosDisc=TarifasForm()
     
     return render(
                     request,
                     'tarifas-especiales.html',
-                    { 'estacionamiento'      : estacionamiento
-                    , 'formCamiones'         : formCamiones
-                    , 'formMotos'            : formMotos
-                    , 'formDiscapacitados'   : formDiscapacitados
+                    { 'estacionamiento'         : estacionamiento
+                    , 'formCamiones'            : formCamiones
+                    , 'formMotos'               : formMotos
+                    , 'formDisc'                : formDisc
+                    , 'formFeriadosCamiones'    : formFeriadosCamiones
+                    , 'formFeriadosMotos'       : formFeriadosMotos
+                    , 'formFeriadosDisc'        : formFeriadosDisc
                     }
                 )
     
