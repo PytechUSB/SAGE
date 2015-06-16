@@ -43,7 +43,7 @@ from estacionamientos.forms import (
     CancelaReservaForm,
     MoverReservaForm,
     PuestosForm
-)
+, TarifasForm)
 
 from estacionamientos.models import (
     Propietario,
@@ -357,11 +357,29 @@ def estacionamiento_detail(request, _id):
         }
     )
     
-def estacionamiento_tarifa_especial(request, _id,_tipo):
-    # estacionamientos = Estacionamiento.objects.all()
-    _tipo = str(_tipo)
+def estacionamiento_tarifa_especial(request, _id):
+    _id = int(_id)
+    
     # Verificamos que el objeto exista antes de continuar
-    raise Http404
+    try:
+        estacionamiento = Estacionamiento.objects.get(id=_id)
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    
+    formCamiones=TarifasForm()
+    formMotos=TarifasForm()
+    formDiscapacitados=TarifasForm()
+    
+    return render(
+                    request,
+                    'tarifas-especiales.html',
+                    { 'estacionamiento'      : estacionamiento
+                    , 'formCamiones'         : formCamiones
+                    , 'formMotos'            : formMotos
+                    , 'formDiscapacitados'   : formDiscapacitados
+                    }
+                )
     
 def estacionamiento_edit(request, _id):
     # estacionamientos = Estacionamiento.objects.all()

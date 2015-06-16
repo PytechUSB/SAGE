@@ -304,7 +304,61 @@ class PuestosForm(forms.Form):
         return cleaned_data   
     
  
-        
+class TarifasForm(forms.Form):
+    
+    tarifa_validator = RegexValidator(
+        regex   = '^([0-9]+(\.[0-9]+)?)$',
+        message = 'Sólo debe contener dígitos.'
+    )  
+    
+    tarifa = forms.DecimalField(
+        required   = True,
+        validators = [tarifa_validator],
+        widget     = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Tarifa'
+            , 'pattern'     : '^([0-9]+(\.[0-9]+)?)$'
+            , 'message'     : 'La entrada debe ser un número decimal.'
+            }
+        )
+    )
+
+    tarifa2 = forms.DecimalField(
+            required   = False,
+            validators = [tarifa_validator],
+            widget     = forms.TextInput(attrs = {
+                'class'       : 'form-control',
+                'placeholder' : 'Tarifa 2',
+                'pattern'     : '^([0-9]+(\.[0-9]+)?)$',
+                'message'     : 'La entrada debe ser un número decimal.'
+            }
+        )
+    )
+    
+    tarifaFeriados = forms.DecimalField(
+            required   = False,
+            validators = [tarifa_validator],
+            widget     = forms.TextInput(attrs = {
+                'class'       : 'form-control',
+                'placeholder' : 'Tarifa feriados',
+                'pattern'     : '^([0-9]+(\.[0-9]+)?)$',
+                'message'     : 'La entrada debe ser un número decimal.'
+            }
+        )
+    )
+    
+    tarifaFeriados2 = forms.DecimalField(
+            required   = False,
+            validators = [tarifa_validator],
+            widget     = forms.TextInput(attrs = {
+                'class'       : 'form-control',
+                'placeholder' : 'Tarifa 2',
+                'pattern'     : '^([0-9]+(\.[0-9]+)?)$',
+                'message'     : 'La entrada debe ser un número decimal.'
+            }
+        )
+    )
+            
 class EstacionamientoExtendedForm(forms.Form):
     
     tarifa_validator = RegexValidator(

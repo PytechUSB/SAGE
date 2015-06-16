@@ -91,28 +91,22 @@
     </td></tr>
 	{% if estacionamiento.capacidad %}
  		<tr><td><b><i class="fa fa-car"></i> Puestos particulares:</b></td></tr>
- 		<tr><td colspan="2">{{estacionamiento.capacidad}}</td></tr>
+ 		<tr><td>{{estacionamiento.capacidad}}</td></tr>
  	{% endif %}
   	{% if estacionamiento.capacidad_C %}
-  		<tr><td><b><i class="fa fa-truck"></i> Puestos para camiones:</b></td>
-        <td><a href="tarifa-camiones">
-          <i class="fa fa-pencil-square-o"></i></a>
-        </td></tr>
-  		<tr><td colspan="2">{{estacionamiento.capacidad_C}}</td></tr>
+  		<tr><td><b><i class="fa fa-truck"></i> Puestos para camiones:</b></td></tr>
+  		<tr><td>{{estacionamiento.capacidad_C}}</td></tr>
   	{% endif %}
  	{% if estacionamiento.capacidad_M %}
   		<tr><td><b><i class="fa fa-motorcycle"></i> Puestos para motos:</b></td>
-        <td><a href="tarifa-motos">
+        <td><a href="tarifas_especiales">
           <i class="fa fa-pencil-square-o"></i></a>
         </td></tr>
-  		<tr><td colspan="2">{{estacionamiento.capacidad_M}}</td></tr>
+  		<tr><td>{{estacionamiento.capacidad_M}}</td></tr>
   	{% endif %}
   	{% if estacionamiento.capacidad_D %}
-  		<tr><td><b><i class="fa fa-wheelchair"></i> Puestos para discapacitados:</b></td>
-        <td><a href="tarifa-discapacitados">
-          <i class="fa fa-pencil-square-o"></i></a>
-        </td></tr>
-  		<tr><td colspan="2">{{estacionamiento.capacidad_D}}</td></tr>
+  		<tr><td><b><i class="fa fa-wheelchair"></i> Puestos para discapacitados:</b></td></tr>
+  		<tr><td>{{estacionamiento.capacidad_D}}</td></tr>
  	{% endif %}
   </tbody>
 </table>
