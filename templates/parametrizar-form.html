@@ -10,9 +10,9 @@
     </div>
   </div>
   <div class="panel-body" align ="center">
-    {% if estacionamiento.tarifa %}
+    {% if estacionamiento.tarifa and estacionamiento.capacidad > 0 or estacionamiento.capacidad_M > 0 or estacionamiento.capacidad_C > 0 or estacionamiento.capacidad_D > 0 %}
       <!-- Introducir tarifas -->  
-      <a href="tarifas_especiales" class="boton" >
+      <a href="tarifas_especiales" class="boton" id="gestionar">
         <div class="controls" align ="center">
           <button type="button" >Gestionar Tarifas</button>
         </div>
@@ -25,6 +25,9 @@
         <div class="control-group">
           <div class="controls">
             {{ field }}
+            {% if field = form.aceptaFeriados %}
+              Esquema para días feriados
+            {% endif %}
             <span class='error' id='{{field.name}}_error' aria-live="polite">
               {{ field.errors }}
             </span>
@@ -32,31 +35,12 @@
           </div>
         </div>
       {% endfor %}
-
-      
-        <!-- Calendario -->
-        <div id="calendar_feriados" style="display: none" >
-          <p>Esquema para días feriados:</p>
-          {% csrf_token %}     
-          {% for field in formFeriados %}
-            <div class="control-group">
-              <div class="controls">
-                {{ field }}
-                <span class='error' id='{{field.name}}_error' aria-live="polite">
-                  {{ field.errors }}
-                </span>
-                <p>
-              </div>
-            </div>
-          {% endfor %}
-          <br>
-          <i class="fa fa-calendar" id="calendar" onclick="calendar()"></i> &nbsp;
-          <span role="text" id="multi_date_picker"></span>
-        </div>
-        <br>
-        <!--Checkbox para tarifa en dias feriados-->
-        <input type="checkbox" value="No" id="check_feriados" onchange="formFeriados(this)">&nbsp;Tarifa días feriados<br>
-        <label></label>
+      <!-- Calendario -->
+      <div id="calendar_feriados" style="display: none" >
+        <i class="fa fa-calendar" id="calendar" onclick="calendar()"></i> &nbsp;
+        <span role="text" id="multi_date_picker"></span>
+      </div>
+      <br>
       <div class="control-group" align ="center">
         <div class="controls" align ="center">
           <button type="submit" class="btn btn-primary" onclick="getDates()" name="botonSubmit">
@@ -75,6 +59,7 @@
   esquema       = document.getElementById('id_esquema');
   inicio        = document.getElementById('id_inicioTarifa2');
   fin           = document.getElementById('id_finTarifa2');
+  aceptaFeriados = document.getElementById('id_aceptaFeriados');
 
   //Feriados
   feriados        = document.getElementById('id_feriados');  
@@ -84,26 +69,37 @@
   
   // Para el horizonte de reservacion
   horizonte        = document.getElementById('id_horizonte');
-  
+    
   inicioTarifaFeriados.style.display = 'none';
   finTarifaFeriados.style.display = 'none';
-  inicio.style.display = 'none';
-  fin.style.display = 'none';
+  esquemaFeriados.style.display = 'none';
+  verificarFeriados()
 
-  if (tarifaFeriados.value != ""){
-    document.getElementById("check_feriados").checked = true;
-    document.getElementById('calendar_feriados').style.display = 'block';
-    verificarTarifaFeriados();
-  }
   verificarTarifa();
   if (esquema) {
     esquema.onchange=function() {
       verificarTarifa();
     }
   }
-  if (esquemaFeriados) {
+  if (aceptaFeriados.checked) {
     esquemaFeriados.onchange=function() {
       verificarTarifaFeriados();
+    }
+  }
+  aceptaFeriados.onchange=function() {
+    verificarFeriados()
+  }
+//Verifica si fue selecionada la opcion de tarifas para feriados
+  function verificarFeriados() {  
+    if(aceptaFeriados.checked){
+      document.getElementById('calendar_feriados').style.display = 'block';
+      esquemaFeriados.style.display = '';
+    }else{
+      document.getElementById('calendar_feriados').style.display = 'none';
+      esquemaFeriados.style.display      = 'none';
+      esquemaFeriados.value          = '';
+      inicioTarifaFeriados.style.display   = 'none';
+      finTarifaFeriados.style.display      = 'none';
     }
   }
 // Funciones para verificar los esquemas tarifarios (para no repetir codigo)
@@ -127,9 +123,9 @@ function verificarTarifa() {
 };
 function verificarTarifaFeriados() {
   if (esquemaFeriados.value == "TarifaHoraPico") {
-      inicioTarifaFeriados.style.display='block';
+      inicioTarifaFeriados.style.display='';
       inicioTarifaFeriados.placeholder = "Inicio horario pico";
-      finTarifaFeriados.style.display='block';
+      finTarifaFeriados.style.display='';
       finTarifaFeriados.placeholder = "Fin horario pico";
   } else if (esquemaFeriados.value == "TarifaFinDeSemana") {
       inicioTarifaFeriados.style.display='none';
@@ -171,14 +167,6 @@ function verificarTarifaFeriados() {
     function getDates() {
         val=$('#multi_date_picker').multiDatesPicker('getDates');
         if (val!='') feriados.value = val;
-    };
-    function formFeriados(element) {
-      if (element.checked){
-        document.getElementById('calendar_feriados').style.display = 'block';
-      } else {
-        document.getElementById('calendar_feriados').style.display = 'none';
-        esquemaFeriados.value  = 'TarifaHora';
-      }
     };
   </script>
 {% endblock %}
