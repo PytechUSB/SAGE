@@ -341,7 +341,13 @@ def estacionamiento_detail(request, _id):
                 , 'errorDialog' : mensaje
                 }
             )
-    estacionamiento = Estacionamiento.objects.get(id=_id)    
+    estacionamiento = Estacionamiento.objects.get(id=_id) 
+    try:
+        # '__all__' expone el error definido en el clean de EstacionamientoExtendedForm
+        EstacionamientoExtendedForm.errors['__all__']
+    except:
+        pass
+
     return render(
         request,
         'detalle-estacionamiento.html',

@@ -10,6 +10,11 @@
     </div>
   </div>
   <div class="panel-body" align ="center">
+    {% if form.non_field_errors %}
+      <p style="color:red" align ="center">
+        {{form.non_field_errors}}
+      </p>
+    {% endif %} 
     {% if estacionamiento.tarifa and estacionamiento.capacidad > 0 or estacionamiento.capacidad_M > 0 or estacionamiento.capacidad_C > 0 or estacionamiento.capacidad_D > 0 %}
       <!-- Introducir tarifas -->  
       <a href="tarifas_especiales" class="boton" id="gestionar">
