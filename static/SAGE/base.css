@@ -21,6 +21,11 @@ footer {
   background-color:#efefef;
 }
 
+.lista_tarifas{
+  list-style-type: none;
+  padding-left: 14px;
+}
+
 .boton{
   color: #292929;
 }
