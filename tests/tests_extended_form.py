@@ -127,7 +127,7 @@ class ExtendedFormTestCase(TestCase):
                       'horarioout': time(hour = 19,  minute = 0),
                       'esquema': 'TarifaHora',
                       'inicioTarifa2': time( hour = 14,  minute = 0),
-                      'finTarifa2': time(hour = 18,  minute = 0)
+                      'finTarifa2': time(hour = 20,  minute = 0)
                     }
         form = EstacionamientoExtendedForm(data = form_data)
         self.assertFalse(form.is_valid())
