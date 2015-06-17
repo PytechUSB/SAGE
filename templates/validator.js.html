@@ -32,15 +32,15 @@
     }
   };
   {% for field in form %}
-    var error_{{ field.name }} = document.getElementById('{{ field.name }}_error')
-    var {{ field.name }} = document.getElementById('id_{{ field.name }}');
-    {{ field.name }}.addEventListener('blur', function (event) {
-      verifyPattern({{ field.name }}, error_{{ field.name }}, {{ field.name }}.getAttribute('message'));
+    var error_{{ field.html_name }} = document.getElementById('{{ field.html_name }}_error')
+    var {{ field.html_name }} = document.getElementById('id_{{ field.html_name }}');
+    {{ field.html_name }}.addEventListener('blur', function (event) {
+      verifyPattern({{ field.html_name }}, error_{{ field.html_name }}, {{ field.html_name }}.getAttribute('message'));
     }, false);
 
-    {{ field.name }}.addEventListener('focus', function (event) {
-      error_{{ field.name}}.innerHTML = ""; // Reset the content of the message
-      error_{{ field.name}}.className = "error"; // Reset the visual state of the message
+    {{ field.html_name }}.addEventListener('focus', function (event) {
+      error_{{ field.html_name}}.innerHTML = ""; // Reset the content of the message
+      error_{{ field.html_name}}.className = "error"; // Reset the visual state of the message
     }, false);
   {% endfor %}
 </script>
