@@ -366,7 +366,7 @@ def estacionamiento_tarifa_especial(request, _id):
     formDisc=TarifasForm(prefix='Discapacitados')
     
     #Forms para dias feriados
-    formFeriadosMotos=TarifasForm(prefix='formFeriadosMotos')
+    formFeriadosMotos=TarifasForm(prefix='FeriadosMotos')
     formFeriadosCamiones=TarifasForm(prefix='FeriadosCamiones')
     formFeriadosDisc=TarifasForm(prefix='FeriadosDiscapacitados')
     
