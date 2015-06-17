@@ -29,10 +29,10 @@
       {% for field in form %}
         <div class="control-group">
           <div class="controls">
-            {{ field }}
-            {% if field = form.aceptaFeriados %}
-              Esquema para días feriados
+            {% if field.name == 'aceptaFeriados' %}
+              <p align="center" style="border:0; color:#0033AF; font-weight:bold;">Esquema para días feriados</p>
             {% endif %}
+            {{ field }}
             <span class='error' id='{{field.name}}_error' aria-live="polite">
               {{ field.errors }}
             </span>
@@ -78,8 +78,8 @@
   inicioTarifaFeriados.style.display = 'none';
   finTarifaFeriados.style.display = 'none';
   esquemaFeriados.style.display = 'none';
-  verificarFeriados()
-
+  verificarFeriados();
+  verificarTarifaFeriados();
   verificarTarifa();
   if (esquema) {
     esquema.onchange=function() {

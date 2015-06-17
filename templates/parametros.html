@@ -8,7 +8,6 @@
       <tr><td>{{estacionamiento.apertura}} - {{estacionamiento.cierre}}</td></tr>
       <tr><td><b><i class="fa fa-circle"></i> Esquema:</b></td></tr>
       <tr><td>{{estacionamiento.tarifa.tipo}} </td></tr>
-    {% endif %}
 
     <!--###############-->
     <!--ESQUEMA REGULAR-->
@@ -40,6 +39,7 @@
       {% endif %}
       </ul>
     </td></tr>
+    {% endif %}
     <!--HORARIO ESPECIAL-->
     {% if estacionamiento.tarifa.tipo == "Tarifa diferenciada por hora pico" %}
       <tr><td><b>&nbsp <i class="fa fa-clock-o"></i> Horario tarifa especial:</b></td></tr>

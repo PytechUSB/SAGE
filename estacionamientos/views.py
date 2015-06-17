@@ -344,7 +344,7 @@ def estacionamiento_detail(request, _id):
     estacionamiento = Estacionamiento.objects.get(id=_id) 
     try:
         # '__all__' expone el error definido en el clean de EstacionamientoExtendedForm
-        EstacionamientoExtendedForm.errors['__all__']
+        form.errors['__all__']
     except:
         pass
 
@@ -367,6 +367,7 @@ def estacionamiento_tarifa_especial(request, _id):
         raise Http404
     
     #Forms para dias regulares
+    formParticulares=TarifasForm(prefix='Particulares')
     formMotos=TarifasForm(prefix='Motos')
     formCamiones=TarifasForm(prefix='Camiones')
     formDisc=TarifasForm(prefix='Discapacitados')
@@ -375,29 +376,126 @@ def estacionamiento_tarifa_especial(request, _id):
     formFeriadosMotos=TarifasForm(prefix='FeriadosMotos')
     formFeriadosCamiones=TarifasForm(prefix='FeriadosCamiones')
     formFeriadosDisc=TarifasForm(prefix='FeriadosDiscapacitados')
+    formFeriadosParticulares = TarifasForm(prefix='FeriadosParticulares')
+    
+    if request.method == 'GET':
+        #Extraemos la data de cada forma desde los esquemas tarifarios de estacionamiento
+        if estacionamiento.capacidad :
+            form_data = {
+                'tarifa'   : estacionamiento.tarifa.tarifa,
+                'tarifa2' : estacionamiento.tarifa.tarifa2
+            }
+            formParticulares=TarifasForm(data=form_data,prefix='Particulares')
+            if estacionamiento.tarifaFeriados:
+                form_data = {
+                    'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                    'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+                }
+                formFeriadosParticulares = TarifasForm(data=form_data,prefix='FeriadosParticulares')
+            
+        if estacionamiento.capacidad_M :
+            form_data = {
+                'tarifa'   : estacionamiento.tarifa.tarifa_M,
+                'tarifa2' : estacionamiento.tarifa.tarifa2_M
+            }
+            formMotos=TarifasForm(data=form_data,prefix='Motos')
+            if estacionamiento.tarifaFeriados:
+                form_data = {
+                    'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                    'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+                }
+                formFeriadosMotos=TarifasForm(data=form_data,prefix='FeriadosMotos')
+            
+        if estacionamiento.capacidad_C :
+            form_data = {
+                'tarifa'   : estacionamiento.tarifa.tarifa_C,
+                'tarifa2' : estacionamiento.tarifa.tarifa2_C
+            }
+            formCamiones=TarifasForm(data=form_data,prefix='Camiones')
+            if estacionamiento.tarifaFeriados:
+                form_data = {
+                    'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                    'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+                }
+                formFeriadosCamiones=TarifasForm(data=form_data,prefix='FeriadosCamiones')
+            
+        if estacionamiento.capacidad_D :
+            form_data = {
+                'tarifa'   : estacionamiento.tarifa.tarifa_D,
+                'tarifa2' : estacionamiento.tarifa.tarifa2_D
+            }
+            formDisc=TarifasForm(data=form_data,prefix='Discapacitados')
+            if estacionamiento.tarifaFeriados:
+                form_data = {
+                    'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                    'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+                }
+                formFeriadosDisc=TarifasForm(data=form_data,prefix='FeriadosDiscapacitados')
     
     if request.method == 'POST':
         if estacionamiento.capacidad > 0:
+            formParticulares=TarifasForm(request.POST,prefix='Particulares')
             formMotos = TarifasForm(request.POST,prefix='Motos')
             formCamiones=TarifasForm(request.POST,prefix='Camiones')
             formDisc=TarifasForm(request.POST,prefix='Discapacitados')
+            formFeriadosParticulares = TarifasForm(request.POST,prefix='FeriadosParticulares')
             formFeriadosMotos = TarifasForm(request.POST,prefix='FeriadosMotos')
             formFeriadosCamiones=TarifasForm(request.POST,prefix='FeriadosCamiones')
             formFeriadosDisc=TarifasForm(request.POST,prefix='FeriadosDiscapacitados')
             
-            if formMotos.is_valid():
-                tarifa_M  = formMotos.cleaned_data['tarifa']
-                tarifa2_M = formMotos.cleaned_data['tarifa2']
-                    
-                    
+            #Si son válidas extraemos las tarifas regulares y feriadas
+            if all([formMotos.is_valid(),formParticulares.is_valid(),formCamiones.is_valid(),formDisc.is_valid()]):
+                regtarifa  = formParticulares.cleaned_data['tarifa']
+                regtarifa2 = formParticulares.cleaned_data['tarifa2']
+                regtarifa_M  = formMotos.cleaned_data['tarifa']
+                regtarifa2_M = formMotos.cleaned_data['tarifa2']
+                regtarifa_C  = formCamiones.cleaned_data['tarifa']
+                regtarifa2_C = formCamiones.cleaned_data['tarifa2']
+                regtarifa_D  = formDisc.cleaned_data['tarifa']
+                regtarifa2_D = formDisc.cleaned_data['tarifa2']
+                
+            if estacionamiento.tarifaFeriados and all([formFeriadosMotos.is_valid(),formFeriadosParticulares.is_valid()
+                   ,formFeriadosCamiones.is_valid(),formFeriadosDisc.is_valid()]):
+                fertarifa  = formFeriadosParticulares.cleaned_data['tarifa']
+                fertarifa2 = formFeriadosParticulares.cleaned_data['tarifa2']
+                fertarifa_M  = formFeriadosMotos.cleaned_data['tarifa']
+                fertarifa2_M = formFeriadosMotos.cleaned_data['tarifa2']
+                fertarifa_C  = formFeriadosCamiones.cleaned_data['tarifa']
+                fertarifa2_C = formFeriadosCamiones.cleaned_data['tarifa2']
+                fertarifa_D  = formFeriadosDisc.cleaned_data['tarifa']
+                fertarifa2_D = formFeriadosDisc.cleaned_data['tarifa2']
+            
+            # Actualizamos los esquemas tarifarios 
+            estacionamiento.tarifa.tarifa          = regtarifa,
+            estacionamiento.tarifa.tarifa2         = regtarifa2,
+            estacionamiento.tarifa.tarifa_M        = regtarifa_M,
+            estacionamiento.tarifa.tarifa2_M       = regtarifa2_M,
+            estacionamiento.tarifa.tarifa_C        = regtarifa_C,
+            estacionamiento.tarifa.tarifa2_C       = regtarifa2_C,
+            estacionamiento.tarifa.tarifa_D        = regtarifa_D,
+            estacionamiento.tarifa.tarifa2_D       = regtarifa2_D
+            if estacionamiento.feriados:
+                estacionamiento.tarifaFeriados.tarifa          = fertarifa,
+                estacionamiento.tarifaFeriados.tarifa2         = fertarifa2,
+                estacionamiento.tarifaFeriados.tarifa_M        = fertarifa_M,
+                estacionamiento.tarifaFeriados.tarifa2_M       = fertarifa2_M,
+                estacionamiento.tarifaFeriados.tarifa_C        = fertarifa_C,
+                estacionamiento.tarifaFeriados.tarifa2_C       = fertarifa2_C,
+                estacionamiento.tarifaFeriados.tarifa_D        = fertarifa_D,
+                estacionamiento.tarifaFeriados.tarifa2_D       = fertarifa2_D
+                
+            estacionamiento.save()
+                   
     return render(
                     request,
                     'tarifas-especiales.html',
                     { 'estacionamiento'         : estacionamiento
+                    , 'formParticulares'        : formParticulares
                     , 'formCamiones'            : formCamiones
                     , 'formMotos'               : formMotos
                     , 'formDisc'                : formDisc
                     , 'formFeriadosCamiones'    : formFeriadosCamiones
+                    , 'formFeriadosParticulares': formFeriadosParticulares
                     , 'formFeriadosMotos'       : formFeriadosMotos
                     , 'formFeriadosDisc'        : formFeriadosDisc
                     }

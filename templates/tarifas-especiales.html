@@ -23,10 +23,50 @@
     <div class="col-md-8">
       <form action="." method="post" class="form form-vertical">
       {% csrf_token %}     
+      {% if estacionamiento.capacidad %}
+      <table width="80%">
+	      <thead>
+	      	<tr><b><i class="fa fa-car"></i> Tarifas para particulares:</b></tr>
+	      </thead>
+	      <tbody>
+	      	<tr>
+	      		<td>
+	      		  {% for field in formParticulares %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.html_name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      		<td>
+	      		  {% if estacionamiento.tarifaFeriados %}
+	      		  {% for field in formFeriadosParticulares %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.html_name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+			      {% endif %}
+      			</td>
+	      	</tr
+	      </tbody>
+      </table>
+      <hr>
+      {% endif %}     
       {% if estacionamiento.capacidad_C %}
       <table width="80%">
 	      <thead>
-	      	<tr><b><i class="fa fa-truck"></i> Tarifas especiales para camiones:</b></tr>
+	      	<tr><b><i class="fa fa-truck"></i> Tarifas para camiones:</b></tr>
 	      </thead>
 	      <tbody>
 	      	<tr>
@@ -66,7 +106,7 @@
       {% if estacionamiento.capacidad_M %}
       <table width="80%">
 	      <thead>
-	      	<tr><b><i class="fa fa-motorcycle"></i> Tarifas especiales para motos:</b></tr>
+	      	<tr><b><i class="fa fa-motorcycle"></i> Tarifas para motos:</b></tr>
 	      </thead>
 	      <tbody>
 	      	<tr>
@@ -106,7 +146,7 @@
       {% if estacionamiento.capacidad_D %}
       <table width="80%">
 	      <thead>
-	      	<tr><b><i class="fa fa-wheelchair"></i> Tarifas especiales para discapacitados:</b></tr>
+	      	<tr><b><i class="fa fa-wheelchair"></i> Tarifas para discapacitados:</b></tr>
 	      </thead>
 	      <tbody>
 	      	<tr>
@@ -155,6 +195,8 @@
     </form>
   </div>
 <!-- Validadores de los campos --> 
+{% include "validator.js.html" with form=formParticulares%}
+{% include "validator.js.html" with form=formFeriadosParticulares%}
 {% include "validator.js.html" with form=formCamiones%}
 {% include "validator.js.html" with form=formFeriadosCamiones%}
 {% include "validator.js.html" with form=formMotos%}
@@ -183,10 +225,12 @@ function trampa(nombre) {
 
 function ocultarTarifa1(feriado) {
 	if (feriado) {
+		trampa("FeriadosParticulares_tarifa");
 		trampa("FeriadosCamiones_tarifa");
 		trampa("FeriadosMotos_tarifa");
 		trampa("FeriadosDiscapacitados_tarifa");
 	} else {
+		trampa("Particulares_tarifa");
 		trampa("Camiones_tarifa");
 		trampa("Motos_tarifa");
 		trampa("Discapacitados_tarifa");
@@ -195,10 +239,12 @@ function ocultarTarifa1(feriado) {
 
 function ocultarTarifa2(feriado) {
 	if (feriado) {
+		trampa("FeriadosParticulares_tarifa2")
 		trampa("FeriadosCamiones_tarifa2");
 		trampa("FeriadosMotos_tarifa2");
 		trampa("FeriadosDiscapacitados_tarifa2");
 	} else {
+		trampa("Particulares_tarifa2");
 		trampa("Camiones_tarifa2");
 		trampa("Motos_tarifa2");
 		trampa("Discapacitados_tarifa2");
