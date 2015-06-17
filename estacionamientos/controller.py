@@ -59,7 +59,8 @@ def validarHorarioReservaMover(inicioReserva, finReserva, apertura, cierre, hori
 		and cierre.hour==23 and cierre.minute==59:
 		fifteen_days=timedelta(days=15)
 		if finReserva-inicioReserva<=fifteen_days:
-			if porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte) < 50:
+			if (porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte) < 50 or 
+			   finReserva > datetime.now() + timedelta(days = 15)) :
 				return (False, 'Una mayor proporcion de la reserva debe estar dentro del horizonte de reservacion.')
 			return (True,'')
 		
@@ -67,7 +68,8 @@ def validarHorarioReservaMover(inicioReserva, finReserva, apertura, cierre, hori
 			return(False,'Se puede reservar un puesto por un maximo de 15 dias dependiendo horizonte de reservacion.')
 		
 	if finReserva > datetime.now().replace(second=0,microsecond=0)+timedelta(hours=horizonte):
-		if porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte) < 50:
+		if (porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte) < 50  or 
+		   finReserva > datetime.now() + timedelta(days = 15)):
 			return (False, 'Una mayor proporcion de la reserva debe estar dentro del horizonte de reservacion.')
 	
 	else:
@@ -84,10 +86,10 @@ def validarHorarioReservaMover(inicioReserva, finReserva, apertura, cierre, hori
 
 	
 def porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte):
-	total_reserva = (finReserva - inicioReserva).seconds
+	total_reserva = (finReserva - inicioReserva).total_seconds()
 	horizonte = datetime.now().replace(second = 0, microsecond = 0) + timedelta(hours = horizonte)
 	if inicioReserva < horizonte:
-		reservaEnHorizonte = (horizonte - inicioReserva).seconds
+		reservaEnHorizonte = (horizonte - inicioReserva).total_seconds()
 		porcentaje = Decimal((reservaEnHorizonte * 100) / total_reserva).quantize(Decimal('1.0'))
 		return porcentaje
 	
