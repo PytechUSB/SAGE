@@ -89,56 +89,56 @@
     <tr><td colspan="2">
       {{estacionamiento.rif}}
     </td></tr>
-  {% if estacionamiento.capacidad %}
-    <tr><td colspan="2"><b><i class="fa fa-car"></i> Puestos particulares:</b></td></tr>
-    <tr><td colspan="2">{{estacionamiento.capacidad}}</td></tr>
-  {% endif %}
-    {% if estacionamiento.capacidad_C %}
-      <tr><td colspan="2"><b><i class="fa fa-truck"></i> Puestos para camiones:</b></td></tr>
-      <tr><td colspan="2">{{estacionamiento.capacidad_C}}</td></tr>
-    {% endif %}
-  {% if estacionamiento.capacidad_M %}
-      <tr><td><b><i class="fa fa-motorcycle"></i> Puestos para motos:</b></td>
-      <tr><td colspan="2">{{estacionamiento.capacidad_M}}</td></tr>
-    {% endif %}
-    {% if estacionamiento.capacidad_D %}
-      <tr><td colspan="2"><b><i class="fa fa-wheelchair"></i> Puestos para discapacitados:</b></td></tr>
-      <tr><td colspan="2">{{estacionamiento.capacidad_D}}</td></tr>
-  {% endif %}
+	{% if estacionamiento.capacidad %}
+ 		<tr><td colspan="2"><b><i class="fa fa-car"></i> Puestos particulares:</b></td></tr>
+ 		<tr><td colspan="2">{{estacionamiento.capacidad}}</td></tr>
+ 	{% endif %}
+  	{% if estacionamiento.capacidad_C %}
+  		<tr><td colspan="2"><b><i class="fa fa-truck"></i> Puestos para camiones:</b></td></tr>
+  		<tr><td colspan="2">{{estacionamiento.capacidad_C}}</td></tr>
+  	{% endif %}
+ 	{% if estacionamiento.capacidad_M %}
+  		<tr><td colspan="2"><b><i class="fa fa-motorcycle"></i> Puestos para motos:</b></td></tr>
+  		<tr><td colspan="2">{{estacionamiento.capacidad_M}}</td></tr>
+  	{% endif %}
+  	{% if estacionamiento.capacidad_D %}
+  		<tr><td colspan="2"><b><i class="fa fa-wheelchair"></i> Puestos para discapacitados:</b></td></tr>
+  		<tr><td colspan="2">{{estacionamiento.capacidad_D}}</td></tr>
+ 	{% endif %}
   </tbody>
 </table>
 
 <div id="dialogpuestos" title="Gestionar puestos" style="display: none">
   {% if errorDialog %}
     <p style="color:red" align ="center">
-      {{errorDialog}}
+	    {{errorDialog}}
     </p>
-  {% endif %} 
+  {% endif %}	
   <form action="." method="POST" class="form form-vertical">
   {% csrf_token %} 
   <div class="control-group" align ="center">
       <div class="controls">
       <table width="250" border="0" cellspacing="0">
           <tr><td><font size="10" color="gray"><i class="fa fa-car fa-spin"> </i></font></td>
-            <td>{{ formPuestos.particulares }}
+          	<td>{{ formPuestos.particulares }}
             <span class='error' id='{{formPuestos.particulares.name}}_error' aria-live="polite">
               {{ formPuestos.particulares.errors }}
             </span></td>
           </tr>
           <tr><td><font size="10" color="gray"><i class="fa fa-truck"> </i></font></td>
-            <td>{{ formPuestos.camiones }}
+          	<td>{{ formPuestos.camiones }}
             <span class='error' id='{{formPuestos.camiones.name}}_error' aria-live="polite">
               {{ formPuestos.camiones.errors }}
             </span></td>
           </tr>
           <tr><td><font size="10" color="black"><i class="fa fa-motorcycle"> </i></font></td>
-            <td>{{ formPuestos.motos }}
+          	<td>{{ formPuestos.motos }}
             <span class='error' id='{{formPuestos.motos.name}}_error' aria-live="polite">
               {{ formPuestos.motos.errors }}
             </span></td>
           </tr>
           <tr><td><font size="10" color="blue"><i class="fa fa-wheelchair"> </i></font></td>
-            <td>{{ formPuestos.discapacitados }}
+          	<td>{{ formPuestos.discapacitados }}
             <span class='error' id='{{formPuestos.discapacitados.name}}_error' aria-live="polite">
               {{ formPuestos.discapacitados.errors }}
             </span></td>
@@ -150,63 +150,63 @@
       <button type="submit" class="btn btn-primary" name="botonPuestos">
         Aceptar
       </button>
-    </div>  
+    </div>	
   </form>  
 </div>
 {% if mostrarBoton %}
     <div class="controls" align ="center">
-      <p><button id="puestos">Gestionar puestos</button></p>
+    	<p><button id="puestos">Gestionar puestos</button></p>
     </div></p>
-{% endif %} 
+{% endif %}	
 
 {% if errorDialog %}
     <script>
-    $(function() {
-        $( "#dialogpuestos" ).dialog( "open" );
-    });
+	  $(function() {
+	      $( "#dialogpuestos" ).dialog( "open" );
+	  });
     </script>
-{% endif %} 
+{% endif %}	
 
 {% include "validator.js.html" with form=formPuestos %}
 {% block scripts %}
-  <script type="text/javascript">
-      function popup(mylink, windowname) {
-        if (! window.focus)
-          return true;
-        var href;
-        if (typeof(mylink) == 'string')
-          href=mylink;
-        else
-          href=mylink.href;
-        window.open(href, windowname, 'width=600,height=400,scrollbars=yes');
-        return false;
-      }
-  </script>
-  <script>
-  function imprimirHorizonte(value) {
-      dias=parseInt(value/24)
-      horas=value%24
-      if (value == 0) {
-       $( "#horizonteParam" ).val("No se admiten reservas");
-      }
-      else if (horas == 0) {
-       if (dias==1) $( "#horizonteParam" ).val( dias + " dia" );
-       else $( "#horizonteParam" ).val( dias + " dias" );
-      }
-      else if (value > 24) {
-       if (dias==1) {
-        if (horas==1) $( "#horizonteParam" ).val( dias + " dia y " + horas + " hora" );
-        else $( "#horizonteParam" ).val( dias + " dia y " + horas + " horas" );
-       }
-       else {
-        if (horas==1) $( "#horizonteParam" ).val( dias + " dias y " + horas + " hora" );
-        else $( "#horizonteParam" ).val( dias + " dias y " + horas + " horas" );
-       }
-      }
-      else {
-       if (horas==1) $( "#horizonteParam" ).val( horas + " hora" );
-       else $( "#horizonteParam" ).val( horas + " horas" );
-      }
-  };
-  </script>
+	<script type="text/javascript">
+	    function popup(mylink, windowname) {
+	      if (! window.focus)
+	        return true;
+	      var href;
+	      if (typeof(mylink) == 'string')
+	        href=mylink;
+	      else
+	        href=mylink.href;
+	      window.open(href, windowname, 'width=600,height=400,scrollbars=yes');
+	      return false;
+	    }
+	</script>
+	<script>
+	function imprimirHorizonte(value) {
+	    dias=parseInt(value/24)
+	    horas=value%24
+	    if (value == 0) {
+	   	 $( "#horizonteParam" ).val("No se admiten reservas");
+	   	}
+	   	else if (horas == 0) {
+	   	 if (dias==1) $( "#horizonteParam" ).val( dias + " dia" );
+	   	 else $( "#horizonteParam" ).val( dias + " dias" );
+	   	}
+	   	else if (value > 24) {
+	   	 if (dias==1) {
+	   	 	if (horas==1) $( "#horizonteParam" ).val( dias + " dia y " + horas + " hora" );
+	   	 	else $( "#horizonteParam" ).val( dias + " dia y " + horas + " horas" );
+	   	 }
+	   	 else {
+	   	 	if (horas==1) $( "#horizonteParam" ).val( dias + " dias y " + horas + " hora" );
+	   	 	else $( "#horizonteParam" ).val( dias + " dias y " + horas + " horas" );
+	   	 }
+	   	}
+	   	else {
+	   	 if (horas==1) $( "#horizonteParam" ).val( horas + " hora" );
+	   	 else $( "#horizonteParam" ).val( horas + " horas" );
+	   	}
+	};
+	</script>
 {% endblock %}
