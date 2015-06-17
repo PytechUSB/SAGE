@@ -458,6 +458,39 @@ class EstacionamientoExtendedForm(forms.Form):
         )
     )
 
+    def clean(self):
+        #cleaned_data = super(EstacionamientoExtendedForm, self).clean()
+        cleaned_data = self.cleaned_data
+
+        horarioin = cleaned_data.get('horarioin')
+        horarioout = cleaned_data.get('horarioout')
+        inicioTarifa2 = cleaned_data.get('inicioTarifa2')
+        finTarifa2 = cleaned_data.get('finTarifa2')
+        inicioTarifaFeriados = cleaned_data.get('inicioTarifaFeriados')
+        finTarifaFeriados = cleaned_data.get('finTarifaFeriados')
+        aceptaFeriados = cleaned_data.get('aceptaFeriados')
+
+        if horarioin!= None and horarioout!= None and horarioin >= horarioout:
+            raise forms.ValidationError("El horario de cierre debe ser mayor al horario de apertura.")
+
+        elif finTarifa2!= None and inicioTarifa2!= None:
+            if finTarifa2 <= inicioTarifa2:
+                raise forms.ValidationError("La hora final de tarifa especial debe ser mayor a la de incio.")
+            elif finTarifa2 > horarioout:
+                raise forms.ValidationError("Horario de tarifa especial fuera del horario del estacionamiento.")
+            elif horarioin > inicioTarifa2:
+                raise forms.ValidationError("Horario de tarifa especial fuera del horario del estacionamiento.")
+
+        elif aceptaFeriados:
+            if finTarifaFeriados!=None and finTarifaFeriados <= inicioTarifaFeriados:
+                raise forms.ValidationError("La hora final de tarifa feriada especial debe ser mayor a la de incio.")
+            elif finTarifaFeriados!=None and finTarifaFeriados > horarioout:
+                raise forms.ValidationError("Horario de tarifa feriada especial fuera del horario del estacionamiento.")
+            elif inicioTarifaFeriados!=None and horarioin > inicioTarifaFeriados:
+                raise forms.ValidationError("Horario de tarifa feriada especial fuera del horario del estacionamiento.")
+                    
+        return cleaned_data 
+
 class ReservaForm(forms.Form):
     
     vehiculoTipo = forms.ChoiceField(

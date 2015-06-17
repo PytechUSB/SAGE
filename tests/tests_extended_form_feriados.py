@@ -29,6 +29,7 @@ class ExtendedFormDiasFeriadosTestCase(TestCase):
         form_data = { 'horarioin': time(hour = 6,  minute = 0),
                       'horarioout': time(hour = 19,  minute = 0),
                       'esquema':'TarifaMinuto',
+                      'aceptaFeriados': True,
                       'feriados' : '2015-05-01,2015-06-24'
                     }
         form = EstacionamientoExtendedForm(data = form_data)
@@ -41,6 +42,7 @@ class ExtendedFormDiasFeriadosTestCase(TestCase):
                       'horarioout': time(hour = 19,  minute = 0),
                       'feriados' : '2015-05-01,2015-06-24',
                       'esquema':'TarifaHora',
+                      'aceptaFeriados': True,
                       'esquemaFeriados':'TarifaHora'}
         form = EstacionamientoExtendedForm(data = form_data)
         self.assertTrue(form.is_valid())
@@ -52,6 +54,7 @@ class ExtendedFormDiasFeriadosTestCase(TestCase):
                       'horarioout': time(hour = 19,  minute = 0),
                       'feriados' : '2015-05-01,2015-06-24',
                       'esquema':'TarifaHora',
+                      'aceptaFeriados': True,
                       'esquemaFeriados':'TarifaMinuto'}
         form = EstacionamientoExtendedForm(data = form_data)
         self.assertTrue(form.is_valid())
@@ -65,6 +68,7 @@ class ExtendedFormDiasFeriadosTestCase(TestCase):
         form_data = { 'horarioin': time(hour = 8,  minute = 0),
                       'horarioout': time(hour = 20,  minute = 50),
                       'esquema':'TarifaHora',
+                      'aceptaFeriados': True,
                       'feriados' : '2015-05-01,2015-06-24',
                       'inicioTarifaFeriados': time(hour = 8,  minute = 0),
                       'finTarifaFeriados': time(hour = 11,  minute = 0)
@@ -77,6 +81,7 @@ class ExtendedFormDiasFeriadosTestCase(TestCase):
         form_data = { 'horarioin': time(hour = 8,  minute = 0),
                       'horarioout': time(hour = 20,  minute = 50),
                       'esquema':'TarifaHora',
+                      'aceptaFeriados': True,
                       'feriados' : '2015-05-01,2015-06-24',
                       'inicioTarifaFeriados': time( hour = 15,  minute = 0),
                       'finTarifaFeriados': time(hour = 20,  minute = 50)
@@ -94,6 +99,7 @@ class ExtendedFormDiasFeriadosTestCase(TestCase):
         form_data = { 'horarioin': time(hour = 8,  minute = 0),
                       'horarioout': time(hour = 20,  minute = 50),
                       'esquema':'TarifaHora',
+                      'aceptaFeriados': True,
                       'feriados' : '2015-05-01,2015-06-24',
                       'inicioTarifaFeriados': time( hour = 8,  minute = 0),
                       'finTarifaFeriados': time(hour = 20,  minute = 50)
@@ -110,6 +116,7 @@ class ExtendedFormDiasFeriadosTestCase(TestCase):
         form_data = { 'horarioin': time( hour = 6,  minute = 0),
                       'horarioout': time(hour = 19,  minute = 0),
                       'esquema': 'TarifaHora',
+                      'aceptaFeriados': True,
                       'feriados' : '2015-05-01,2015-06-24',
                       'esquemaFeriados': 'TarifaHola'
                     }
@@ -121,6 +128,7 @@ class ExtendedFormDiasFeriadosTestCase(TestCase):
         form_data = { 'horarioin': time( hour = 6,  minute = 0),
                       'horarioout': time(hour = 19,  minute = 0),
                       'esquema': 'TarifaHora',
+                      'aceptaFeriados': True,
                       'feriados' : '2015-05-01,2015-06-24',
                       'inicioTarifaFeriados': time( hour = 20,  minute = 0),
                       'finTarifaFeriados': time(hour = 8,  minute = 0)
@@ -133,9 +141,10 @@ class ExtendedFormDiasFeriadosTestCase(TestCase):
         form_data = { 'horarioin': time( hour = 6,  minute = 0),
                       'horarioout': time(hour = 19,  minute = 0),
                       'esquema': 'TarifaHora',
+                      'aceptaFeriados': True,
                       'feriados' : '2015-05-01,2015-06-24',
                       'inicioTarifaFeriados': time( hour = 14,  minute = 0),
-                      'finTarifaFeriados': time(hour = 18,  minute = 0)
+                      'finTarifaFeriados': time(hour = 20,  minute = 0)
                     }
         form = EstacionamientoExtendedForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -145,6 +154,7 @@ class ExtendedFormDiasFeriadosTestCase(TestCase):
         form_data = { 'horarioin': time( hour = 8,  minute = 0),
                       'horarioout': time(hour = 19,  minute = 0),
                       'esquema': 'TarifaHora',
+                      'aceptaFeriados': True,
                       'feriados' : '2015-05-01,2015-06-24',
                       'inicioTarifaFeriados': time( hour = 7,  minute = 0),
                       'finTarifaFeriados': time(hour = 12,  minute = 0)
