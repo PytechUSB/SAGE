@@ -332,7 +332,12 @@ class TarifasForm(forms.Form):
                 'message'     : 'La entrada debe ser un número decimal.'
             }
         )
-    )                            
+    )   
+    """ Es necesario cambiar esto para que logre validar diversas forms iguales 
+    con prefijos que las distingan, puesto que la funcion original retorna '%s-%s', dicho
+    "-" impide la validacion correcta de los campos """
+    def add_prefix(self, field_name):
+        return '%s_%s' % (self.prefix, field_name) if self.prefix else field_name                      
 
 class EstacionamientoExtendedForm(forms.Form):
     

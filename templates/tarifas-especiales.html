@@ -75,6 +75,7 @@
 			        <div class="control-group">
 			          <div class="controls">
 			            {{ field }}
+			            {{field.html_name}}_error
 			            <span class='error' id='{{field.html_name}}_error' aria-live="polite">
 			              {{ field.errors }}
 			            </span>
@@ -89,6 +90,7 @@
 			        <div class="control-group">
 			          <div class="controls">
 			            {{ field }}
+			            {{field.auto_id}}
 			            <span class='error' id='{{field.html_name}}_error' aria-live="polite">
 			              {{ field.errors }}
 			            </span>
@@ -155,8 +157,12 @@
     </form>
   </div>
 <!-- Validadores de los campos --> 
-{% include "validator.js.html" with form=formMotos %}
-{% include "validator.js.html" with form=formFeriadosMotos %}
+{% include "validator.js.html" with form=formCamiones%}
+{% include "validator.js.html" with form=formFeriadosCamiones%}
+{% include "validator.js.html" with form=formMotos%}
+{% include "validator.js.html" with form=formFeriadosMotos%}
+{% include "validator.js.html" with form=formDisc%}
+{% include "validator.js.html" with form=formFeriadosDisc%}
 <script>
 	var esquemaFeriados = "{{ estacionamiento.tarifaFeriados }}";
 	var tipoFeriados="{{estacionamiento.tarifaFeriados.tipo}}";

@@ -362,14 +362,23 @@ def estacionamiento_tarifa_especial(request, _id):
     
     #Forms para dias regulares
     formMotos=TarifasForm(prefix='Motos')
+    formCamiones=TarifasForm(prefix='Camiones')
+    formDisc=TarifasForm(prefix='Discapacitados')
     
     #Forms para dias feriados
     formFeriadosMotos=TarifasForm(prefix='formFeriadosMotos')
+    formFeriadosCamiones=TarifasForm(prefix='FeriadosCamiones')
+    formFeriadosDisc=TarifasForm(prefix='FeriadosDiscapacitados')
     
     if request.method == 'POST':
         if estacionamiento.capacidad > 0:
             formMotos = TarifasForm(request.POST,prefix='Motos')
-            formFeriadosMotos = TarifasForm(request.POST,prefix='formFeriadosMotos')
+            formCamiones=TarifasForm(request.POST,prefix='Camiones')
+            formDisc=TarifasForm(request.POST,prefix='Discapacitados')
+            formFeriadosMotos = TarifasForm(request.POST,prefix='FeriadosMotos')
+            formFeriadosCamiones=TarifasForm(request.POST,prefix='FeriadosCamiones')
+            formFeriadosDisc=TarifasForm(request.POST,prefix='FeriadosDiscapacitados')
+            
             if formMotos.is_valid():
                 tarifa_M  = formMotos.cleaned_data['tarifa']
                 tarifa2_M = formMotos.cleaned_data['tarifa2']
@@ -379,12 +388,12 @@ def estacionamiento_tarifa_especial(request, _id):
                     request,
                     'tarifas-especiales.html',
                     { 'estacionamiento'         : estacionamiento
-                    #, 'formCamiones'            : formCamiones
+                    , 'formCamiones'            : formCamiones
                     , 'formMotos'               : formMotos
-                    #, 'formDisc'                : formDisc
-                    #, 'formFeriadosCamiones'    : formFeriadosCamiones
+                    , 'formDisc'                : formDisc
+                    , 'formFeriadosCamiones'    : formFeriadosCamiones
                     , 'formFeriadosMotos'       : formFeriadosMotos
-                    #, 'formFeriadosDisc'        : formFeriadosDisc
+                    , 'formFeriadosDisc'        : formFeriadosDisc
                     }
                 )
     
