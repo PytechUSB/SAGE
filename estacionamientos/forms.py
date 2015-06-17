@@ -312,7 +312,6 @@ class TarifasForm(forms.Form):
     
     tarifa = forms.DecimalField(
         required   = True,
-        initial = 0.00,
         validators = [tarifa_validator],
         widget     = forms.TextInput(attrs =
             { 'class'       : 'form-control'
@@ -325,11 +324,10 @@ class TarifasForm(forms.Form):
 
     tarifa2 = forms.DecimalField(
             required   = False,
-            initial = 0.00,
             validators = [tarifa_validator],
             widget     = forms.TextInput(attrs = {
                 'class'       : 'form-control',
-                'placeholder' : 'Tarifa 2',
+                'placeholder' : 'Tarifa Especial',
                 'pattern'     : '^([0-9]+(\.[0-9]+)?)$',
                 'message'     : 'La entrada debe ser un número decimal.'
             }

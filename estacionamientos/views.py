@@ -359,81 +359,68 @@ def estacionamiento_detail(request, _id):
 
 def estacionamiento_tarifa_especial(request, _id):
     _id = int(_id)
-    
     # Verificamos que el objeto exista antes de continuar
     try:
         estacionamiento = Estacionamiento.objects.get(id=_id)
     except ObjectDoesNotExist:
         raise Http404
-    
-    #Forms para dias regulares
-    formParticulares=TarifasForm(prefix='Particulares')
-    formMotos=TarifasForm(prefix='Motos')
-    formCamiones=TarifasForm(prefix='Camiones')
-    formDisc=TarifasForm(prefix='Discapacitados')
-    
-    #Forms para dias feriados
-    formFeriadosMotos=TarifasForm(prefix='FeriadosMotos')
-    formFeriadosCamiones=TarifasForm(prefix='FeriadosCamiones')
-    formFeriadosDisc=TarifasForm(prefix='FeriadosDiscapacitados')
-    formFeriadosParticulares = TarifasForm(prefix='FeriadosParticulares')
-    
+        
     if request.method == 'GET':
         #Extraemos la data de cada forma desde los esquemas tarifarios de estacionamiento
-        if estacionamiento.capacidad :
+        print("HOLA")
+        form_data = {
+            'tarifa'   : estacionamiento.tarifa.tarifa,
+            'tarifa2' : estacionamiento.tarifa.tarifa2
+        }
+        formParticulares=TarifasForm(data=form_data,prefix='Particulares')
+        
+        form_data = {
+            'tarifa'   : estacionamiento.tarifa.tarifa_M,
+            'tarifa2' : estacionamiento.tarifa.tarifa2_M
+        }
+        formMotos=TarifasForm(data=form_data,prefix='Motos')
+        
+        form_data = {
+            'tarifa'   : estacionamiento.tarifa.tarifa_C,
+            'tarifa2' : estacionamiento.tarifa.tarifa2_C
+        }
+        formCamiones=TarifasForm(data=form_data,prefix='Camiones')
+        
+        form_data = {
+            'tarifa'   : estacionamiento.tarifa.tarifa_D,
+            'tarifa2' : estacionamiento.tarifa.tarifa2_D
+        }
+        formDisc=TarifasForm(data=form_data,prefix='Discapacitados')
+        
+        if estacionamiento.tarifaFeriados:
             form_data = {
-                'tarifa'   : estacionamiento.tarifa.tarifa,
-                'tarifa2' : estacionamiento.tarifa.tarifa2
+                'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
             }
-            formParticulares=TarifasForm(data=form_data,prefix='Particulares')
-            if estacionamiento.tarifaFeriados:
-                form_data = {
-                    'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
-                    'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
-                }
-                formFeriadosParticulares = TarifasForm(data=form_data,prefix='FeriadosParticulares')
+            formFeriadosParticulares = TarifasForm(data=form_data,prefix='FeriadosParticulares')
+            form_data = {
+                'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+            }
+            formFeriadosDisc=TarifasForm(data=form_data,prefix='FeriadosDiscapacitados')
+            form_data = {
+                'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+            }
+            formFeriadosCamiones=TarifasForm(data=form_data,prefix='FeriadosCamiones')
+            form_data = {
+                'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+            }
+            formFeriadosMotos=TarifasForm(data=form_data,prefix='FeriadosMotos')
+        else:
+            formFeriadosParticulares = TarifasForm(prefix='FeriadosParticulares')
+            formFeriadosDisc=TarifasForm(prefix='FeriadosDiscapacitados')
+            formFeriadosCamiones=TarifasForm(prefix='FeriadosCamiones')
+            formFeriadosMotos=TarifasForm(prefix='FeriadosMotos')
             
-        if estacionamiento.capacidad_M :
-            form_data = {
-                'tarifa'   : estacionamiento.tarifa.tarifa_M,
-                'tarifa2' : estacionamiento.tarifa.tarifa2_M
-            }
-            formMotos=TarifasForm(data=form_data,prefix='Motos')
-            if estacionamiento.tarifaFeriados:
-                form_data = {
-                    'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
-                    'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
-                }
-                formFeriadosMotos=TarifasForm(data=form_data,prefix='FeriadosMotos')
             
-        if estacionamiento.capacidad_C :
-            form_data = {
-                'tarifa'   : estacionamiento.tarifa.tarifa_C,
-                'tarifa2' : estacionamiento.tarifa.tarifa2_C
-            }
-            formCamiones=TarifasForm(data=form_data,prefix='Camiones')
-            if estacionamiento.tarifaFeriados:
-                form_data = {
-                    'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
-                    'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
-                }
-                formFeriadosCamiones=TarifasForm(data=form_data,prefix='FeriadosCamiones')
-            
-        if estacionamiento.capacidad_D :
-            form_data = {
-                'tarifa'   : estacionamiento.tarifa.tarifa_D,
-                'tarifa2' : estacionamiento.tarifa.tarifa2_D
-            }
-            formDisc=TarifasForm(data=form_data,prefix='Discapacitados')
-            if estacionamiento.tarifaFeriados:
-                form_data = {
-                    'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
-                    'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
-                }
-                formFeriadosDisc=TarifasForm(data=form_data,prefix='FeriadosDiscapacitados')
-    
     if request.method == 'POST':
-        if estacionamiento.capacidad > 0:
             formParticulares=TarifasForm(request.POST,prefix='Particulares')
             formMotos = TarifasForm(request.POST,prefix='Motos')
             formCamiones=TarifasForm(request.POST,prefix='Camiones')

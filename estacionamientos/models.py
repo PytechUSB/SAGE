@@ -238,17 +238,17 @@ class EsquemaTarifario(models.Model):
     finEspecial    = models.TimeField(blank = True, null = True)
     
     # Para Particulares
-    tarifa         = models.DecimalField(max_digits=20, decimal_places=2)
-    tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
+    tarifa         = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
+    tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
     # Para Motos
-    tarifa_M         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
-    tarifa2_M        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
+    tarifa_M         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2, default=Decimal('0.00'))
+    tarifa2_M        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
     # Para Camiones
-    tarifa_C         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
-    tarifa2_C        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
+    tarifa_C         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2, default=Decimal('0.00'))
+    tarifa2_C        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
     # Para Discapacitados
-    tarifa_D         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
-    tarifa2_D        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
+    tarifa_D         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2, default=Decimal('0.00'))
+    tarifa2_D        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
 
     #devuelve las tarifas regulares segun el tipo de vehiculo
     def obtenerTarifa1(self, tipoDeVehiculo):
