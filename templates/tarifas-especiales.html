@@ -207,11 +207,7 @@
 	var esquemaFeriados = "{{ estacionamiento.tarifaFeriados }}";
 	var tipo="{{estacionamiento.tarifa.tipo}}";
 	var esquemas=["Por Hora","Por Minuto","Por Hora y Fraccion"];
-	if (!esquemaFeriados) {
-		// Escondemos los feriados
-		ocultarTarifa1(1);
-		ocultarTarifa2(1);
-	} else {
+	if (esquemaFeriados) {
 		var tipoFeriados="{{estacionamiento.tarifaFeriados.tipo}}";
 		if (esquemas.indexOf(tipoFeriados)!=-1) ocultarTarifa2(1);
 	}

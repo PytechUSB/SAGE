@@ -451,6 +451,7 @@ def estacionamiento_tarifa_especial(request, _id):
             
             
     if request.method == 'POST':
+            regtarifa  = formParticulares.cleaned_data['tar2ifa']
             formParticulares=TarifasForm(request.POST,prefix='Particulares')
             formMotos = TarifasForm(request.POST,prefix='Motos')
             formCamiones=TarifasForm(request.POST,prefix='Camiones')
