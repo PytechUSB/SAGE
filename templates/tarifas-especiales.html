@@ -58,7 +58,7 @@
 			      {% endfor %}
 			      {% endif %}
       			</td>
-	      	</tr
+	      	</tr>
 	      </tbody>
       </table>
       <hr>
@@ -98,7 +98,7 @@
 			      {% endfor %}
 			      {% endif %}
       			</td>
-	      	</tr
+	      	</tr>
 	      </tbody>
       </table>
       <hr>
@@ -138,7 +138,7 @@
 			      {% endfor %}
 			      {% endif %}
       			</td>
-	      	</tr
+	      	</tr>
 	      </tbody>
       </table>
       <hr>
@@ -178,7 +178,7 @@
 			      {% endfor %}
 			      {% endif %}
       			</td>
-	      	</tr
+	      	</tr>
 	      </tbody>
       </table>
 	  <hr>
@@ -216,7 +216,8 @@
 	// nombre: nombre del elemento a esconder determinado por field.html_name
 	// feriados: 0 para tarifas normales, 1 para tarifas feriadas
 	function trampa(nombre) {
-		document.getElementById(nombre).style.display = 'none';
+		var existe = document.getElementById(nombre);
+		if (existe) existe.style.display = 'none';
 	};
 	
 	function ocultarTarifa1(feriado) {
