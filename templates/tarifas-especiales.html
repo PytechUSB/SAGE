@@ -183,7 +183,7 @@
       </table>
 	  <hr>
       {% endif %}
-	  <div class="controls">
+	  <div class="controls" align="center">
 		<button type="submit" class="btn btn-primary">
 	    Cambiar tarifas especiales
 	 	</button>
@@ -203,53 +203,54 @@
 {% include "validator.js.html" with form=formFeriadosMotos%}
 {% include "validator.js.html" with form=formDisc%}
 {% include "validator.js.html" with form=formFeriadosDisc%}
-<script>
+<script type="text/javascript">
 	var esquemaFeriados = "{{ estacionamiento.tarifaFeriados }}";
-	var tipoFeriados="{{estacionamiento.tarifaFeriados.tipo}}";
 	var tipo="{{estacionamiento.tarifa.tipo}}";
 	var esquemas=["Por Hora","Por Minuto","Por Hora y Fraccion"];
 	if (!esquemaFeriados) {
 		// Escondemos los feriados
 		ocultarTarifa1(1);
 		ocultarTarifa2(1);
+	} else {
+		var tipoFeriados="{{estacionamiento.tarifaFeriados.tipo}}";
+		if (esquemas.indexOf(tipoFeriados)!=-1) ocultarTarifa2(1);
 	}
 	if (esquemas.indexOf(tipo)!=-1) ocultarTarifa2(0);
-	if (esquemas.indexOf(tipoFeriados)!=-1) ocultarTarifa2(1);
 	
-// nombre: nombre del elemento a esconder determinado por field.html_name
-// feriados: 0 para tarifas normales, 1 para tarifas feriadas
-function trampa(nombre) {
-	var tarifas = document.getElementsByName(nombre);
-	tarifas[0].style.display = 'none';
-};
+	// nombre: nombre del elemento a esconder determinado por field.html_name
+	// feriados: 0 para tarifas normales, 1 para tarifas feriadas
+	function trampa(nombre) {
+		document.getElementById(nombre).style.display = 'none';
+	};
+	
+	function ocultarTarifa1(feriado) {
+		if (feriado) {
+			trampa("id_FeriadosParticulares_tarifa");
+			trampa("id_FeriadosCamiones_tarifa");
+			trampa("id_FeriadosMotos_tarifa");
+			trampa("id_FeriadosDiscapacitados_tarifa");
+		} else {
+			trampa("id_Particulares_tarifa");
+			trampa("id_Camiones_tarifa");
+			trampa("id_Motos_tarifa");
+			trampa("id_Discapacitados_tarifa");
+		}
+	};
+	
+	function ocultarTarifa2(feriado) {
+		if (feriado) {
+			trampa("id_FeriadosParticulares_tarifa2");
+			trampa("id_FeriadosCamiones_tarifa2");
+			trampa("id_FeriadosMotos_tarifa2");
+			trampa("id_FeriadosDiscapacitados_tarifa2");
+		} else {
+			trampa("id_Particulares_tarifa2");
+			trampa("id_Camiones_tarifa2");
+			trampa("id_Motos_tarifa2");
+			trampa("id_Discapacitados_tarifa2");
+		}	
+	};	
 
-function ocultarTarifa1(feriado) {
-	if (feriado) {
-		trampa("FeriadosParticulares_tarifa");
-		trampa("FeriadosCamiones_tarifa");
-		trampa("FeriadosMotos_tarifa");
-		trampa("FeriadosDiscapacitados_tarifa");
-	} else {
-		trampa("Particulares_tarifa");
-		trampa("Camiones_tarifa");
-		trampa("Motos_tarifa");
-		trampa("Discapacitados_tarifa");
-	}	
-};
-
-function ocultarTarifa2(feriado) {
-	if (feriado) {
-		trampa("FeriadosParticulares_tarifa2")
-		trampa("FeriadosCamiones_tarifa2");
-		trampa("FeriadosMotos_tarifa2");
-		trampa("FeriadosDiscapacitados_tarifa2");
-	} else {
-		trampa("Particulares_tarifa2");
-		trampa("Camiones_tarifa2");
-		trampa("Motos_tarifa2");
-		trampa("Discapacitados_tarifa2");
-	}	
-};
 </script>
 
 {% endblock %}

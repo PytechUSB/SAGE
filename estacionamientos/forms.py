@@ -311,7 +311,7 @@ class TarifasForm(forms.Form):
     )  
     
     tarifa = forms.DecimalField(
-        required   = True,
+        required   = False,
         validators = [tarifa_validator],
         widget     = forms.TextInput(attrs =
             { 'class'       : 'form-control'

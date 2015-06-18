@@ -284,18 +284,50 @@ def estacionamiento_detail(request, _id):
                     , 'mensaje': 'El horario de apertura debe ser menor al horario de cierre'
                     }
                 )
-
-            esquemaTarifa = eval(tipo)(
-                tarifa      = 0,
-                inicioEspecial  = inicioTarifa2,
-                finEspecial     = finTarifa2
-            )
-            if (aceptaFeriados):
-                esquemaTarifaFeriados = eval(tipo2)(
-                    tarifa      = 0,
-                    inicioEspecial = inicioTarifaFeriados,
-                    finEspecial    = finTarifaFeriados
+            #Verificamos si el esquema existe, de ser asi copiamos todos sus datos
+            if (estacionamiento.tarifa):
+                esquemaTarifa = eval(tipo)(
+                    tarifa      = estacionamiento.tarifa.tarifa,
+                    tarifa2      = estacionamiento.tarifa.tarifa2,
+                    tarifa_M      = estacionamiento.tarifa.tarifa_M,
+                    tarifa2_M      = estacionamiento.tarifa.tarifa2_M,
+                    tarifa_C      = estacionamiento.tarifa.tarifa_C,
+                    tarifa2_C      = estacionamiento.tarifa.tarifa2_C,
+                    tarifa_D      = estacionamiento.tarifa.tarifa_D,
+                    tarifa2_D      = estacionamiento.tarifa.tarifa2_D,
+                    inicioEspecial  = inicioTarifa2,
+                    finEspecial     = finTarifa2
                 )
+                #Borramos el esquema anterior
+                estacionamiento.tarifa.delete()
+            else:
+                esquemaTarifa = eval(tipo)(
+                    tarifa      = 0,
+                    inicioEspecial  = inicioTarifa2,
+                    finEspecial     = finTarifa2
+                )
+            if (aceptaFeriados):
+                if (estacionamiento.tarifaFeriados):
+                    esquemaTarifaFeriados = eval(tipo2)(
+                        tarifa      = estacionamiento.tarifaFeriados.tarifa,
+                        tarifa2      = estacionamiento.tarifaFeriados.tarifa2,
+                        tarifa_M      = estacionamiento.tarifaFeriados.tarifa_M,
+                        tarifa2_M      = estacionamiento.tarifaFeriados.tarifa2_M,
+                        tarifa_C      = estacionamiento.tarifaFeriados.tarifa_C,
+                        tarifa2_C      = estacionamiento.tarifaFeriados.tarifa2_C,
+                        tarifa_D      = estacionamiento.tarifaFeriados.tarifa_D,
+                        tarifa2_D      = estacionamiento.tarifaFeriados.tarifa2_D,
+                        inicioEspecial = inicioTarifaFeriados,
+                        finEspecial    = finTarifaFeriados
+                    )
+                    #Borramos el esquema anterior
+                    estacionamiento.tarifaFeriados.delete()
+                else:    
+                    esquemaTarifaFeriados = eval(tipo2)(
+                        tarifa      = 0,
+                        inicioEspecial = inicioTarifaFeriados,
+                        finEspecial    = finTarifaFeriados
+                    )
                 esquemaTarifaFeriados.save()
                 estacionamiento.tarifaFeriados = esquemaTarifaFeriados
             else:
@@ -364,53 +396,51 @@ def estacionamiento_tarifa_especial(request, _id):
         estacionamiento = Estacionamiento.objects.get(id=_id)
     except ObjectDoesNotExist:
         raise Http404
-        
     if request.method == 'GET':
         #Extraemos la data de cada forma desde los esquemas tarifarios de estacionamiento
-        print("HOLA")
         form_data = {
-            'tarifa'   : estacionamiento.tarifa.tarifa,
-            'tarifa2' : estacionamiento.tarifa.tarifa2
+            'Particulares_tarifa'   : estacionamiento.tarifa.tarifa,
+            'Particulares_tarifa2' : estacionamiento.tarifa.tarifa2
         }
         formParticulares=TarifasForm(data=form_data,prefix='Particulares')
         
         form_data = {
-            'tarifa'   : estacionamiento.tarifa.tarifa_M,
-            'tarifa2' : estacionamiento.tarifa.tarifa2_M
+            'Motos_tarifa'   : estacionamiento.tarifa.tarifa_M,
+            'Motos_tarifa2' : estacionamiento.tarifa.tarifa2_M
         }
         formMotos=TarifasForm(data=form_data,prefix='Motos')
         
         form_data = {
-            'tarifa'   : estacionamiento.tarifa.tarifa_C,
-            'tarifa2' : estacionamiento.tarifa.tarifa2_C
+            'Camiones_tarifa'   : estacionamiento.tarifa.tarifa_C,
+            'Camiones_tarifa2' : estacionamiento.tarifa.tarifa2_C
         }
         formCamiones=TarifasForm(data=form_data,prefix='Camiones')
         
         form_data = {
-            'tarifa'   : estacionamiento.tarifa.tarifa_D,
-            'tarifa2' : estacionamiento.tarifa.tarifa2_D
+            'Discapacitados_tarifa'   : estacionamiento.tarifa.tarifa_D,
+            'Discapacitados_tarifa2' : estacionamiento.tarifa.tarifa2_D
         }
         formDisc=TarifasForm(data=form_data,prefix='Discapacitados')
         
         if estacionamiento.tarifaFeriados:
             form_data = {
-                'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
-                'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+                'FeriadosParticulares_tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                'FeriadosParticulares_tarifa2' : estacionamiento.tarifaFeriados.tarifa2
             }
             formFeriadosParticulares = TarifasForm(data=form_data,prefix='FeriadosParticulares')
             form_data = {
-                'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
-                'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+                'FeriadosDiscapacitados_tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                'FeriadosDiscapacitados_tarifa2' : estacionamiento.tarifaFeriados.tarifa2
             }
             formFeriadosDisc=TarifasForm(data=form_data,prefix='FeriadosDiscapacitados')
             form_data = {
-                'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
-                'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+                'FeriadosCamiones_tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                'FeriadosCamiones_tarifa2' : estacionamiento.tarifaFeriados.tarifa2
             }
             formFeriadosCamiones=TarifasForm(data=form_data,prefix='FeriadosCamiones')
             form_data = {
-                'tarifa'   : estacionamiento.tarifaFeriados.tarifa,
-                'tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+                'FeriadosMotos_tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                'FeriadosMotos_tarifa2' : estacionamiento.tarifaFeriados.tarifa2
             }
             formFeriadosMotos=TarifasForm(data=form_data,prefix='FeriadosMotos')
         else:
@@ -452,24 +482,27 @@ def estacionamiento_tarifa_especial(request, _id):
                 fertarifa_D  = formFeriadosDisc.cleaned_data['tarifa']
                 fertarifa2_D = formFeriadosDisc.cleaned_data['tarifa2']
             
-            # Actualizamos los esquemas tarifarios 
-            estacionamiento.tarifa.tarifa          = regtarifa,
-            estacionamiento.tarifa.tarifa2         = regtarifa2,
-            estacionamiento.tarifa.tarifa_M        = regtarifa_M,
-            estacionamiento.tarifa.tarifa2_M       = regtarifa2_M,
-            estacionamiento.tarifa.tarifa_C        = regtarifa_C,
-            estacionamiento.tarifa.tarifa2_C       = regtarifa2_C,
-            estacionamiento.tarifa.tarifa_D        = regtarifa_D,
+            # Actualizamos los esquemas tarifarios
+            estacionamiento.tarifa.tarifa          = regtarifa
+            estacionamiento.tarifa.tarifa2         = regtarifa2
+            estacionamiento.tarifa.tarifa_M        = regtarifa_M
+            estacionamiento.tarifa.tarifa2_M       = regtarifa2_M
+            estacionamiento.tarifa.tarifa_C        = regtarifa_C
+            estacionamiento.tarifa.tarifa2_C       = regtarifa2_C
+            estacionamiento.tarifa.tarifa_D        = regtarifa_D
             estacionamiento.tarifa.tarifa2_D       = regtarifa2_D
-            if estacionamiento.feriados:
-                estacionamiento.tarifaFeriados.tarifa          = fertarifa,
-                estacionamiento.tarifaFeriados.tarifa2         = fertarifa2,
-                estacionamiento.tarifaFeriados.tarifa_M        = fertarifa_M,
-                estacionamiento.tarifaFeriados.tarifa2_M       = fertarifa2_M,
-                estacionamiento.tarifaFeriados.tarifa_C        = fertarifa_C,
-                estacionamiento.tarifaFeriados.tarifa2_C       = fertarifa2_C,
-                estacionamiento.tarifaFeriados.tarifa_D        = fertarifa_D,
+            estacionamiento.tarifa.save()
+            if estacionamiento.tarifaFeriados:
+                print("holi")
+                estacionamiento.tarifaFeriados.tarifa          = fertarifa
+                estacionamiento.tarifaFeriados.tarifa2         = fertarifa2
+                estacionamiento.tarifaFeriados.tarifa_M        = fertarifa_M
+                estacionamiento.tarifaFeriados.tarifa2_M       = fertarifa2_M
+                estacionamiento.tarifaFeriados.tarifa_C        = fertarifa_C
+                estacionamiento.tarifaFeriados.tarifa2_C       = fertarifa2_C
+                estacionamiento.tarifaFeriados.tarifa_D        = fertarifa_D
                 estacionamiento.tarifaFeriados.tarifa2_D       = fertarifa2_D
+                estacionamiento.tarifaFeriados.save()
                 
             estacionamiento.save()
                    
