@@ -496,7 +496,7 @@ def estacionamiento_reserva(request, _id):
                     'template-mensaje.html',
                     {'color'   : 'red'
                     , 'mensaje' : 'No hay un puesto disponible para ' + str(vehiculoTipo) + 
-                                  'en ese horario'
+                                  ' en ese horario'
                     }
                 )
 
@@ -1253,24 +1253,8 @@ def mover_reserva(request, id_pago):
                     vehiculoTipo    = vehiculoTipo,
                 )
                 
-                feriados = estacionamiento.feriados.split(',')
-                inicio   = inicioReserva.date()
-                
-                #monto de la tarifa en dia feriaro
-                if(estacionamiento.tarifaFeriados and (str(inicio) in feriados)):
-                    monto = Decimal(
-                        estacionamiento.tarifaFeriados.calcularPrecio(
-                            inicioReserva, finalReserva
-                        )
-                    )
-
-                #monto de la tarifa en dia normal
-                else:
-                    monto = Decimal(
-                        estacionamiento.tarifa.calcularPrecio(
-                            inicioReserva, finalReserva
-                        )
-                    )
+                #calcular monto a pagar
+                monto = Decimal(calcularMonto(estacionamiento.id, inicioReserva, finalReserva))
                 
                 request.session['vehiculoTipo']        = vehiculoTipo
                 request.session['finalReservaHora']    = finalReserva.hour
@@ -1293,10 +1277,11 @@ def mover_reserva(request, id_pago):
                     else:
                         monto_debitar = 0
                         
-                diferenciaMonto = Decimal(monto - pago.monto)
-                request.session['monto'] = float(diferenciaMonto)
+                
                 request.session['cargoOperacionesEspeciales'] = float(monto_debitar)
                 if (monto + monto_debitar) < pago.monto: 
+                    diferenciaMonto = Decimal(pago.monto - monto)
+                    request.session['monto'] = float(diferenciaMonto)
                     return render(
                         request,
                         'confirmar-mover.html',
@@ -1313,6 +1298,8 @@ def mover_reserva(request, id_pago):
                     )
                         
                 else:
+                    diferenciaMonto = Decimal(monto - pago.monto)
+                    request.session['monto'] = float(diferenciaMonto)
                     return render(
                         request,
                         'confirmar-mover.html',
@@ -1334,7 +1321,7 @@ def mover_reserva(request, id_pago):
                     'mensaje.html',
                     {'color'   : 'red'
                     , 'mensaje' : 'No hay un puesto disponible para ' + str(pago.reserva.vehiculoTipo) + 
-                                  'en ese horario'
+                                  ' en ese horario'
                     }
                 )
 

@@ -89,9 +89,13 @@ def porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte):
 	total_reserva = (finReserva - inicioReserva).total_seconds()
 	horizonte = datetime.now().replace(second = 0, microsecond = 0) + timedelta(hours = horizonte)
 	if inicioReserva < horizonte:
-		reservaEnHorizonte = (horizonte - inicioReserva).total_seconds()
-		porcentaje = Decimal((reservaEnHorizonte * 100) / total_reserva).quantize(Decimal('1.0'))
-		return porcentaje
+		if finReserva > horizonte:
+			reservaEnHorizonte = (horizonte - inicioReserva).total_seconds()
+			porcentaje = Decimal(Decimal(reservaEnHorizonte * 100) / Decimal(total_reserva)).quantize(Decimal('1.0'))
+			return porcentaje
+		
+		else:
+			return 100
 	
 	else:
 		return 0
@@ -174,7 +178,10 @@ def tasa_reservaciones(id_estacionamiento,prt=False):
 		while (reserva_final.date()>reserva_inicio.date()): 
 			final_aux+=UN_DIA
 			longitud_reserva = final_aux-reserva_inicio
-			ocupacion_por_dia[reserva_inicio.date()] += longitud_reserva.seconds/60+longitud_reserva.days*24*60
+			try:
+				ocupacion_por_dia[reserva_inicio.date()] += longitud_reserva.seconds/60 + longitud_reserva.days*24*60
+			except:
+				ocupacion_por_dia [reserva_inicio.date()] = longitud_reserva.seconds/60 + longitud_reserva.days*24*60
 			reserva_inicio = final_aux
 		longitud_reserva=reserva_final-reserva_inicio
 		try:
