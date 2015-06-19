@@ -12,7 +12,8 @@
     <p>
     <label for="amount">Horizonte de reservacion:</label>
      <input type="text" id="horizonteParam" readonly style="border:0; color:#0033AF; font-weight:bold;">
-  </p>
+     <span id="horizonteCambiado" style="color:red" readonly></span>
+    </p>
   <div id="slider"></div>
     <hr>
     <div class="col-md-4">
@@ -34,9 +35,10 @@
       max: 360,
       step: 1,
       slide: function( event, ui ) {
-      imprimirHorizonte(ui.value);
-      horizonte.value=ui.value;
-      }
+	      imprimirHorizonte(ui.value);
+	      horizonte.value=ui.value;
+	      document.getElementById("horizonteCambiado").innerHTML="Debe parametrizar el estacionamiento para guardar los cambios";
+	  }
     });
     value=$("#slider").slider("value" );
     // imprimirHorizonte esta en datos.html

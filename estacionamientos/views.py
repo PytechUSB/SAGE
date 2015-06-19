@@ -503,6 +503,7 @@ def estacionamiento_tarifa_especial(request, _id):
                     , 'formFeriadosParticulares': formFeriadosParticulares
                     , 'formFeriadosMotos'       : formFeriadosMotos
                     , 'formFeriadosDisc'        : formFeriadosDisc
+                    , 'ocultarParametros'       : True
                     }
                 )
     

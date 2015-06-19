@@ -21,7 +21,14 @@
 	   	{% endif %}
     </div>
     <div class="col-md-8">
-      <form action="." method="post" class="form form-vertical">
+      <table width="80%">
+      <tr>
+      	<td><span align="center" style="border:0; color:#0033AF; font-weight:bold;">&nbsp;&nbsp; Tarifas para dias regulares:</span></td>
+      	<td><span align="center" style="border:0; color:#0033AF; font-weight:bold;">&nbsp;&nbsp; Tarifas para dias feriados:</span></td>
+      </tr>
+      </table>
+      <p></p>
+  	  <form action="." method="post" class="form form-vertical">
       {% csrf_token %}     
       {% if estacionamiento.capacidad %}
       <table width="80%">
