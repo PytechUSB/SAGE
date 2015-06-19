@@ -429,18 +429,18 @@ def estacionamiento_tarifa_especial(request, _id):
             }
             formFeriadosParticulares = TarifasForm(data=form_data,prefix='FeriadosParticulares')
             form_data = {
-                'FeriadosDiscapacitados_tarifa'   : estacionamiento.tarifaFeriados.tarifa,
-                'FeriadosDiscapacitados_tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+                'FeriadosDiscapacitados_tarifa'   : estacionamiento.tarifaFeriados.tarifa_D,
+                'FeriadosDiscapacitados_tarifa2' : estacionamiento.tarifaFeriados.tarifa2_D
             }
             formFeriadosDisc=TarifasForm(data=form_data,prefix='FeriadosDiscapacitados')
             form_data = {
-                'FeriadosCamiones_tarifa'   : estacionamiento.tarifaFeriados.tarifa,
-                'FeriadosCamiones_tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+                'FeriadosCamiones_tarifa'   : estacionamiento.tarifaFeriados.tarifa_C,
+                'FeriadosCamiones_tarifa2' : estacionamiento.tarifaFeriados.tarifa2_C
             }
             formFeriadosCamiones=TarifasForm(data=form_data,prefix='FeriadosCamiones')
             form_data = {
-                'FeriadosMotos_tarifa'   : estacionamiento.tarifaFeriados.tarifa,
-                'FeriadosMotos_tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+                'FeriadosMotos_tarifa'   : estacionamiento.tarifaFeriados.tarifa_M,
+                'FeriadosMotos_tarifa2' : estacionamiento.tarifaFeriados.tarifa2_M
             }
             formFeriadosMotos=TarifasForm(data=form_data,prefix='FeriadosMotos')
         else:
@@ -461,49 +461,34 @@ def estacionamiento_tarifa_especial(request, _id):
             formFeriadosDisc=TarifasForm(request.POST,prefix='FeriadosDiscapacitados')
             
             #Si son válidas extraemos las tarifas regulares y feriadas
-            if all([formMotos.is_valid(),formParticulares.is_valid(),formCamiones.is_valid(),formDisc.is_valid()]):
-                regtarifa  = formParticulares.cleaned_data['tarifa']
-                regtarifa2 = formParticulares.cleaned_data['tarifa2']
-                regtarifa_M  = formMotos.cleaned_data['tarifa']
-                regtarifa2_M = formMotos.cleaned_data['tarifa2']
-                regtarifa_C  = formCamiones.cleaned_data['tarifa']
-                regtarifa2_C = formCamiones.cleaned_data['tarifa2']
-                regtarifa_D  = formDisc.cleaned_data['tarifa']
-                regtarifa2_D = formDisc.cleaned_data['tarifa2']
+            if formMotos.is_valid():
+                estacionamiento.tarifa.tarifa_M        = formMotos.cleaned_data['tarifa']
+                estacionamiento.tarifa.tarifa2_M       = formMotos.cleaned_data['tarifa2']
+            if formParticulares.is_valid():
+                estacionamiento.tarifa.tarifa          = formParticulares.cleaned_data['tarifa']
+                estacionamiento.tarifa.tarifa2         = formParticulares.cleaned_data['tarifa2']
+            if formCamiones.is_valid():
+                estacionamiento.tarifa.tarifa_C        = formCamiones.cleaned_data['tarifa']
+                estacionamiento.tarifa.tarifa2_C       = formCamiones.cleaned_data['tarifa2']
+            if formDisc.is_valid():
+                estacionamiento.tarifa.tarifa_D        = formDisc.cleaned_data['tarifa']
+                estacionamiento.tarifa.tarifa2_D       = formDisc.cleaned_data['tarifa2']
                 
-            if estacionamiento.tarifaFeriados and all([formFeriadosMotos.is_valid(),formFeriadosParticulares.is_valid()
-                   ,formFeriadosCamiones.is_valid(),formFeriadosDisc.is_valid()]):
-                fertarifa  = formFeriadosParticulares.cleaned_data['tarifa']
-                fertarifa2 = formFeriadosParticulares.cleaned_data['tarifa2']
-                fertarifa_M  = formFeriadosMotos.cleaned_data['tarifa']
-                fertarifa2_M = formFeriadosMotos.cleaned_data['tarifa2']
-                fertarifa_C  = formFeriadosCamiones.cleaned_data['tarifa']
-                fertarifa2_C = formFeriadosCamiones.cleaned_data['tarifa2']
-                fertarifa_D  = formFeriadosDisc.cleaned_data['tarifa']
-                fertarifa2_D = formFeriadosDisc.cleaned_data['tarifa2']
-            
-            # Actualizamos los esquemas tarifarios
-            estacionamiento.tarifa.tarifa          = regtarifa
-            estacionamiento.tarifa.tarifa2         = regtarifa2
-            estacionamiento.tarifa.tarifa_M        = regtarifa_M
-            estacionamiento.tarifa.tarifa2_M       = regtarifa2_M
-            estacionamiento.tarifa.tarifa_C        = regtarifa_C
-            estacionamiento.tarifa.tarifa2_C       = regtarifa2_C
-            estacionamiento.tarifa.tarifa_D        = regtarifa_D
-            estacionamiento.tarifa.tarifa2_D       = regtarifa2_D
-            estacionamiento.tarifa.save()
             if estacionamiento.tarifaFeriados:
-                print("holi")
-                estacionamiento.tarifaFeriados.tarifa          = fertarifa
-                estacionamiento.tarifaFeriados.tarifa2         = fertarifa2
-                estacionamiento.tarifaFeriados.tarifa_M        = fertarifa_M
-                estacionamiento.tarifaFeriados.tarifa2_M       = fertarifa2_M
-                estacionamiento.tarifaFeriados.tarifa_C        = fertarifa_C
-                estacionamiento.tarifaFeriados.tarifa2_C       = fertarifa2_C
-                estacionamiento.tarifaFeriados.tarifa_D        = fertarifa_D
-                estacionamiento.tarifaFeriados.tarifa2_D       = fertarifa2_D
+                if formFeriadosParticulares.is_valid():
+                    estacionamiento.tarifaFeriados.tarifa          = formFeriadosParticulares.cleaned_data['tarifa']
+                    estacionamiento.tarifaFeriados.tarifa2         = formFeriadosParticulares.cleaned_data['tarifa2']
+                if formFeriadosMotos.is_valid():
+                    estacionamiento.tarifaFeriados.tarifa_M         = formFeriadosMotos.cleaned_data['tarifa']
+                    estacionamiento.tarifaFeriados.tarifa2_M        = formFeriadosMotos.cleaned_data['tarifa2']
+                if formFeriadosCamiones.is_valid():
+                    estacionamiento.tarifaFeriados.tarifa_C        = formFeriadosCamiones.cleaned_data['tarifa']
+                    estacionamiento.tarifaFeriados.tarifa2_C       = formFeriadosCamiones.cleaned_data['tarifa2']
+                if formFeriadosDisc.is_valid():
+                    estacionamiento.tarifaFeriados.tarifa_D        = formFeriadosDisc.cleaned_data['tarifa']
+                    estacionamiento.tarifaFeriados.tarifa2_D       = formFeriadosDisc.cleaned_data['tarifa2']
                 estacionamiento.tarifaFeriados.save()
-                
+            estacionamiento.tarifa.save()
             estacionamiento.save()
                    
     return render(
@@ -621,7 +606,7 @@ def estacionamiento_reserva(request, _id):
                 )
 
                 #calcula el monto a pagar
-                monto = Decimal(calcularMonto(estacionamiento.id, inicioReserva, finalReserva))
+                monto = Decimal(calcularMonto(estacionamiento.id, inicioReserva, finalReserva,vehiculoTipo))
                 request.session['monto'] = float(monto)
                                 
                 request.session['vehiculoTipo']        = vehiculoTipo

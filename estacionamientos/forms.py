@@ -311,7 +311,7 @@ class TarifasForm(forms.Form):
     )  
     
     tarifa = forms.DecimalField(
-        required   = False,
+        required   = True,
         validators = [tarifa_validator],
         widget     = forms.TextInput(attrs =
             { 'class'       : 'form-control'
@@ -332,7 +332,8 @@ class TarifasForm(forms.Form):
                 'message'     : 'La entrada debe ser un número decimal.'
             }
         )
-    )   
+    )
+    
     """ Es necesario cambiar esto para que logre validar diversas forms iguales 
     con prefijos que las distingan, puesto que la funcion original retorna '%s-%s', dicho
     "-" impide la validacion correcta de los campos """
