@@ -27,6 +27,7 @@
     </div>
   </div>
 <script>
+  var mensaje="Debe parametrizar el estacionamiento para guardar los cambios";
   $(function() {
   $( "#slider" ).slider({
       value:"{{ estacionamiento.horizonte }}",
@@ -37,10 +38,14 @@
       slide: function( event, ui ) {
 	      imprimirHorizonte(ui.value);
 	      horizonte.value=ui.value;
-	      document.getElementById("horizonteCambiado").innerHTML="Debe parametrizar el estacionamiento para guardar los cambios";
+	      document.getElementById("horizonteCambiado").innerHTML=mensaje;
+	      $( "#slider" ).on( "slide", function( event, ui ) {
+		      imprimirHorizonte(ui.value);
+		      horizonte.value=ui.value;
+	      }); //Cambiamos la funcion de slider por la misma sin colocar repetidamente el mensaje (+ rapidez)
 	  }
     });
-    value=$("#slider").slider("value" );
+    value=$("#slider").slider("value");
     // imprimirHorizonte esta en datos.html
     imprimirHorizonte(value);
     horizonte.value=$( "#slider" ).slider("value");
