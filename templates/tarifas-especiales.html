@@ -24,7 +24,11 @@
       <table width="80%">
       <tr>
       	<td><span align="center" style="border:0; color:#0033AF; font-weight:bold;">&nbsp;&nbsp; Tarifas para dias regulares:</span></td>
-      	<td><span align="center" style="border:0; color:#0033AF; font-weight:bold;">&nbsp;&nbsp; Tarifas para dias feriados:</span></td>
+      	{% if estacionamiento.tarifaFeriados %}
+      		<td><span align="center" style="border:0; color:#0033AF; font-weight:bold;">
+      			&nbsp;&nbsp; Tarifas para dias feriados:</span>
+      		</td>
+      	{% endif %}
       </tr>
       </table>
       <p></p>
