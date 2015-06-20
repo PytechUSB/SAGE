@@ -16,22 +16,22 @@
 <table class="table table-striped">
   <thead></thead>
   <tbody>
-    <tr><td colspan="2"><b><i class="fa-spin fa fa-car"></i>
+    <tr><td colspan="2"><b><i class="fa fa-car"></i>
       Nombre del estacionamiento:
     </b></td></tr>
     <tr><td colspan="2">
       {{estacionamiento.nombre}}
     </td></tr>
-    <tr><td><b><i class="fa-spin fa fa-user"></i>
+    <tr><td><b><i class="fa fa-user"></i>
       Nombre del propietario:
       </b></td>
       <td><a href="cambiar-dueno">
-          <i class="fa-spin fa fa-pencil-square-o"></i></a>
+          <i class="fa fa-pencil-square-o"></i></a>
       </td></tr>
     <tr><td colspan="2">
       {{estacionamiento.propietario}}
     </td></tr>
-    <tr><td colspan="2"><b><i class="fa-spin fa fa-home"></i>
+    <tr><td colspan="2"><b><i class="fa fa-home"></i>
       Dirección:
     </b></td></tr>
     <tr><td colspan="2">
@@ -39,7 +39,7 @@
     </td></tr>
 
     {% if estacionamiento.telefono1 %}
-      <tr><td colspan="2"><b><i class="fa-spin fa fa-phone"></i>
+      <tr><td colspan="2"><b><i class="fa fa-phone"></i>
         Teléfono:
       </b></td></tr>
       <tr><td colspan="2">
@@ -48,7 +48,7 @@
     {% endif %}
 
     {% if estacionamiento.telefono2 %}
-      <tr><td colspan="2"><b><i class="fa-spin fa fa-phone"></i>
+      <tr><td colspan="2"><b><i class="fa fa-phone"></i>
         Teléfono:
       </b></td></tr>
       <tr><td colspan="2">
@@ -57,7 +57,7 @@
     {% endif %}
 
      {% if estacionamiento.telefono3 %}
-      <tr><td colspan="2"><b><i class="fa-spin fa fa-phone"></i>
+      <tr><td colspan="2"><b><i class="fa fa-phone"></i>
         Teléfono:
       </b></td></tr>
       <tr><td colspan="2">
@@ -66,7 +66,7 @@
     {% endif %}
 
     {% if estacionamiento.email1 %}
-      <tr><td colspan="2"><b><i class="fa-spin fa fa-at"></i>
+      <tr><td colspan="2"><b><i class="fa fa-at"></i>
         Correo Electrónico:
       </b></td></tr>
       <tr><td colspan="2">
@@ -75,7 +75,7 @@
     {% endif %}
 
     {% if estacionamiento.email2 %}
-      <tr><td colspan="2"><b><i class="fa-spin fa fa-at"></i>
+      <tr><td colspan="2"><b><i class="fa fa-at"></i>
         Correo Electrónico:
       </b></td></tr>
       <tr><td colspan="2">
@@ -83,26 +83,26 @@
       </td></tr>
     {% endif %}
     
-    <tr><td colspan="2"><b><i class="fa-spin fa fa-circle"></i>
+    <tr><td colspan="2"><b><i class="fa fa-circle"></i>
       RIF:
     </b></td></tr>
     <tr><td colspan="2">
       {{estacionamiento.rif}}
     </td></tr>
 	{% if estacionamiento.capacidad %}
- 		<tr><td colspan="2"><b><i class="fa-spin fa fa-car"></i> Puestos particulares:</b></td></tr>
+ 		<tr><td colspan="2"><b><i class="fa fa-car"></i> Puestos particulares:</b></td></tr>
  		<tr><td colspan="2">{{estacionamiento.capacidad}}</td></tr>
  	{% endif %}
   	{% if estacionamiento.capacidad_C %}
-  		<tr><td colspan="2"><b><i class="fa-spin fa fa-truck"></i> Puestos para camiones:</b></td></tr>
+  		<tr><td colspan="2"><b><i class="fa fa-truck"></i> Puestos para camiones:</b></td></tr>
   		<tr><td colspan="2">{{estacionamiento.capacidad_C}}</td></tr>
   	{% endif %}
  	{% if estacionamiento.capacidad_M %}
-  		<tr><td colspan="2"><b><i class="fa-spin fa fa-motorcycle"></i> Puestos para motos:</b></td></tr>
+  		<tr><td colspan="2"><b><i class="fa fa-motorcycle"></i> Puestos para motos:</b></td></tr>
   		<tr><td colspan="2">{{estacionamiento.capacidad_M}}</td></tr>
   	{% endif %}
   	{% if estacionamiento.capacidad_D %}
-  		<tr><td colspan="2"><b><i class="fa-spin fa fa-wheelchair"></i> Puestos para discapacitados:</b></td></tr>
+  		<tr><td colspan="2"><b><i class="fa fa-wheelchair"></i> Puestos para discapacitados:</b></td></tr>
   		<tr><td colspan="2">{{estacionamiento.capacidad_D}}</td></tr>
  	{% endif %}
   </tbody>
@@ -119,25 +119,25 @@
   <div class="control-group" align ="center">
       <div class="controls">
       <table width="250" border="0" cellspacing="0">
-          <tr><td><font size="10" color="gray"><i class="fa-spin fa fa-car"> </i></font></td>
+          <tr><td><font size="10" color="gray"><i class="fa fa-car"> </i></font></td>
           	<td>{{ formPuestos.particulares }}
             <span class='error' id='{{formPuestos.particulares.name}}_error' aria-live="polite">
               {{ formPuestos.particulares.errors }}
             </span></td>
           </tr>
-          <tr><td><font size="10" color="gray"><i class="fa-spin fa fa-truck"> </i></font></td>
+          <tr><td><font size="10" color="gray"><i class="fa fa-truck"> </i></font></td>
           	<td>{{ formPuestos.camiones }}
             <span class='error' id='{{formPuestos.camiones.name}}_error' aria-live="polite">
               {{ formPuestos.camiones.errors }}
             </span></td>
           </tr>
-          <tr><td><font size="10" color="black"><i class="fa-spin fa fa-motorcycle"> </i></font></td>
+          <tr><td><font size="10" color="black"><i class="fa fa-motorcycle"> </i></font></td>
           	<td>{{ formPuestos.motos }}
             <span class='error' id='{{formPuestos.motos.name}}_error' aria-live="polite">
               {{ formPuestos.motos.errors }}
             </span></td>
           </tr>
-          <tr><td><font size="10" color="blue"><i class="fa-spin fa fa-wheelchair"> </i></font></td>
+          <tr><td><font size="10" color="blue"><i class="fa fa-wheelchair"> </i></font></td>
           	<td>{{ formPuestos.discapacitados }}
             <span class='error' id='{{formPuestos.discapacitados.name}}_error' aria-live="polite">
               {{ formPuestos.discapacitados.errors }}
