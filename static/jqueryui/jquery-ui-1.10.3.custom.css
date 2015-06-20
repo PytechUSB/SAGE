@@ -30,7 +30,6 @@
 #calendar,#feriados{
 	cursor: pointer;
 }
-
 .ui-helper-reset {
 	margin: 0;
 	padding: 0;
@@ -401,8 +400,8 @@
 .ui-state-disabled,
 .ui-widget-content .ui-state-disabled,
 .ui-widget-header .ui-state-disabled {
-	opacity: .35;
-	filter:Alpha(Opacity=35);
+	opacity: .50;
+	filter:Alpha(Opacity=50);
 	background-image: none;
 }
 
@@ -2159,7 +2158,6 @@ body .ui-tooltip {
 	-moz-border-radius: 4px; /* Firefox 3.6 */
 	border-radius: 4px;
 }
-
 .ui-datepicker td .ui-state-active {
 	color: #333333;
     background-color: #ebebeb;
