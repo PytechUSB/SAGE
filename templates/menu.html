@@ -1,34 +1,34 @@
 <div class="col-sm-2">
-  <h3><i class="fa fa-bars"></i>
+  <h3><i class="fa-spin fa fa-bars"></i>
       Menú
   </h3>
   <hr>
   <ul class="nav nav-stacked">
-    <li><a href="/estacionamientos"><i class="fa fa-bus"></i>
+    <li><a href="/estacionamientos"><i class="fa-spin fa fa-bus"></i>
       Estacionamientos
     </a></li>
-    <li><a href="/estacionamientos/propietario-crear"><i class="fa fa-users"></i>
+    <li><a href="/estacionamientos/propietario-crear"><i class="fa-spin fa fa-users"></i>
       Propietarios
     </a></li>
-    <li><a href="/estacionamientos/ingreso"><i class="fa fa-money"></i>
+    <li><a href="/estacionamientos/ingreso"><i class="fa-spin fa fa-money"></i>
       Consultar Ingreso
     </a></li>
-    <li><a href="/estacionamientos/consulta_reserva"><i class="fa fa-clock-o"></i>
+    <li><a href="/estacionamientos/consulta_reserva"><i class="fa-spin fa fa-clock-o"></i>
       Consultar Reservas
     </a></li>
-    <li><a href="/estacionamientos/crear_billetera"><i class="fa fa-credit-card"></i>
+    <li><a href="/estacionamientos/crear_billetera"><i class="fa-spin fa fa-credit-card"></i>
       Billetera Electrónica
     </a></li>
-    <li><a href="/estacionamientos/validar_reserva/validar_billetera/cancelar_reserva" onClick="return popup(this, 'Validar Reservacion')"><i class="fa fa-times"></i>
+    <li><a href="/estacionamientos/validar_reserva/validar_billetera/cancelar_reserva" onClick="return popup(this, 'Validar Reservacion')"><i class="fa-spin fa fa-times"></i>
       Cancelar Reservación
     </a></li>
     {% if not ocultarParametros %}
 	    {% if estacionamiento.capacidad or estacionamiento.capacidad_M or estacionamiento.capacidad_C or estacionamiento.capacidad_D%}
 	      {% if estacionamiento.tarifa %}
-	      <li><a href="./"><i class="fa fa-wrench"></i>
+	      <li><a href="./"><i class="fa-spin fa fa-wrench"></i>
 	        Parametrizar
 	      </a></li>
-	      <li><a href="./reserva"><i class="fa fa-pencil-square-o"></i>
+	      <li><a href="./reserva"><i class="fa-spin fa fa-pencil-square-o"></i>
 	        Reservar
 	      </a></li>
 	      {% endif %}

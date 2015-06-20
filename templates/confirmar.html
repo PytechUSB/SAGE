@@ -5,7 +5,7 @@
 {% endblock %}
 {% block innerContents %}
   <div class="col-sm-10">
-    <h3><i class="fa fa-bus"></i>
+    <h3><i class="fa-spin fa fa-bus"></i>
       Reservación
     </h3>
     <hr>
@@ -19,35 +19,35 @@
       <table class="table table-striped">
         <thead></thead>
         <tbody>
-          <tr><td><b><i class="fa fa-car"></i>
+          <tr><td><b><i class="fa-spin fa fa-car"></i>
             Nombre del estacionamiento:
           </b></td></tr>
           <tr><td>
             {{reserva.estacionamiento.nombre}}
           </td></tr>
 
-          <tr><td><b><i class="fa fa-clock-o"></i>
+          <tr><td><b><i class="fa-spin fa fa-clock-o"></i>
             Horario inicio de reserva:
           </b></td></tr>
           <tr><td>
             {{reserva.inicioReserva}}
           </td></tr>
 
-          <tr><td><b><i class="fa fa-clock-o"></i>
+          <tr><td><b><i class="fa-spin fa fa-clock-o"></i>
             Horario fin de reserva:
           </b></td></tr>
           <tr><td>
             {{reserva.finalReserva}}
           </td></tr>
 
-          <tr><td><b><i class="fa fa-car"></i>
+          <tr><td><b><i class="fa-spin fa fa-car"></i>
             Tipo de vehículo:
           </b></td></tr>
           <tr><td>
             {{reserva.vehiculoTipo}}
           </td></tr>
 
-          <tr><td><b><i class="fa fa-money"></i>
+          <tr><td><b><i class="fa-spin fa fa-money"></i>
             Monto:
           </b></td></tr>
           <tr><td>

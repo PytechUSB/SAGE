@@ -2,27 +2,27 @@
 <table class="table table-striped">
   <thead></thead>
   <tbody>
-    <tr><td colspan="3"><b><i class="fa fa-user"></i>
+    <tr><td colspan="3"><b><i class="fa-spin fa fa-user"></i>
       Nombre:
     </b></td></tr>
     <tr><td colspan="3">
       {{propietario.nombres}} {{propietario.apellidos}}
     </td></tr>
-    <tr><td colspan="3"><b><i class="fa fa-circle"></i>
+    <tr><td colspan="3"><b><i class="fa-spin fa fa-circle"></i>
       Cédula:
     </b></td></tr>
     <tr><td colspan="3">
       {{propietario.cedulaTipo}}-{{propietario.cedula}}
     </td></tr>
     {% if propietario.telefono1 %}
-	    <tr><td colspan="3"><b><i class="fa fa-phone"></i>
+	    <tr><td colspan="3"><b><i class="fa-spin fa fa-phone"></i>
 	      Teléfono:
 	    </b></td></tr>
 	    <tr><td colspan="3">
 	      {{propietario.telefono1}}
 	    </td></tr>
 	{% endif %}
-	<tr><td colspan="3"><b><i class="fa fa-car"></i>
+	<tr><td colspan="3"><b><i class="fa-spin fa fa-car"></i>
       Estacionamientos:
 	</b></td></tr>
     {% if estacionamientos %}
@@ -33,7 +33,7 @@
               <td>{{obj.nombre}}</td>
               <td>{{obj.rif}}</td>
               <td><a href="/estacionamientos/{{obj.id}}">
-                <i class="fa fa-search"></i></a>
+                <i class="fa-spin fa fa-search"></i></a>
               </td>
             </tr>
           {% endif %}

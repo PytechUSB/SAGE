@@ -19,25 +19,25 @@
             <!--Particular-->
             {% if estacionamiento.capacidad > 0 and value.0 == "Particular" %}
               <div class="vehiculo_tipo">
-                <font size="4"><i class="fa fa-car"></i></font>
+                <font size="4"><i class="fa-spin fa fa-car"></i></font>
                 <br>{{ form.vehiculoTipo.0 }} 
               </div>
             <!--Moto-->
             {% elif estacionamiento.capacidad_M > 0 and value.0 == "Moto" %}
               <div class="vehiculo_tipo">
-                <font size="4"><i class="fa fa-motorcycle"></i></font>
+                <font size="4"><i class="fa-spin fa fa-motorcycle"></i></font>
                 <br>{{ form.vehiculoTipo.1 }} 
               </div>
             <!--Camion-->
             {% elif estacionamiento.capacidad_C > 0 and value.0 == "Camion" %}
               <div class="vehiculo_tipo">
-                <font size="4"><i class="fa fa-truck"></i></font>
+                <font size="4"><i class="fa-spin fa fa-truck"></i></font>
                 <br>{{ form.vehiculoTipo.2 }} 
               </div class="vehiculo_tipo">
             <!--Discapacitado-->
             {% elif estacionamiento.capacidad_D > 0 and value.0 == "Discapacitado" %}
               <div class="vehiculo_tipo">
-                <font size="4"><i class="fa fa-wheelchair"> </i></font>
+                <font size="4"><i class="fa-spin fa fa-wheelchair"> </i></font>
                 <br>{{ form.vehiculoTipo.3 }} 
               </div>
             {% endif %}

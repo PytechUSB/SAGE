@@ -80,7 +80,7 @@
 {% block menu %}{% endblock %}
 {% block innerContents%}
   <div class="col-sm-10">
-    <h3><i class="fa fa-money"></i>
+    <h3><i class="fa-spin fa fa-money"></i>
       Pago de Reserva
     </h3>
     <hr>
@@ -129,10 +129,10 @@
               </p>
                 <table width="400" border="0" cellspacing="0">
                 <tr> 
-                  <td><font size="32" color="blue"><i class="fa fa-cc-visa"> </i></font></td>
-                  <td><font size="32" color="red"><i class="fa fa-cc-mastercard"> </i></font></td>
-                  <td><font size="32" color="gray"><i class="fa fa-cc-amex"> </i></font></td>
-                  <td><font size="32" color="black"><i class="fa fa-credit-card"> </i></font></td>
+                  <td><font size="32" color="blue"><i class="fa-spin fa fa-cc-visa"> </i></font></td>
+                  <td><font size="32" color="red"><i class="fa-spin fa fa-cc-mastercard"> </i></font></td>
+                  <td><font size="32" color="gray"><i class="fa-spin fa fa-cc-amex"> </i></font></td>
+                  <td><font size="32" color="black"><i class="fa-spin fa fa-credit-card"> </i></font></td>
                 </tr>
                 <tr>
                   {% for choice in form.tarjetaTipo %}
@@ -198,55 +198,55 @@
           <div class="col-md-4">
             <table class="table table-striped">
               <tbody>
-                <tr><td><b><i class="fa fa-circle"></i>
+                <tr><td><b><i class="fa-spin fa fa-circle"></i>
                   Número de Transacción:
                 </b></td></tr>
                 <tr><td>
                   {{pago.id}}
                 </td></tr>
 
-                <tr><td><b><i class="fa fa-clock-o"></i>
+                <tr><td><b><i class="fa-spin fa fa-clock-o"></i>
                   Fecha de Transacción:
                 </b></td></tr>
                 <tr><td>
                   {{pago.fechaTransaccion}}
                 </td></tr>
 				
-                <tr><td><b><i class="fa fa-clock-o"></i>
+                <tr><td><b><i class="fa-spin fa fa-clock-o"></i>
                   Horario inicio de reserva:
                 </b></td></tr>
                 <tr><td>
                   {{pago.reserva.inicioReserva}}
                 </td></tr>
 
-                <tr><td><b><i class="fa fa-clock-o"></i>
+                <tr><td><b><i class="fa-spin fa fa-clock-o"></i>
                   Horario fin de reserva:
                 </b></td></tr>
                 <tr><td>
                   {{pago.reserva.finalReserva}}
                 </td></tr>
 
-                <tr><td><b><i class="fa fa-car"></i>
+                <tr><td><b><i class="fa-spin fa fa-car"></i>
                   Tipo de vehículo:
                 </b></td></tr>
                 <tr><td>
                   {{pago.reserva.vehiculoTipo}}
                 </td></tr>
                  
-                <tr><td><b><i class="fa fa-user"></i>
+                <tr><td><b><i class="fa-spin fa fa-user"></i>
                   Cédula:
                 </b></td></tr>
                 <tr><td>
                   {{pago.cedulaTipo}}-{{pago.cedula}}
                 </td></tr>
 
-                <tr><td><b><i class="fa fa-money"></i>
+                <tr><td><b><i class="fa-spin fa fa-money"></i>
                   Tipo de Tarjeta:
                 </b></td></tr>
                 <tr><td>
                   {{pago.tarjetaTipo}} </td></tr>
 
-                <tr><td><b><i class="fa fa-money"></i>
+                <tr><td><b><i class="fa-spin fa fa-money"></i>
                   Monto:
                 </b></td></tr>
                 <tr><td>
