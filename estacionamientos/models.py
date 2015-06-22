@@ -313,48 +313,49 @@ class EsquemaTarifario(models.Model):
 	tarifa_C         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2, default=Decimal('0.00'))
 	tarifa2_C        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
 	# Para Discapacitados
-    tarifa_D         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2, default=Decimal('0.00'))
-    tarifa2_D        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
-    
-    #devuelve las tarifas regulares segun el tipo de vehiculo
-    def obtenerTarifa1(self, tipoDeVehiculo):
-    	tarifa  = 0
-    	if tipoDeVehiculo == "Particular":
-    		tarifa  = self.tarifa
-    	elif tipoDeVehiculo == "Moto":
-    		tarifa  = self.tarifa_M
-    	elif tipoDeVehiculo == "Camion":
-    		tarifa  = self.tarifa_C
-    	elif tipoDeVehiculo == "Discapacitado":
-    		tarifa  = self.tarifa_D
-    	return tarifa 
-    
-    #devuelve las tarifas segun el tipo de vehiculo
-    def obtenerTarifa2(self, tipoDeVehiculo):
-    	tarifa2 = 0
-    	if tipoDeVehiculo == "Particular":
-    		tarifa2 = self.tarifa2
-    	elif tipoDeVehiculo == "Moto":
-    		tarifa2 = self.tarifa2_M
-    	elif tipoDeVehiculo == "Camion":
-    		tarifa2 = self.tarifa2_C
-    	elif tipoDeVehiculo == "Discapacitado":
-    		tarifa2 = self.tarifa2_D
-    	return tarifa2
-    
-    class Meta:
-    	abstract = True
-    def __str__(self):
-    	return str(self.tarifa)
+	tarifa_D         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2, default=Decimal('0.00'))
+	tarifa2_D        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
+
+	#devuelve las tarifas regulares segun el tipo de vehiculo
+	def obtenerTarifa1(self, tipoDeVehiculo):
+		tarifa  = 0
+		if tipoDeVehiculo == "Particular":
+			tarifa  = self.tarifa
+		elif tipoDeVehiculo == "Moto":
+			tarifa  = self.tarifa_M
+		elif tipoDeVehiculo == "Camion":
+			tarifa  = self.tarifa_C
+		elif tipoDeVehiculo == "Discapacitado":
+			tarifa  = self.tarifa_D
+		return tarifa 
+
+	#devuelve las tarifas segun el tipo de vehiculo
+	def obtenerTarifa2(self, tipoDeVehiculo):
+		tarifa2 = 0
+		if tipoDeVehiculo == "Particular":
+			tarifa2 = self.tarifa2
+		elif tipoDeVehiculo == "Moto":
+			tarifa2 = self.tarifa2_M
+		elif tipoDeVehiculo == "Camion":
+			tarifa2 = self.tarifa2_C
+		elif tipoDeVehiculo == "Discapacitado":
+			tarifa2 = self.tarifa2_D
+		return tarifa2
+	
+	class Meta:
+		abstract = True
+	def __str__(self):
+		return str(self.tarifa)
 
 class TarifaHora(EsquemaTarifario):
+	
 	def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
 		tarifa = self.obtenerTarifa1(tipoDeVehiculo)
 		a = horaFinal-horaInicio
 		a = a.days*24+a.seconds/3600
 		a = ceil(a) #  De las horas se calcula el techo de ellas
-
-	return(Decimal(tarifa*a).quantize(Decimal('1.00')))
+		
+	return(Decimal(tarifa * a).quantize(Decimal('1.00')))
 
 	def tipo(self):
 		return("Por Hora")
@@ -365,6 +366,7 @@ class TarifaMinuto(EsquemaTarifario):
 		minutes = horaFinal-horaInicio
 		minutes = minutes.days*24*60+minutes.seconds/60
 	return (Decimal(minutes)*Decimal(tarifa/60)).quantize(Decimal('1.00'))
+	
 	def tipo(self):
 		return("Por Minuto")
 
