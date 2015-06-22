@@ -298,6 +298,18 @@ class PagoOperacionesEspeciales(models.Model):
 	
 	def __str__(self):
 		return str(self.id)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
+	
+	def obtener_string(self):
+		if self.cancelacion != None:
+			return "Cargo por Cancelacion"
+		
+		elif self.pago_movido != None:
+			return "Cargo por Mover Reserva"
+		
+		return "Cargo por Operacion Especial"
+	
+	def obtener_tipo(self):
+		return "Cargo Especial"
 
 	
 class EsquemaTarifario(models.Model):

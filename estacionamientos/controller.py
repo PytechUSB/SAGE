@@ -262,6 +262,10 @@ def buscar_historial_billetera(identificador):
 	for pag in lista_pagos:
 		historial.append(pag)
 		
+	lista_opEspeciales = PagoOperacionesEspeciales.objects.filter(billetera = identificador)
+	for opEsp in lista_opEspeciales:
+		historial.append(opEsp)
+		
 	def getKey(item):
 		return item.fechaTransaccion	
 		
