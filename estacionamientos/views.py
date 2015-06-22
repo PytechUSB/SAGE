@@ -44,7 +44,7 @@ from estacionamientos.forms import (
     CancelaReservaForm,
     MoverReservaForm,
     PuestosForm, 
-    TarifasForm
+    TarifasForm,
     AdministrarSAGEForm,
     cambioPinBilleteraForm
 )

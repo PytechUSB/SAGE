@@ -303,10 +303,10 @@ class PagoOperacionesEspeciales(models.Model):
 class EsquemaTarifario(models.Model):
 	inicioEspecial = models.TimeField(blank = True, null = True)
 	finEspecial    = models.TimeField(blank = True, null = True)
-    # Para Particulares
+	# Para Particulares
 	tarifa         = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
 	tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
-    # Para Motos
+	# Para Motos
 	tarifa_M         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2, default=Decimal('0.00'))
 	tarifa2_M        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
 	# Para Camiones
@@ -355,7 +355,7 @@ class TarifaHora(EsquemaTarifario):
 		a = a.days*24+a.seconds/3600
 		a = ceil(a) #  De las horas se calcula el techo de ellas
 		
-	return(Decimal(tarifa * a).quantize(Decimal('1.00')))
+		return(Decimal(tarifa * a).quantize(Decimal('1.00')))
 
 	def tipo(self):
 		return("Por Hora")
@@ -365,7 +365,7 @@ class TarifaMinuto(EsquemaTarifario):
 		tarifa = self.obtenerTarifa1(tipoDeVehiculo)
 		minutes = horaFinal-horaInicio
 		minutes = minutes.days*24*60+minutes.seconds/60
-	return (Decimal(minutes)*Decimal(tarifa/60)).quantize(Decimal('1.00'))
+		return (Decimal(minutes)*Decimal(tarifa/60)).quantize(Decimal('1.00'))
 	
 	def tipo(self):
 		return("Por Minuto")
