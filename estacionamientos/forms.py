@@ -3,7 +3,6 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.forms.widgets import SplitDateTimeWidget
 from estacionamientos.models import Propietario
-from decimal import Decimal
 
 # Límites para los campos  
 MAXNOMBRE=100
@@ -304,7 +303,43 @@ class PuestosForm(forms.Form):
         return cleaned_data   
     
  
-        
+class TarifasForm(forms.Form):
+    
+    tarifa_validator = RegexValidator(
+        regex   = '^([0-9]+(\.[0-9]+)?)$',
+        message = 'Sólo debe contener dígitos.'
+    )  
+    
+    tarifa = forms.DecimalField(
+        required   = True,
+        validators = [tarifa_validator],
+        widget     = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Tarifa'
+            , 'pattern'     : '^([0-9]+(\.[0-9]+)?)$'
+            , 'message'     : 'La entrada debe ser un número decimal.'
+            }
+        )
+    )
+
+    tarifa2 = forms.DecimalField(
+            required   = False,
+            validators = [tarifa_validator],
+            widget     = forms.TextInput(attrs = {
+                'class'       : 'form-control',
+                'placeholder' : 'Tarifa Especial',
+                'pattern'     : '^([0-9]+(\.[0-9]+)?)$',
+                'message'     : 'La entrada debe ser un número decimal.'
+            }
+        )
+    )
+    
+    """ Es necesario cambiar esto para que logre validar diversas forms iguales 
+    con prefijos que las distingan, puesto que la funcion original retorna '%s-%s', dicho
+    "-" impide la validacion correcta de los campos """
+    def add_prefix(self, field_name):
+        return '%s_%s' % (self.prefix, field_name) if self.prefix else field_name                      
+
 class EstacionamientoExtendedForm(forms.Form):
     
     tarifa_validator = RegexValidator(
@@ -364,55 +399,37 @@ class EstacionamientoExtendedForm(forms.Form):
             { 'class' : 'form-control' }
         )
     )
-    
-    tarifa = forms.DecimalField(
-        required   = True,
-        validators = [tarifa_validator],
-        widget     = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Tarifa'
-            , 'pattern'     : '^([0-9]+(\.[0-9]+)?)$'
-            , 'message'     : 'La entrada debe ser un número decimal.'
-            }
-        )
-    )
-
-    tarifa2 = forms.DecimalField(
-            required   = False,
-            validators = [tarifa_validator],
-            widget     = forms.TextInput(attrs = {
-                'class'       : 'form-control',
-                'placeholder' : 'Tarifa 2',
-                'pattern'     : '^([0-9]+(\.[0-9]+)?)$',
-                'message'     : 'La entrada debe ser un número decimal.'
-            }
-        )
-    )
 
     inicioTarifa2 = forms.TimeField(
         required = False,
         label    = 'Inicio Horario Especial',
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Horario Inicio Reserva'
+        widget   = forms.TimeInput(attrs =
+            { 'class':'form-control'
+            , 'placeholder' : 'Horario Apertura'
             , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
             , 'message'     : 'La entrada debe ser una hora válida.'
-            }
+            }, 
+            format='%H:%M'
         )
     )
 
     finTarifa2 = forms.TimeField(
         required = False,
         label    = 'Fin Horario Especial',
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Horario Fin Reserva'
+        widget   = forms.TimeInput(attrs =
+            { 'class':'form-control'
+            , 'placeholder' : 'Horario Apertura'
             , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
             , 'message'     : 'La entrada debe ser una hora válida.'
-            }
+            }, 
+            format='%H:%M'
         )
     )
     
+    aceptaFeriados = forms.BooleanField(
+        required=False
+    )
+
     esquemaFeriados = forms.ChoiceField(
         required = False,
         choices  = choices_esquema,
@@ -421,55 +438,64 @@ class EstacionamientoExtendedForm(forms.Form):
         )
     )
     
-    tarifaFeriados = forms.DecimalField(
-            required   = False,
-            validators = [tarifa_validator],
-            widget     = forms.TextInput(attrs = {
-                'class'       : 'form-control',
-                'placeholder' : 'Tarifa feriados',
-                'pattern'     : '^([0-9]+(\.[0-9]+)?)$',
-                'message'     : 'La entrada debe ser un número decimal.'
-            }
-        )
-    )
-    
-    tarifaFeriados2 = forms.DecimalField(
-            required   = False,
-            validators = [tarifa_validator],
-            widget     = forms.TextInput(attrs = {
-                'class'       : 'form-control',
-                'placeholder' : 'Tarifa 2',
-                'pattern'     : '^([0-9]+(\.[0-9]+)?)$',
-                'message'     : 'La entrada debe ser un número decimal.'
-            }
-        )
-    )
-    
     inicioTarifaFeriados = forms.TimeField(
         required = False,
         label    = 'Inicio Horario Especial',
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Horario Inicio Reserva'
+        widget   = forms.TimeInput(attrs =
+            { 'class':'form-control'
+            , 'placeholder' : 'Horario Apertura'
             , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
             , 'message'     : 'La entrada debe ser una hora válida.'
-            }
+            }, 
+            format='%H:%M'
         )
     )
 
     finTarifaFeriados = forms.TimeField(
         required = False,
         label    = 'Fin Horario Especial',
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Horario Fin Reserva'
+        widget   = forms.TimeInput(attrs =
+            { 'class':'form-control'
+            , 'placeholder' : 'Horario Apertura'
             , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
             , 'message'     : 'La entrada debe ser una hora válida.'
-            }
+            }, 
+            format='%H:%M'
         )
     )
-    
-    
+
+    def clean(self):
+        #cleaned_data = super(EstacionamientoExtendedForm, self).clean()
+        cleaned_data = self.cleaned_data
+
+        horarioin = cleaned_data.get('horarioin')
+        horarioout = cleaned_data.get('horarioout')
+        inicioTarifa2 = cleaned_data.get('inicioTarifa2')
+        finTarifa2 = cleaned_data.get('finTarifa2')
+        inicioTarifaFeriados = cleaned_data.get('inicioTarifaFeriados')
+        finTarifaFeriados = cleaned_data.get('finTarifaFeriados')
+        aceptaFeriados = cleaned_data.get('aceptaFeriados')
+
+        if horarioin!= None and horarioout!= None and horarioin >= horarioout:
+            raise forms.ValidationError("El horario de cierre debe ser mayor al horario de apertura.")
+
+        elif finTarifa2!= None and inicioTarifa2!= None:
+            if finTarifa2 <= inicioTarifa2:
+                raise forms.ValidationError("La hora final de tarifa especial debe ser mayor a la de incio.")
+            elif finTarifa2 > horarioout:
+                raise forms.ValidationError("Horario de tarifa especial fuera del horario del estacionamiento.")
+            elif horarioin > inicioTarifa2:
+                raise forms.ValidationError("Horario de tarifa especial fuera del horario del estacionamiento.")
+
+        elif aceptaFeriados:
+            if finTarifaFeriados!=None and finTarifaFeriados <= inicioTarifaFeriados:
+                raise forms.ValidationError("La hora final de tarifa feriada especial debe ser mayor a la de incio.")
+            elif finTarifaFeriados!=None and finTarifaFeriados > horarioout:
+                raise forms.ValidationError("Horario de tarifa feriada especial fuera del horario del estacionamiento.")
+            elif inicioTarifaFeriados!=None and horarioin > inicioTarifaFeriados:
+                raise forms.ValidationError("Horario de tarifa feriada especial fuera del horario del estacionamiento.")
+                    
+        return cleaned_data 
 
 class ReservaForm(forms.Form):
     

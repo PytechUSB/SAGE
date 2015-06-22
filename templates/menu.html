@@ -25,15 +25,17 @@
     <li><a href="/estacionamientos/administrar_sage"><i class="fa fa-cog"></i>
       Administrar SAGE
     </a></li>
-    {% if estacionamiento.capacidad or estacionamiento.capacidad_M or estacionamiento.capacidad_C or estacionamiento.capacidad_D%}
-      {% if estacionamiento.tarifa %}
-      <li><a href="./"><i class="fa fa-wrench"></i>
-        Parametrizar
-      </a></li>
-      <li><a href="./reserva"><i class="fa fa-pencil-square-o"></i>
-        Reservar
-      </a></li>
-      {% endif %}
+    {% if not ocultarParametros %}
+	    {% if estacionamiento.capacidad or estacionamiento.capacidad_M or estacionamiento.capacidad_C or estacionamiento.capacidad_D%}
+	      {% if estacionamiento.tarifa %}
+	      <li><a href="./"><i class="fa fa-wrench"></i>
+	        Parametrizar
+	      </a></li>
+	      <li><a href="./reserva"><i class="fa fa-pencil-square-o"></i>
+	        Reservar
+	      </a></li>
+	      {% endif %}
+	    {% endif %}
     {% endif %}
   </ul>
   <hr>

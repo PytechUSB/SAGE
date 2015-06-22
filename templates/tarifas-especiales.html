@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}
+  SAGE - Estacionamiento {{estacionamiento.nombre}}
+{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Estacionamiento {{estacionamiento.nombre}}
+    </h3>
+    <hr>	
+    <p>
+    <div class="col-md-4">
+		<label>Esquema tarifario:</label>
+		<p style="border:0; color:#0033AF; font-weight:bold;">{{ estacionamiento.tarifa.tipo }}</p>
+	    <hr>
+		{% if estacionamiento.tarifaFeriados %}
+  		  	<label>Esquema tarifario para dias feriados:</label>
+			<p style="border:0; color:#0033AF; font-weight:bold;">{{ estacionamiento.tarifaFeriados.tipo }}</p>
+	   		<hr>
+	   	{% endif %}
+    </div>
+    <div class="col-md-8">
+      <table width="80%">
+      <tr>
+      	<td><span align="center" style="border:0; color:#0033AF; font-weight:bold;">&nbsp;&nbsp; Tarifas para dias regulares:</span></td>
+      	{% if estacionamiento.tarifaFeriados %}
+      		<td><span align="center" style="border:0; color:#0033AF; font-weight:bold;">
+      			&nbsp;&nbsp; Tarifas para dias feriados:</span>
+      		</td>
+      	{% endif %}
+      </tr>
+      </table>
+      <p></p>
+  	  <form action="." method="post" class="form form-vertical">
+      {% csrf_token %}     
+      {% if estacionamiento.capacidad %}
+      <table width="80%">
+	      <thead>
+	      	<tr><b><i class="fa fa-car"></i> Tarifas para particulares:</b></tr>
+	      </thead>
+	      <tbody>
+	      	<tr>
+	      		<td>
+	      		  {% for field in formParticulares %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.html_name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      		<td>
+	      		  {% if estacionamiento.tarifaFeriados %}
+	      		  {% for field in formFeriadosParticulares %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.html_name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+			      {% endif %}
+      			</td>
+	      	</tr>
+	      </tbody>
+      </table>
+      <hr>
+      {% endif %}     
+      {% if estacionamiento.capacidad_C %}
+      <table width="80%">
+	      <thead>
+	      	<tr><b><i class="fa fa-truck"></i> Tarifas para camiones:</b></tr>
+	      </thead>
+	      <tbody>
+	      	<tr>
+	      		<td>
+	      		  {% for field in formCamiones %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.html_name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      		<td>
+	      		  {% if estacionamiento.tarifaFeriados %}
+	      		  {% for field in formFeriadosCamiones %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.html_name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+			      {% endif %}
+      			</td>
+	      	</tr>
+	      </tbody>
+      </table>
+      <hr>
+      {% endif %}   
+      {% if estacionamiento.capacidad_M %}
+      <table width="80%">
+	      <thead>
+	      	<tr><b><i class="fa fa-motorcycle"></i> Tarifas para motos:</b></tr>
+	      </thead>
+	      <tbody>
+	      	<tr>
+	      		<td>
+	      		  {% for field in formMotos %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.html_name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      		<td>
+	      		  {% if estacionamiento.tarifaFeriados %}
+	      		  {% for field in formFeriadosMotos %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.html_name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+			      {% endif %}
+      			</td>
+	      	</tr>
+	      </tbody>
+      </table>
+      <hr>
+      {% endif %} 
+      {% if estacionamiento.capacidad_D %}
+      <table width="80%">
+	      <thead>
+	      	<tr><b><i class="fa fa-wheelchair"></i> Tarifas para discapacitados:</b></tr>
+	      </thead>
+	      <tbody>
+	      	<tr>
+	      		<td>
+	      		  {% for field in formDisc %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.html_name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+      			</td>
+	      		<td>
+	      		  {% if estacionamiento.tarifaFeriados %}
+	      		  {% for field in formFeriadosDisc %}
+			        <div class="control-group">
+			          <div class="controls">
+			            {{ field }}
+			            <span class='error' id='{{field.html_name}}_error' aria-live="polite">
+			              {{ field.errors }}
+			            </span>
+			            <p>
+			          </div>
+			        </div>
+			      {% endfor %}
+			      {% endif %}
+      			</td>
+	      	</tr>
+	      </tbody>
+      </table>
+	  <hr>
+      {% endif %}
+	  <div class="controls" align="center">
+		<button type="submit" class="btn btn-primary">
+	    Cambiar tarifas
+	 	</button>
+        <button type="button" value="Previous Page" class="btn btn-primary" onClick="location.href='../'">
+          Volver
+        </button>
+	  </div>
+    </div>
+    </form>
+  </div>
+<!-- Validadores de los campos --> 
+{% include "validator.js.html" with form=formParticulares%}
+{% include "validator.js.html" with form=formFeriadosParticulares%}
+{% include "validator.js.html" with form=formCamiones%}
+{% include "validator.js.html" with form=formFeriadosCamiones%}
+{% include "validator.js.html" with form=formMotos%}
+{% include "validator.js.html" with form=formFeriadosMotos%}
+{% include "validator.js.html" with form=formDisc%}
+{% include "validator.js.html" with form=formFeriadosDisc%}
+<script type="text/javascript">
+	var esquemaFeriados = "{{ estacionamiento.tarifaFeriados }}";
+	var tipo="{{estacionamiento.tarifa.tipo}}";
+	var esquemas=["Por Hora","Por Minuto","Por Hora y Fraccion"];
+	if (esquemaFeriados) {
+		var tipoFeriados="{{estacionamiento.tarifaFeriados.tipo}}";
+		if (esquemas.indexOf(tipoFeriados)!=-1) ocultarTarifa2(1);
+	}
+	if (esquemas.indexOf(tipo)!=-1) ocultarTarifa2(0);
+	
+	// nombre: nombre del elemento a esconder determinado por field.html_name
+	// feriados: 0 para tarifas normales, 1 para tarifas feriadas
+	function trampa(nombre) {
+		var existe = document.getElementById(nombre);
+		if (existe) existe.style.display = 'none';
+	};
+	
+	function ocultarTarifa1(feriado) {
+		if (feriado) {
+			trampa("id_FeriadosParticulares_tarifa");
+			trampa("id_FeriadosCamiones_tarifa");
+			trampa("id_FeriadosMotos_tarifa");
+			trampa("id_FeriadosDiscapacitados_tarifa");
+		} else {
+			trampa("id_Particulares_tarifa");
+			trampa("id_Camiones_tarifa");
+			trampa("id_Motos_tarifa");
+			trampa("id_Discapacitados_tarifa");
+		}
+	};
+	
+	function ocultarTarifa2(feriado) {
+		if (feriado) {
+			trampa("id_FeriadosParticulares_tarifa2");
+			trampa("id_FeriadosCamiones_tarifa2");
+			trampa("id_FeriadosMotos_tarifa2");
+			trampa("id_FeriadosDiscapacitados_tarifa2");
+		} else {
+			trampa("id_Particulares_tarifa2");
+			trampa("id_Camiones_tarifa2");
+			trampa("id_Motos_tarifa2");
+			trampa("id_Discapacitados_tarifa2");
+		}	
+	};	
+</script>
+
+{% endblock %}
+

@@ -1,19 +1,22 @@
 {% extends "base.html" %}
-
 {% block title %}
   SAGE - Estacionamiento {{estacionamiento.nombre}}
 {% endblock %}
+
+<style>
+</style>
 {% block innerContents%}
   <div class="col-sm-10">
     <h3><i class="fa fa-bus"></i>
       Estacionamiento {{estacionamiento.nombre}}
     </h3>
-    <hr>	
+    <hr>  
     <p>
-	  <label for="amount">Horizonte de reservacion:</label>
-	   <input type="text" id="horizonteParam" readonly style="border:0; color:#0033AF; font-weight:bold;">
-	</p>
-	<div id="slider"></div>
+    <label for="amount">Horizonte de reservacion:</label>
+     <input type="text" id="horizonteParam" readonly style="border:0; color:#0033AF; font-weight:bold;">
+     <span id="horizonteCambiado" style="color:red" readonly></span>
+    </p>
+  <div id="slider"></div>
     <hr>
     <div class="col-md-4">
       {% include "datos.html" with mostrarBoton=True %}
@@ -26,24 +29,27 @@
     </div>
   </div>
 <script>
+  var mensaje="Debe parametrizar el estacionamiento para guardar los cambios";
   $(function() {
- 	$( "#slider" ).slider({
+    $( "#slider" ).slider({
+      range: "min",
       value:"{{ estacionamiento.horizonte }}",
-      animate: "slow",
       min: 0,
       max: 360,
       step: 1,
+      change: function( event, ui ) {
+      		document.getElementById("horizonteCambiado").innerHTML=mensaje;
+      },
       slide: function( event, ui ) {
-	    imprimirHorizonte(ui.value);
-   		horizonte.value=ui.value;
-      }
+	      imprimirHorizonte(ui.value);
+	      horizonte.value=ui.value;
+	  }
     });
-    value=$("#slider").slider("value" );
+    value=$("#slider").slider("value");
     // imprimirHorizonte esta en datos.html
     imprimirHorizonte(value);
-   	horizonte.value=$( "#slider" ).slider("value");
+    horizonte.value=$( "#slider" ).slider("value");
   });
 </script>
 
 {% endblock %}
-

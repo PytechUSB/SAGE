@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta, time
 from decimal import Decimal
 from collections import OrderedDict
-from estacionamientos.models import Propietario, Estacionamiento, Reserva, Pago, BilleteraElectronica, Recargas,Cancelaciones,\
+from estacionamientos.models import Propietario, Estacionamiento, Reserva, Pago, BilleteraElectronica, Recargas,Cancelaciones,
 	PagoOperacionesEspeciales
 
 # chequeo de horarios de extended
@@ -101,7 +101,7 @@ def porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte):
 		return 0
 	
 
-def calcularMonto(idEstacionamiento, hIn, hOut):
+def calcularMonto(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular'):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
 	monto  = 0
 	inicio = hIn
@@ -113,9 +113,9 @@ def calcularMonto(idEstacionamiento, hIn, hOut):
 	#calcula el monto segun el esquema y el dia
 	while inicio<hOut:
 		if(e.tarifaFeriados and (str(inicio.date()) in e.feriados)):
-			monto+=e.tarifaFeriados.calcularPrecio(inicio,final)
+			monto+=e.tarifaFeriados.calcularPrecio(inicio,final, tipoDeVehiculo)
 		else:
-			monto+=e.tarifa.calcularPrecio(inicio,final)
+			monto+=e.tarifa.calcularPrecio(inicio,final, tipoDeVehiculo)
 
 		inicio=final
 		if(final.date() == hOut.date()):
