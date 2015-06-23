@@ -721,7 +721,7 @@ def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaRese
         
     else:
         pagoAnterior = Pago.objects.get(pk = idFacturaReservaMovida)
-        if monto == pagoAnterior.monto or form == None:
+        if monto <= pagoAnterior.monto and form == None:
             pago = Pago(
                 id = asigna_id_unico(),
                 fechaTransaccion = datetime.now(),
