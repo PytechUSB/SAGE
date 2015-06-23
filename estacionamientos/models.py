@@ -69,7 +69,10 @@ class Estacionamiento(models.Model):
 			puestos  = self.capacidad_C
 		elif tipoDeVehiculo == "Discapacitado":
 			puestos  = self.capacidad_D
-		return puestos 
+		return puestos
+	
+	def capacidadTotal(self):
+		return (self.capacidad + self.capacidad_M + self.capacidad_C + self.capacidad_D)
 	
 	def __str__(self):
 		return self.nombre+' '+str(self.id)

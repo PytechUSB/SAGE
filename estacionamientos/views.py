@@ -110,7 +110,7 @@ def propietario_all(request):
                 return render(
                     request, 'template-mensaje.html',
                     { 'color'   : 'red'
-                    , 'mensaje' : 'CÃ©dula ya existente'
+                    , 'mensaje' : 'Cédula ya existente'
                     }
                 )
             # Recargamos los propietarios ya que acabamos de agregar
@@ -661,7 +661,7 @@ def estacionamiento_reserva(request, _id):
                     request,
                     'template-mensaje.html',
                     {'color'   : 'red'
-                    , 'mensaje' : 'No hay un puesto disponible para ' + str(vehiculoTipo) + 
+                    , 'mensaje' : 'No hay un puesto disponible para Vehiculo ' + str(vehiculoTipo) + 
                                   ' en ese horario'
                     }
                 )
@@ -974,7 +974,8 @@ def tasa_de_reservacion(request, _id):
             }
         )
     ocupacion = tasa_reservaciones(_id)
-    calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, estacionamiento.capacidad, ocupacion)
+    capacidad_total = estacionamiento.capacidadTotal()
+    calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, capacidad_total, ocupacion)
     datos_ocupacion = urlencode(ocupacion) # Se convierten los datos del diccionario en el formato key1=value1&key2=value2&...
     return render(
         request,
@@ -1486,7 +1487,7 @@ def mover_reserva(request, id_pago):
                     request,
                     'mensaje.html',
                     {'color'   : 'red'
-                    , 'mensaje' : 'No hay un puesto disponible para ' + str(pago.reserva.vehiculoTipo) + 
+                    , 'mensaje' : 'No hay un puesto disponible para Vehiculo' + str(pago.reserva.vehiculoTipo) + 
                                   ' en ese horario'
                     }
                 )
