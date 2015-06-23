@@ -172,7 +172,7 @@ class TarifaHoraTestCase(TestCase):
         self.assertEqual(value, 0)
 
     #quince dias, tarifa=0
-    def test_tarifa_hora_quince_dias(self):
+    def test_tarifa_hora_quince_dias_tarifa_cero(self):
         rate=TarifaHora(tarifa=0)
         initial_time=datetime(2015,2,18,0,0)
         final_time=datetime(2015,2,25,0,0)
