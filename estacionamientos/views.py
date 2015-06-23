@@ -992,7 +992,7 @@ def tasa_de_reservacion(request, _id):
     datos_ocupacion = []
     for vehiculoTipo in vehiculos:
         if vehiculoTipo == 'Todos':
-            ocupacion = tasa_reservaciones(_id)
+            ocupacion = (tasa_reservaciones(_id))
             capacidad = estacionamiento.capacidadTotal()
                 
         else:
@@ -1001,7 +1001,6 @@ def tasa_de_reservacion(request, _id):
             
         calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, capacidad, ocupacion)
         datos_ocupacion.append(urlencode(ocupacion)) # Se convierten los datos del diccionario en el formato key1=value1&key2=value2&...
-    
     return render(
         request,
         'tasa-reservacion.html',
