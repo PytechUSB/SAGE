@@ -70,7 +70,7 @@ class TarifaHoraTestCase(TestCase):
 
     def test_tarifa_hora_quince_dias(self):
         rate=TarifaHora(tarifa=1)
-        initial_time=datetime(2015,2,18,0,0)
+        initial_time=datetime(2015,2,10,0,0)
         final_time=datetime(2015,2,25,0,0)
         value = rate.calcularPrecio(initial_time, final_time,'Particular')
         self.assertEqual(value, 24*15)
@@ -174,7 +174,7 @@ class TarifaHoraTestCase(TestCase):
     #quince dias, tarifa=0
     def test_tarifa_hora_quince_dias_tarifa_cero(self):
         rate=TarifaHora(tarifa=0)
-        initial_time=datetime(2015,2,18,0,0)
+        initial_time=datetime(2015,2,10,0,0)
         final_time=datetime(2015,2,25,0,0)
         value = rate.calcularPrecio(initial_time, final_time,'Particular')
         self.assertEqual(value, 0)
