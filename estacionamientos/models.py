@@ -4,10 +4,7 @@ from math import ceil, floor
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from decimal import Decimal, ROUND_DOWN
-from datetime import timedelta, datetime
-from django.db.models.fields import IntegerField
-from django.db.models.fields.related import ForeignKey
-from django.template.defaultfilters import default
+from datetime import timedelta
 SMAX = 10000
 
 class Propietario(models.Model):
@@ -59,6 +56,8 @@ class Estacionamiento(models.Model):
 	#capacidad para vehiculos de discapacitados
 	capacidad_D   = models.IntegerField(blank = True, null = True, default=0)
 
+	#Horizonte de reservación medido en horas
+	horizonte    = models.IntegerField(blank = True, default=168) # 7 dias
 	#retorna la capacidd del estacionamiento segun el tipo de vehiculo
 	def obtenerCapacidad(self, tipoDeVehiculo):
 		puestos = 0
@@ -89,6 +88,21 @@ class BilleteraElectronica (models.Model):
 	def __str__(self):
 		return str(self.id)
 	
+	def validar_cambio_pin(self, pin, nuevo_pin1, nuevo_pin2):
+		if self.PIN == pin:
+			if nuevo_pin1 == nuevo_pin2:
+				return (True, '')
+			else:
+				return (False, 'Los Pines no coinciden intentelo de nuevo')
+		else:
+			return (False, 'Autenticacion denegada intentelo de nuevo')
+	
+	def cambiar_pin(self, pin, nuevo_pin1, nuevo_pin2):
+		if self.validar_cambio_pin(pin, nuevo_pin1, nuevo_pin2)[0]:
+			self.PIN = nuevo_pin1
+			self.save()
+		
+	
 	def recargar_saldo(self, monto):
 		if self.validar_recarga(monto):
 			self.saldo += Decimal(monto)
@@ -118,7 +132,34 @@ class BilleteraElectronica (models.Model):
 			self.saldo -= Decimal(monto)
 			self.saldo = Decimal(self.saldo).quantize(Decimal('.01'), rounding = ROUND_DOWN)
 			self.save()
+			
+class AdministracionSageManager(models.Manager):
+	def create_AdministracionSage(self, porcentaje = 0):
+		if len(AdministracionSage.objects.all()) < 1:
+			administracionSage = self.create(id = 1, porcentaje = Decimal(porcentaje))
+			administracionSage.save()
 	
+			
+class AdministracionSage(models.Model):
+	id 	       = models.IntegerField(primary_key = True)
+	porcentaje = models.DecimalField(max_digits = 3, decimal_places = 1, default= Decimal(0))
+	
+	objects = AdministracionSageManager()
+	
+	def __str__(self):
+		return str(self.id) + ' ' + str(self.porcentaje)
+	
+	def cambiar_porcentaje(self, porcentaje):
+		if porcentaje > 0 and porcentaje <= Decimal('9.9'):
+			self.porcentaje = porcentaje
+			self.save()
+	
+	def calcular_monto(self, monto_pago):
+		monto_debitar = Decimal((self.porcentaje * monto_pago)/100).quantize(Decimal('.01'))
+		return  monto_debitar			
+
+		
+
 class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()
@@ -166,7 +207,7 @@ class Pago(models.Model):
 		self.save() 
 		
 	def obtener_string(self):
-		if self.fueMovido != None:
+		if self.fueMovido:	
 			return "Reserva Movida"
 		
 		return "Reservacion"
@@ -187,6 +228,17 @@ class Pago(models.Model):
 			return True
 		
 		return False
+
+	def factura_inicial_pagada_billetera(self):
+		aux = self
+		while(aux.facturaMovida != None):
+			aux = aux.facturaMovida
+			
+		if aux.tarjetaTipo == 'Billetera Electronica':
+			return False
+		
+		else:
+			return True
 
 class Recargas(models.Model):
 	id				 = models.IntegerField(primary_key = True)
@@ -233,58 +285,113 @@ class Cancelaciones(models.Model):
 	def obtener_tipo(self):
 		return "Cancelacion"
 
+class PagoOperacionesEspeciales(models.Model):
+	id 						= models.IntegerField(primary_key = True)
+	monto 					= models.DecimalField(decimal_places = 2, max_digits = 256)
+	billetera 	 			= models.ForeignKey(BilleteraElectronica, blank = True, null = True)
+	pago_movido				= models.ForeignKey(Pago, blank = True, null = True)
+	cancelacion				= models.ForeignKey(Cancelaciones, blank = True, null = True)
+	fechaTransaccion 		= models.DateTimeField()
+	
+	def __str__(self):
+		return str(self.id)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
+	
+	def obtener_string(self):
+		if self.cancelacion != None:
+			return "Cargo por Cancelacion"
+		
+		elif self.pago_movido != None:
+			return "Cargo por Mover Reserva"
+		
+		return "Cargo por Operacion Especial"
+	
+	def obtener_tipo(self):
+		return "Cargo Especial"
+
 class EsquemaTarifario(models.Model):
 
-	# No se cuantos digitos deberiamos poner
-	tarifa         = models.DecimalField(max_digits=20, decimal_places=2)
-	tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
 	inicioEspecial = models.TimeField(blank = True, null = True)
 	finEspecial    = models.TimeField(blank = True, null = True)
+	
+	# Para Particulares
+	tarifa         = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
+	tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
+	# Para Motos
+	tarifa_M         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2, default=Decimal('0.00'))
+	tarifa2_M        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
+	# Para Camiones
+	tarifa_C         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2, default=Decimal('0.00'))
+	tarifa2_C        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
+	# Para Discapacitados
+	tarifa_D         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2, default=Decimal('0.00'))
+	tarifa2_D        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
+
+	#devuelve las tarifas regulares segun el tipo de vehiculo y el tipo de tarifa: tarifa, tarifa2
+	def obtenerTarifa(self, tipo, tipoDeVehiculo):
+		tarifa  = 0
+		# Utilizamos eval() para obtener la variable de clase respectiva y no repetir codigo. Ej: eval('self.tarifa_C').
+		if tipoDeVehiculo == "Particular":
+			tarifa  = eval('self.'+tipo)
+		elif tipoDeVehiculo == "Moto":
+			tarifa  = eval('self.'+tipo+'_M')
+		elif tipoDeVehiculo == "Camion":
+			tarifa  = eval('self.'+tipo+'_C')
+		elif tipoDeVehiculo == "Discapacitado":
+			tarifa  = eval('self.'+tipo+'_D')
+		return tarifa 
 	
 	class Meta:
 		abstract = True
 	def __str__(self):
 		return str(self.tarifa)
 
-
 class TarifaHora(EsquemaTarifario):
-	def calcularPrecio(self,horaInicio,horaFinal):
+	def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
+		tarifa = self.obtenerTarifa('tarifa',tipoDeVehiculo)
 		a = horaFinal-horaInicio
 		a = a.days*24+a.seconds/3600
 		a = ceil(a) #  De las horas se calcula el techo de ellas
-		return(Decimal(self.tarifa*a).quantize(Decimal('1.00')))
+		
+		return(Decimal(tarifa*a).quantize(Decimal('1.00')))
+
 	def tipo(self):
 		return("Por Hora")
 
 class TarifaMinuto(EsquemaTarifario):
-	def calcularPrecio(self,horaInicio,horaFinal):
+	def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
+		tarifa = self.obtenerTarifa('tarifa',tipoDeVehiculo)
 		minutes = horaFinal-horaInicio
 		minutes = minutes.days*24*60+minutes.seconds/60
-		return (Decimal(minutes)*Decimal(self.tarifa/60)).quantize(Decimal('1.00'))
+		
+		return (Decimal(minutes)*Decimal(tarifa/60)).quantize(Decimal('1.00'))
+
 	def tipo(self):
 		return("Por Minuto")
 
 class TarifaHorayFraccion(EsquemaTarifario):
-	def calcularPrecio(self,horaInicio,horaFinal):
+	def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
+		tarifa = self.obtenerTarifa('tarifa',tipoDeVehiculo)
 		time = horaFinal-horaInicio
 		time = time.days*24*3600+time.seconds
 		if(time>3600):
-			valor = (floor(time/3600)*self.tarifa)
+			valor = (floor(time/3600)*tarifa)
 			if((time%3600)==0):
 				pass
 			elif((time%3600)>1800):
-				valor += self.tarifa
+				valor += tarifa
 			else:
-				valor += self.tarifa/2
+				valor += tarifa/2
 		else:
-			valor = self.tarifa
+			valor = tarifa
 		return(Decimal(valor).quantize(Decimal('1.00')))
 
 	def tipo(self):
 		return("Por Hora y Fraccion")
 
 class TarifaFinDeSemana(EsquemaTarifario):
-	def calcularPrecio(self,inicio,final):
+	def calcularPrecio(self,inicio,final,tipoDeVehiculo):
+		tarifa = self.obtenerTarifa('tarifa',tipoDeVehiculo)
+		tarifa2 = self.obtenerTarifa('tarifa2',tipoDeVehiculo)
 		minutosNormales    = 0
 		minutosFinDeSemana = 0
 		tiempoActual       = inicio
@@ -302,15 +409,17 @@ class TarifaFinDeSemana(EsquemaTarifario):
 				minutosFinDeSemana += 1
 			tiempoActual += minuto
 		return Decimal(
-			minutosNormales*self.tarifa/60 +
-			minutosFinDeSemana*self.tarifa2/60
-		).quantize(Decimal('1.00'))
+            minutosNormales*tarifa/60 +
+            minutosFinDeSemana*tarifa2/60
+        ).quantize(Decimal('1.00'))
 
 	def tipo(self):
 		return("Tarifa diferenciada para fines de semana")
 
 class TarifaHoraPico(EsquemaTarifario):
-	def calcularPrecio(self,reservaInicio,reservaFinal):
+	def calcularPrecio(self,reservaInicio,reservaFinal,tipoDeVehiculo):
+		tarifa = self.obtenerTarifa('tarifa',tipoDeVehiculo)
+		tarifa2 = self.obtenerTarifa('tarifa2',tipoDeVehiculo)
 		minutosPico  = 0
 		minutosValle = 0
 		tiempoActual = reservaInicio
@@ -323,9 +432,10 @@ class TarifaHoraPico(EsquemaTarifario):
 				minutosValle += 1
 			tiempoActual += minuto
 		return Decimal(
-			minutosPico*self.tarifa2/60 +
-			minutosValle*self.tarifa/60
-		).quantize(Decimal('1.00'))
+            minutosPico*tarifa2/60 +
+            minutosValle*tarifa/60
+        ).quantize(Decimal('1.00'))
 
 	def tipo(self):
 		return("Tarifa diferenciada por hora pico")
+	

@@ -14,7 +14,7 @@
       Consultar Ingreso
     </a></li>
     <li><a href="/estacionamientos/consulta_reserva"><i class="fa fa-clock-o"></i>
-      Consultar Reservas
+      Consultar / Mover Reservas
     </a></li>
     <li><a href="/estacionamientos/crear_billetera"><i class="fa fa-credit-card"></i>
       Billetera Electrónica
@@ -22,15 +22,20 @@
     <li><a href="/estacionamientos/validar_reserva/validar_billetera/cancelar_reserva" onClick="return popup(this, 'Validar Reservacion')"><i class="fa fa-times"></i>
       Cancelar Reservación
     </a></li>
-    {% if estacionamiento.capacidad or estacionamiento.capacidad_M or estacionamiento.capacidad_C or estacionamiento.capacidad_D%}
-      {% if estacionamiento.tarifa %}
-      <li><a href="./"><i class="fa fa-wrench"></i>
-        Parametrizar
-      </a></li>
-      <li><a href="./reserva"><i class="fa fa-pencil-square-o"></i>
-        Reservar
-      </a></li>
-      {% endif %}
+    <li><a href="/estacionamientos/administrar_sage"><i class="fa fa-cog"></i>
+      Administrar SAGE
+    </a></li>
+    {% if not ocultarParametros %}
+	    {% if estacionamiento.capacidad or estacionamiento.capacidad_M or estacionamiento.capacidad_C or estacionamiento.capacidad_D%}
+	      {% if estacionamiento.tarifa %}
+	      <li><a href="./"><i class="fa fa-wrench"></i>
+	        Parametrizar
+	      </a></li>
+	      <li><a href="./reserva"><i class="fa fa-pencil-square-o"></i>
+	        Reservar
+	      </a></li>
+	      {% endif %}
+	    {% endif %}
     {% endif %}
   </ul>
   <hr>

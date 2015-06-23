@@ -31,21 +31,21 @@ class DecimalTestCase(TestCase):
         rate=TarifaHora(tarifa=0.3)
         initial_time=datetime(2015,2,20,15,0)
         final_time=datetime(2015,2,20,18,0)
-        value = rate.calcularPrecio(initial_time, final_time)
+        value = rate.calcularPrecio(initial_time, final_time,'Particular')
         self.assertEqual(value, Decimal('0.9'))
 
     def test_tarifa_minuto_decimal(self):
-        rate=TarifaMinuto(tarifa=0.3)
+        rate=TarifaMinuto(tarifa_M=0.3)
         initial_time=datetime(2015,2,20,15,0)
         final_time=datetime(2015,2,20,18,30)
-        value = rate.calcularPrecio(initial_time, final_time)
+        value = rate.calcularPrecio(initial_time, final_time,'Moto')
         self.assertEqual(value, Decimal('1.05'))
 
     def test_tarifa_hora_y_fraccion_decimal(self):
-        rate=TarifaHorayFraccion(tarifa=0.3)
+        rate=TarifaHorayFraccion(tarifa_C=0.3)
         initial_time=datetime(2015,2,20,15,0)
         final_time=datetime(2015,2,20,17,25)
-        value = rate.calcularPrecio(initial_time, final_time)
+        value = rate.calcularPrecio(initial_time, final_time,'Camion')
         self.assertEqual(value, Decimal('0.75'))
         
     def test_tarifa_pico_decimal(self):
@@ -54,12 +54,12 @@ class DecimalTestCase(TestCase):
         tarifa = TarifaHoraPico(tarifa=0.1,tarifa2=0.3,inicioEspecial=inicio,finEspecial=fin)
         inicioReserva = datetime(2015,1,1,15)
         finReserva = datetime(2015,1,1,20)
-        valor = tarifa.calcularPrecio(inicioReserva,finReserva)
+        valor = tarifa.calcularPrecio(inicioReserva,finReserva,'Particular')
         self.assertEqual(valor,Decimal('1.10'))
         
     def test_tarifa_fin_de_semana_decimal(self):
-        tarifa = TarifaFinDeSemana(tarifa=0.1,tarifa2=0.3)
+        tarifa = TarifaFinDeSemana(tarifa_D=0.1,tarifa2_D=0.3)
         inicioReserva = datetime(2015,3,6,22)
         finReserva = datetime(2015,3,7,3)
-        valor = tarifa.calcularPrecio(inicioReserva,finReserva)
+        valor = tarifa.calcularPrecio(inicioReserva,finReserva,'Discapacitado')
         self.assertEqual(valor,Decimal('1.10'))

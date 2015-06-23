@@ -257,7 +257,7 @@
                   {{pago.cedulaTipo}}-{{pago.cedula}}
                 </td></tr>
 
-                <tr><td><b><i class="fa fa-money"></i>
+                <tr><td><b><i class="fa fa-credit-card"></i>
                   Tipo de Tarjeta:
                 </b></td></tr>
                 <tr><td>
@@ -265,11 +265,27 @@
                 </td></tr>
 
                 <tr><td><b><i class="fa fa-money"></i>
-                  Monto:
+                  Monto de la reserva:
                 </b></td></tr>
                 <tr><td>
                   BsF. {{pago.monto|floatformat:2|intcomma }}
                 </td></tr>
+                
+                 <tr><td><b><i class="fa fa-money"></i>
+                  Cargo por operaciones especiales:
+                </b></td></tr>
+                <tr><td>
+                  BsF. {{monto_debitar|floatformat:2|intcomma }}
+                </td></tr>
+                
+                {% if not id_billetera %}
+                <tr><td><b><i class="fa fa-money"></i>
+                  Monto total operacion:
+                </b></td></tr>
+                <tr><td>
+                  BsF. {{monto_total|floatformat:2|intcomma }}
+                </td></tr>
+                {% endif %}
                 
                 {% if id_billetera%} 
                 <tr><td><b><i class="fa fa-circle"></i>
@@ -279,7 +295,7 @@
                   {{id_billetera}}
                 </td></tr>
                 
-                <tr><td><b><i class="fa fa-circle"></i>
+                <tr><td><b><i class="fa fa-money"></i>
                   Monto recargado:
                 </b></td></tr>
                 <tr><td>
@@ -287,7 +303,7 @@
                 </td></tr>
                 
                 {% endif %}
-                
+              
               </tbody>
             </table>
             <div>

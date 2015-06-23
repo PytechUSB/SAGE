@@ -103,6 +103,20 @@
             <td></td>
             </tr>
             {% endif %}
+            {% if transaccion.obtener_tipo == "Cargo Especial" %}
+           <tr>
+            <td align="center">{{transaccion.fechaTransaccion}}</td> 
+            <td align="center">{{transaccion.id}}</td>
+              {% if transaccion.cancelacion != None %}
+              <td align="center">{{transaccion.obtener_string}} | Id de Cancelacion: {{transaccion.cancelacion.id}} </td>
+              {% endif %}
+              {% if transaccion.pago_movido != None %}
+              <td align="center">{{transaccion.obtener_string}} | Id de Pago Movido: {{transaccion.pago_movido.id}} </td>
+              {% endif %}
+            <td></td>
+            <td align="center">-{{transaccion.monto|floatformat:2|intcomma }}</td>
+            </tr>
+            {% endif %}
            {% endfor %}
            <tr>
            <td colspan="3"></td>
@@ -184,6 +198,10 @@
 	              id="id_volver"
 	              class="btn btn-primary"
                  >
+                 <a href="/estacionamientos/{{ billetera.id }}/cambio_pin" onClick="return popup(this, 'Cambio PIN')">
+              <button class="btn btn-primary">
+                Cambiar PIN
+              </button> </a>
           <p></p>
             </div>
      </div>
@@ -199,6 +217,7 @@
         
         
                 $('#id_mensaje').css("display", "none");
+                
         
            if({{billetera.saldo}} == 0){
                 $('#id_mensaje').css("display", "block");
