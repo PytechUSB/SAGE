@@ -58,6 +58,7 @@ class Estacionamiento(models.Model):
 
 	#Horizonte de reservación medido en horas
 	horizonte    = models.IntegerField(blank = True, default=168) # 7 dias
+	
 	#retorna la capacidd del estacionamiento segun el tipo de vehiculo
 	def obtenerCapacidad(self, tipoDeVehiculo):
 		puestos = 0
@@ -71,14 +72,13 @@ class Estacionamiento(models.Model):
 			puestos  = self.capacidad_D
 		return puestos
 	
+	# Devuelve la suma de la capacidad del estacionamiento para cada tipo de vehiculo
 	def capacidadTotal(self):
 		return (self.capacidad + self.capacidad_M + self.capacidad_C + self.capacidad_D)
 	
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
 
-# clase billetera con los datos necesario para crearla
-# faltan los credito y debitos
 
 class BilleteraElectronica (models.Model):
 	nombre = models.CharField(max_length = 30, help_text = "Nombre Propio")
@@ -91,6 +91,7 @@ class BilleteraElectronica (models.Model):
 	def __str__(self):
 		return str(self.id)
 	
+	# Valida el cambio de PIN de una billetera
 	def validar_cambio_pin(self, pin, nuevo_pin1, nuevo_pin2):
 		if self.PIN == pin:
 			if nuevo_pin1 == nuevo_pin2:
@@ -100,18 +101,20 @@ class BilleteraElectronica (models.Model):
 		else:
 			return (False, 'Autenticacion denegada intentelo de nuevo')
 	
+	# Cambia el PIN de la billetera
 	def cambiar_pin(self, pin, nuevo_pin1, nuevo_pin2):
 		if self.validar_cambio_pin(pin, nuevo_pin1, nuevo_pin2)[0]:
 			self.PIN = nuevo_pin1
 			self.save()
 		
-	
+	# Recarga un monto determinado al saldo de la billetera
 	def recargar_saldo(self, monto):
 		if self.validar_recarga(monto):
 			self.saldo += Decimal(monto)
 			self.saldo = Decimal(self.saldo).quantize(Decimal('.01'), rounding = ROUND_DOWN)
 			self.save()
-		
+	
+	# Valida que la recarga sea valida	
 	def validar_recarga(self, monto):
 		try:
 			if (((self.saldo + Decimal(monto)) <= SMAX) and (monto > 0)):
@@ -121,6 +124,7 @@ class BilleteraElectronica (models.Model):
 		
 		return False
 	
+	# Valida que el monto del consumo no sobrepase el saldo y que no sea negativo
 	def validar_consumo(self, monto):
 		try:
 			if ((self.saldo >= Decimal(monto)) and (monto >= 0)):
@@ -130,21 +134,24 @@ class BilleteraElectronica (models.Model):
 		
 		return False
 	
+	# Disminuye el saldo de una billetera en un monto dado
 	def consumir_saldo(self, monto):
 		if self.validar_consumo(monto):
 			self.saldo -= Decimal(monto)
 			self.saldo = Decimal(self.saldo).quantize(Decimal('.01'), rounding = ROUND_DOWN)
 			self.save()
-			
+
+# Manejador para construir la unica instancia de la clase AdministracionSage 			
 class AdministracionSageManager(models.Manager):
 	def create_AdministracionSage(self, porcentaje = 0):
 		if len(AdministracionSage.objects.all()) < 1:
 			administracionSage = self.create(id = 1, porcentaje = Decimal(porcentaje))
 			administracionSage.save()
 	
-			
+# Clase de la administracion de SAGE			
 class AdministracionSage(models.Model):
 	id 	       = models.IntegerField(primary_key = True)
+	# Porcentaje de cobro por operaciones especiales
 	porcentaje = models.DecimalField(max_digits = 3, decimal_places = 1, default= Decimal(0))
 	
 	objects = AdministracionSageManager()
@@ -152,11 +159,13 @@ class AdministracionSage(models.Model):
 	def __str__(self):
 		return str(self.id) + ' ' + str(self.porcentaje)
 	
+	# Cambia el porcentaje de tasa de cobro por operaciones especiales
 	def cambiar_porcentaje(self, porcentaje):
 		if porcentaje >= 0 and porcentaje <= Decimal('9.9'):
 			self.porcentaje = porcentaje
 			self.save()
 	
+	# Calcula el monto a pagar por realizar una operacion especial
 	def calcular_monto(self, monto_pago):
 		monto_debitar = Decimal((self.porcentaje * monto_pago)/100).quantize(Decimal('.01'))
 		return  monto_debitar			
@@ -200,24 +209,31 @@ class Pago(models.Model):
 	def __str__(self):
 		return str(self.id)+" "+str(self.reserva.estacionamiento.nombre)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
 	
+	# Cancela una reserva o factura dada
 	def cancelar_reserva(self):
 		self.cancelado = True
 		self.save()
-		
+	
+	# Asigna True al atributo cancelado y movido de un pago	
 	def fue_movido(self):
 		self.cancelado = True
 		self.fueMovido = True
 		self.save() 
-		
+	
+	# Devuelve la descripcion de una factura	
 	def obtener_string(self):
 		if self.facturaMovida != None:	
 			return "Reserva Movida"
 		
 		return "Reservacion"
 	
+	# Devuelve el tipo
 	def obtener_tipo(self):
 		return "Pago"
 	
+	# Devuelve el monto de la factura dependiendo de su estado actual
+	# puede ser el monto completo o si se trata de una factura movida
+	# se devuelve el monto menos el monto de la original
 	def obtener_monto(self):
 		if self.facturaMovida != None:
 			if self.facturaMovida.monto <= self.monto:
@@ -225,13 +241,15 @@ class Pago(models.Model):
 			else: return 0
 		
 		return self.monto
-		
+	
+	# Valida la cancelacion de una factura	
 	def validar_cancelacion(self, tiempo):
 		if ((tiempo < self.reserva.inicioReserva) and (not self.cancelado)):
 			return True
 		
 		return False
 
+	# Determina si una factura que ha sido movid se pago inicialmente con una billetera electronica
 	def factura_inicial_pagada_billetera(self):
 		aux = self
 		while(aux.facturaMovida != None):
@@ -242,6 +260,7 @@ class Pago(models.Model):
 		
 		else:
 			return True
+
 
 class Recargas(models.Model):
 	id				 = models.IntegerField(primary_key = True)
@@ -256,9 +275,11 @@ class Recargas(models.Model):
 	def __str__(self):
 		return str(self.id)+" "+str(self.billetera.id)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
 	
+	# Devuelve la descripcion del objeto
 	def obtener_string(self):
 		return "Recarga"
 	
+	# Devuelve los ultimos 4 numeros de la tarjeta con la que se pago la recarga
 	def ultimos_numeros(self):
 		arreglo = list(self.numTarjeta)
 		resultado = ""
@@ -279,15 +300,18 @@ class Cancelaciones(models.Model):
 	def __str__(self):
 		return str(self.id)+" "+str(self.pagoCancelado.id) + " " + str(self.fechaTransaccion)
 	
+	# Devuelve la descripcion del objeto
 	def obtener_string(self):
 		if self.pagoCancelado.fueMovido:
 			return "Recarga Reserva Movida"
 		
 		return "Cancelacion"
 	
+	# Devuelve el tipo del objeto
 	def obtener_tipo(self):
 		return "Cancelacion"
 
+# Facturas de los pagos por concepto de realizacion de operaciones mover y cancelar reserva
 class PagoOperacionesEspeciales(models.Model):
 	id 						= models.IntegerField(primary_key = True)
 	monto 					= models.DecimalField(decimal_places = 2, max_digits = 256)
@@ -299,6 +323,7 @@ class PagoOperacionesEspeciales(models.Model):
 	def __str__(self):
 		return str(self.id)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
 	
+	# Devuelve la descripcion del objeto
 	def obtener_string(self):
 		if self.cancelacion != None:
 			return "Cargo por Cancelacion"
@@ -308,6 +333,7 @@ class PagoOperacionesEspeciales(models.Model):
 		
 		return "Cargo por Operacion Especial"
 	
+	# Devuelve el tipo del objeto
 	def obtener_tipo(self):
 		return "Cargo Especial"
 
