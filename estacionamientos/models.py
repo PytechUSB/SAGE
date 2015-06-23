@@ -153,7 +153,7 @@ class AdministracionSage(models.Model):
 		return str(self.id) + ' ' + str(self.porcentaje)
 	
 	def cambiar_porcentaje(self, porcentaje):
-		if porcentaje > 0 and porcentaje <= Decimal('9.9'):
+		if porcentaje >= 0 and porcentaje <= Decimal('9.9'):
 			self.porcentaje = porcentaje
 			self.save()
 	
@@ -210,7 +210,7 @@ class Pago(models.Model):
 		self.save() 
 		
 	def obtener_string(self):
-		if self.fueMovido:	
+		if self.facturaMovida != None:	
 			return "Reserva Movida"
 		
 		return "Reservacion"
