@@ -404,6 +404,7 @@ def estacionamiento_tarifa_especial(request, _id):
     except ObjectDoesNotExist:
         raise Http404
     if request.method == 'GET':
+        mensaje=""
         #Extraemos la data de cada forma desde los esquemas tarifarios de estacionamiento
         form_data = {
             'Particulares_tarifa'   : estacionamiento.tarifa.tarifa,
@@ -466,6 +467,8 @@ def estacionamiento_tarifa_especial(request, _id):
             formFeriadosMotos = TarifasForm(request.POST,prefix='FeriadosMotos')
             formFeriadosCamiones=TarifasForm(request.POST,prefix='FeriadosCamiones')
             formFeriadosDisc=TarifasForm(request.POST,prefix='FeriadosDiscapacitados')
+            mensaje=""
+            errorFeriados=False
             
             #Si son válidas extraemos las tarifas regulares y feriadas
             if formMotos.is_valid():
@@ -480,7 +483,7 @@ def estacionamiento_tarifa_especial(request, _id):
             if formDisc.is_valid():
                 estacionamiento.tarifa.tarifa_D        = formDisc.cleaned_data['tarifa']
                 estacionamiento.tarifa.tarifa2_D       = formDisc.cleaned_data['tarifa2']
-                
+            
             if estacionamiento.tarifaFeriados:
                 if formFeriadosParticulares.is_valid():
                     estacionamiento.tarifaFeriados.tarifa          = formFeriadosParticulares.cleaned_data['tarifa']
@@ -494,10 +497,22 @@ def estacionamiento_tarifa_especial(request, _id):
                 if formFeriadosDisc.is_valid():
                     estacionamiento.tarifaFeriados.tarifa_D        = formFeriadosDisc.cleaned_data['tarifa']
                     estacionamiento.tarifaFeriados.tarifa2_D       = formFeriadosDisc.cleaned_data['tarifa2']
-                estacionamiento.tarifaFeriados.save()
-            estacionamiento.tarifa.save()
-            estacionamiento.save()
-                   
+                if ((formFeriadosParticulares.errors and estacionamiento.capacidad)     or 
+                        (formFeriadosCamiones.errors and estacionamiento.capacidad_C)   or 
+                        (formFeriadosMotos.errors and estacionamiento.capacidad_M)      or
+                        (formFeriadosDisc.errors and estacionamiento.capacidad_D)): 
+                    errorFeriados=True
+                else: estacionamiento.tarifaFeriados.save() #Solo si no hay error guardamos los datos
+            print(formParticulares.errors)
+            # De morgan poderoso
+            if not(errorFeriados or ((formParticulares.errors and estacionamiento.capacidad) 
+                                        or (formCamiones.errors and estacionamiento.capacidad_C)
+                                        or (formMotos.errors and estacionamiento.capacidad_M)
+                                        or (formDisc.errors and estacionamiento.capacidad_D))): 
+                mensaje="Se han cambiado las tarifas exitosamente"
+                estacionamiento.tarifa.save()
+                estacionamiento.save() #Solo si no hay error guardamos los datos
+            
     return render(
                     request,
                     'tarifas-especiales.html',
@@ -511,6 +526,7 @@ def estacionamiento_tarifa_especial(request, _id):
                     , 'formFeriadosMotos'       : formFeriadosMotos
                     , 'formFeriadosDisc'        : formFeriadosDisc
                     , 'ocultarParametros'       : True
+                    , 'mensaje'                 : mensaje
                     }
                 )
  
