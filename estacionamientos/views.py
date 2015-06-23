@@ -988,6 +988,16 @@ def tasa_de_reservacion(request, _id):
             }
         )
         
+    puestos = []
+    if estacionamiento.capacidad > 0 :
+        puestos.append("car")
+    if estacionamiento.capacidad_M > 0 :
+        puestos.append("motorcycle")
+    if estacionamiento.capacidad_D > 0 :
+        puestos.append("wheelchair")
+    if estacionamiento.capacidad_C > 0 :
+        puestos.append("truck")
+        
     vehiculos = ['Todos', 'Particular', 'Moto', 'Camion', 'Discapacitado']
     datos_ocupacion = []
     for vehiculoTipo in vehiculos:
@@ -1005,7 +1015,8 @@ def tasa_de_reservacion(request, _id):
         request,
         'tasa-reservacion.html',
         { "ocupacion" : ocupacion
-        , "datos_ocupacion": datos_ocupacion[0]
+        , "datos_ocupacion": datos_ocupacion
+        , "puestos": puestos
         }
     )
 

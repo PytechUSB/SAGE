@@ -1,3 +1,14 @@
+<div class="control-group" >
+ <div class="controls" align="center">
+ <b>Tipo de gráfica:</b><br>
+ <tr> 
+    <td><i class="fa fa-rocket"></i><input type="radio" name="tipografica" value="todos" checked="checked"/>&nbsp &nbsp </td>
+    {% for choice in puestos %} 
+   <td><i class="fa fa-{{ choice }}"></i><input type="radio" name="tipografica" value="{{ choice }}"/>&nbsp &nbsp </td>
+     {% endfor %}
+ </tr>
+ </div>
+</div>
 <table class="table table-striped">
   <thead>
 	<tr>
