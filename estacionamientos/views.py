@@ -1000,22 +1000,26 @@ def tasa_de_reservacion(request, _id):
         
     vehiculos = ['Todos', 'Particular', 'Moto', 'Camion', 'Discapacitado']
     datos_ocupacion = []
+    ocupacion = []
+    i = 0
     for vehiculoTipo in vehiculos:
         if vehiculoTipo == 'Todos':
-            ocupacion = (tasa_reservaciones(_id))
+            ocupacion.append((tasa_reservaciones(_id)))
             capacidad = estacionamiento.capacidadTotal()
                 
         else:
-            ocupacion = tasa_reservaciones(_id, vehiculoTipo = vehiculoTipo)
+            ocupacion.append(tasa_reservaciones(_id, vehiculoTipo = vehiculoTipo))
             capacidad = estacionamiento.obtenerCapacidad(vehiculoTipo)
             
-        calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, capacidad, ocupacion)
-        datos_ocupacion.append(urlencode(ocupacion)) # Se convierten los datos del diccionario en el formato key1=value1&key2=value2&...
+        calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, capacidad, ocupacion[i])
+        datos_ocupacion.append(urlencode(ocupacion[i])) # Se convierten los datos del diccionario en el formato key1=value1&key2=value2&...
+        i += 1
+    
     return render(
         request,
         'tasa-reservacion.html',
-        { "ocupacion" : ocupacion
-        , "datos_ocupacion": datos_ocupacion
+        { "ocupacion" : ocupacion[0]
+        , "datos_ocupacion": datos_ocupacion[0]
         , "puestos": puestos
         }
     )
