@@ -5,7 +5,7 @@ from django.forms.widgets import SplitDateTimeWidget
 from estacionamientos.models import Propietario
 
 # Límites para los campos  
-MAXNOMBRE=100
+MAXNOMBRE=100 
 MAXRIF=11
 MAXCEDULA=10
 MAXTELEFONO=11
@@ -15,7 +15,8 @@ MAXPIN=4
 MAXID=4
 MAXMONTO=7
 MAXDECIMALS = 2
-SMAX = 10000
+# Saldo maximo permitido de la Billetera Electronica
+SMAX = 10000 
 
 class CustomSplitDateTimeWidget(SplitDateTimeWidget):
 
