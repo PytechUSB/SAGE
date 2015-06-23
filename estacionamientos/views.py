@@ -126,6 +126,7 @@ def propietario_all(request):
         }
     )
 
+# Vista para editar los datos del propietario
 def propietario_edit(request, _id):
     estacionamientos = Estacionamiento.objects.all()
     _id = int(_id)
@@ -226,6 +227,7 @@ def estacionamientos_all(request):
         }
     )
 
+# Vista para procesar los detalles del estacionamiento
 def estacionamiento_detail(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
@@ -396,6 +398,7 @@ def estacionamiento_detail(request, _id):
         }
     )
 
+# Vista que procesa las tarifas especiales
 def estacionamiento_tarifa_especial(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
@@ -530,7 +533,7 @@ def estacionamiento_tarifa_especial(request, _id):
                     }
                 )
  
-
+# Vista para procesar las ediciones a los datos de un estacionamiento
 def estacionamiento_edit(request, _id):
     # estacionamientos = Estacionamiento.objects.all()
     _id = int(_id)
@@ -577,6 +580,7 @@ def estacionamiento_edit(request, _id):
         }
     )
 
+# Vista que procesa y valida las reservas
 def estacionamiento_reserva(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
@@ -674,6 +678,7 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
+# Metodo auxiliar que permite reutilizar el codigo de generacion de facturas de pago
 def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaReservaMovida = None):
     inicioReserva = datetime(
         year   = request.session['anioinicial'],
@@ -753,7 +758,7 @@ def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaRese
              
     return pago
 
-
+# Vista que permite procesar los pagos de reservas
 def estacionamiento_pago(request, _id):
     form = PagoForm()
     
@@ -769,9 +774,11 @@ def estacionamiento_pago(request, _id):
         form = PagoForm(request.POST)
         if form.is_valid():
             monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+            # Si el metodo de pago es billetera electronica
             if (form.cleaned_data['tarjetaTipo'] == 'Billetera Electronica'):
                 billeteraE = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
                 
+                # Si no existe una billetera o el pin no concuerda
                 if (billeteraE == None):
                     return render(
                         request, 'mensaje.html',
@@ -781,6 +788,7 @@ def estacionamiento_pago(request, _id):
                     )
                     
                 else:
+                    # Si no hay saldo suficiente o el monto es menor que cero
                     if(not billeteraE.validar_consumo(monto)):
                         return render(
                             request, 'mensaje.html',
@@ -788,7 +796,8 @@ def estacionamiento_pago(request, _id):
                             , 'mensaje' : 'Saldo Insuficiente'
                             }
                         ) 
-                        
+                    
+                    # Si la operacion es valida    
                     else:
                         pago = pago_reserva_aux(
                             request, 
@@ -798,6 +807,7 @@ def estacionamiento_pago(request, _id):
                         )
                         pago.save()
                         billeteraE.consumir_saldo(monto)
+                        
                         if (billeteraE.saldo == 0):
                             return render(
                                 request,
@@ -825,6 +835,7 @@ def estacionamiento_pago(request, _id):
             
             
             else:
+                # Si el metodo de pago es tarjeta de credito
                 pago = pago_reserva_aux(
                             request,
                             monto, 
@@ -848,7 +859,8 @@ def estacionamiento_pago(request, _id):
         'pago.html',
         { 'form' : form }
     )
-
+    
+# Vista para procesar la consulta de ingresos de un estacionamiento
 def estacionamiento_ingreso(request):
     form = RifForm()
     if request.method == 'POST':
@@ -873,6 +885,7 @@ def estacionamiento_ingreso(request):
         { "form" : form }
     )
 
+# Vista para procesar las consultas a reservas 
 def estacionamiento_consulta_reserva(request):
     form = CedulaForm()
     if request.method == 'POST':
@@ -958,7 +971,8 @@ def receive_sms(request):
         return HttpResponse(m_validado[1])
     
     return HttpResponse('')
-    
+
+# Vista para procesar el porcentaje y grafica de ocupacion del estacionamiento    
 def tasa_de_reservacion(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
@@ -985,6 +999,7 @@ def tasa_de_reservacion(request, _id):
         }
     )
 
+# Vista para procesar la grafica de ocupacion del estacionamiento
 def grafica_tasa_de_reservacion(request):
     
     # Recuperacion del diccionario para crear el grafico
@@ -1012,7 +1027,7 @@ def grafica_tasa_de_reservacion(request):
     
     return response
 
-# vista para procesar los datos de la billetera
+# Vista para procesar la creacion de la billetera
 def billetera_all(request):
     billetera = BilleteraElectronica.objects.all()
     
@@ -1067,7 +1082,7 @@ def billetera_all(request):
         }
     )
    
-# vista para mostar los datos de la billetera
+# Vista para mostar los datos de la billetera
 def billetera_datos(request):
     form = BilleteraForm()
     formAuth = authBilleteraForm()
@@ -1110,7 +1125,7 @@ def billetera_datos(request):
                 }
             )
     
-# vista para mostar los datos de la billetera
+# Vista que procesa las recargas a la billetera
 def billetera_recarga(request, _id):
     _id = int(_id)
     try:
@@ -1177,7 +1192,8 @@ def billetera_recarga(request, _id):
         { 'form': form
         }
     )
-    
+
+# Vista que valida que la reserva exista y este registrada bajo la cedula introducida    
 def validar_reserva(request, link = ''):
     form = CancelaReservaForm()
     
@@ -1235,6 +1251,7 @@ def validar_reserva(request, link = ''):
           }
     )
     
+# Vista que valida la existencia de la billetera y que el pin introducido es el correcto  
 def validar_billetera(request, id_pago, link = ''):
     id_pago = int(id_pago)
     
@@ -1280,7 +1297,8 @@ def validar_billetera(request, id_pago, link = ''):
         {'form' : form
         }
     )         
-    
+
+# Vista para procesar las cancelaciones de reservas    
 def cancelar_reserva(request, id_pago, id_billetera):
     id_pago = int(id_pago)
     id_billetera = int(id_billetera)
@@ -1367,6 +1385,7 @@ def cancelar_reserva(request, id_pago, id_billetera):
             }
         )
 
+# Vista que procesa las operaciones especiales de mover reserva
 def mover_reserva(request, id_pago):
     id_pago = int(id_pago)
     
@@ -1500,6 +1519,7 @@ def mover_reserva(request, id_pago):
         }
     )
     
+# Vista que procesa las recargas generadas por mover una reserva a un horario mas economico    
 def recarga_mover(request, id_pago, id_billetera):
     id_pago = int(id_pago)
     id_billetera = int(id_billetera)
@@ -1554,7 +1574,8 @@ def recarga_mover(request, id_pago, id_billetera):
         , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
         }
     )
-    
+
+# Vista que procesa los pagos por mover reservas a horarios de costo igual o mayor al anterior    
 def pago_mover(request, id_pago):
     idFacturaReservaMovida = int(id_pago)
     
@@ -1715,7 +1736,8 @@ def pago_mover(request, id_pago):
         'pago.html',
         { 'form' : form }
     )
-    
+
+# Vista que procesa la modificacion de los datos de la administracion sage    
 def administrar_sage(request):
     administracion = AdministracionSage.objects.get(pk = 1)
     form = AdministrarSAGEForm()
@@ -1753,7 +1775,8 @@ def administrar_sage(request):
         , 'form' : form 
         }
     )
-    
+
+# Vista que procesa el cambio del PIN de una billetera    
 def cambio_pin(request, _id):
     _id = int(_id)
     try:
