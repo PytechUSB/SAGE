@@ -1585,7 +1585,7 @@ def pago_mover(request, id_pago):
         
         return render(
             request,
-            'pago-mover.html',
+            'pago.html',
             { 'pago'    : pago_movido
             , 'id_pago_anterior' : id_pago
             , 'monto_debitar' : monto_debitar
@@ -1649,7 +1649,7 @@ def pago_mover(request, id_pago):
                         if (billeteraE.saldo == 0):
                             return render(
                                 request,
-                                'pago-mover.html',
+                                'pago.html',
                                 { 'pago'    : pago_movido
                                 , 'id_pago_anterior' : id_pago
                                 , 'monto_debitar' : monto_debitar
@@ -1664,7 +1664,7 @@ def pago_mover(request, id_pago):
                         else:
                             return render(
                                 request,
-                                'pago-mover.html',
+                                'pago.html',
                                 { 'pago'    : pago_movido
                                 , 'id_pago_anterior' : id_pago
                                 , 'monto_debitar' : monto_debitar
@@ -1700,7 +1700,7 @@ def pago_mover(request, id_pago):
                 
                 return render(
                     request,
-                    'pago-mover.html',
+                    'pago.html',
                     { 'pago'    : pago_movido
                     , 'id_pago_anterior' : id_pago
                     , 'monto_debitar' : monto_debitar
@@ -1712,7 +1712,7 @@ def pago_mover(request, id_pago):
 
     return render(
         request,
-        'pago-mover.html',
+        'pago.html',
         { 'form' : form }
     )
     
