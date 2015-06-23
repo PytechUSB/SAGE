@@ -1544,7 +1544,7 @@ def recarga_mover(request, id_pago, id_billetera):
     
     return render(
         request,
-        'pago-mover.html',
+        'pago.html',
         { 'pago'    : pago_movido
         , 'id_billetera' : id_billetera
         , 'id_pago_anterior' : id_pago
