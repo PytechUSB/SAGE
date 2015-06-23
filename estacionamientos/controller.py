@@ -10,10 +10,11 @@ from estacionamientos.models import (
 	PagoOperacionesEspeciales
 )
 
-# chequeo de horarios de extended
+# Chequeo de horarios de extended
 def HorarioEstacionamiento(HoraInicio, HoraFin):
 	return HoraFin > HoraInicio
 
+# Validacion de la hora y fecha de la reserva
 def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre, horizonte = 168):
 	inicioReserva=inicioReserva.replace(second=0,microsecond=0)
 	finReserva=finReserva.replace(second=0,microsecond=0)
@@ -49,7 +50,7 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre, horizonte
 			return (False, 'No puede haber reservas entre dos dias distintos')
 		return (True,'')
 	
-
+# Validacion de la hora y fecha de la nueva reserva movida
 def validarHorarioReservaMover(inicioReserva, finReserva, apertura, cierre, horizonte = 168):
 	inicioReserva=inicioReserva.replace(second=0,microsecond=0)
 	finReserva=finReserva.replace(second=0,microsecond=0)
@@ -89,7 +90,7 @@ def validarHorarioReservaMover(inicioReserva, finReserva, apertura, cierre, hori
 		return (True,'')
 
 
-	
+# Calcula el porcentaje de la reserva que queda dentro del horizonte cuando se aplica mover	
 def porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte):
 	total_reserva = (finReserva - inicioReserva).total_seconds()
 	horizonte = datetime.now().replace(second = 0, microsecond = 0) + timedelta(hours = horizonte)
@@ -105,7 +106,7 @@ def porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte):
 	else:
 		return 0
 	
-
+# Calcula el monto de una reserva
 def calcularMonto(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular'):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
 	monto  = 0
@@ -129,6 +130,7 @@ def calcularMonto(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular'):
 			final += timedelta(days=1)
 	return monto
 
+# Determina si hay o no puestos disponibles en un estacionamiento y a una fecha y hora dada
 def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular', idReservaMovida = None):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
 	ocupacion = []
@@ -151,6 +153,7 @@ def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular', idReserv
 			return False
 	return True
 
+
 def get_client_ip(request):
 	x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
 	if x_forwarded_for:
@@ -159,6 +162,7 @@ def get_client_ip(request):
 		ip = request.META.get('REMOTE_ADDR')
 	return ip
 
+# Calcula la tasa de reservaciones
 def tasa_reservaciones(id_estacionamiento,prt=False):
 	e = Estacionamiento.objects.get(id = id_estacionamiento)
 	ahora = datetime.today().replace(hour=0,minute=0,second=0,microsecond=0)
@@ -195,6 +199,7 @@ def tasa_reservaciones(id_estacionamiento,prt=False):
 			ocupacion_por_dia [reserva_inicio.date()] = longitud_reserva.seconds/60 + longitud_reserva.days*24*60
 	return ocupacion_por_dia
 
+# Calcula el porcentaje de ocupacion de un estacionamiento
 def calcular_porcentaje_de_tasa(hora_apertura,hora_cierre, capacidad, ocupacion):
 	factor_divisor=timedelta(hours=hora_cierre.hour,minutes=hora_cierre.minute)
 	factor_divisor-=timedelta(hours=hora_apertura.hour,minutes=hora_apertura.minute)
@@ -203,7 +208,8 @@ def calcular_porcentaje_de_tasa(hora_apertura,hora_cierre, capacidad, ocupacion)
 		factor_divisor+=1 # Se le suma un minuto
 	for i in ocupacion.keys():
 		ocupacion[i]=(Decimal(ocupacion[i])*100/(factor_divisor*capacidad)).quantize(Decimal('1.0'))
-		
+
+# Calcula los ingresos de un estacionamiento dado		
 def consultar_ingresos(rif):
 	listaEstacionamientos = Estacionamiento.objects.filter(rif = rif)
 	ingresoTotal = 0
@@ -222,6 +228,7 @@ def consultar_ingresos(rif):
 		
 	return listaIngresos, ingresoTotal
 
+# Valida que en la base de datos haya una billetera con identificador y PIN dados
 def billetera_autenticar(identificador, PIN):
 	try:
 		billetera = BilleteraElectronica.objects.get(pk = identificador)
@@ -231,7 +238,8 @@ def billetera_autenticar(identificador, PIN):
 		
 	except(Exception):
 		return None
-	
+
+# Valida la existencia de un pago y si la cedula corresponde con la registrada	
 def pago_autenticar(identificador, cedulaTipo, cedula):
 	try:
 		pago = Pago.objects.get(pk = identificador)
@@ -241,6 +249,7 @@ def pago_autenticar(identificador, cedulaTipo, cedula):
 	except:
 		return None
 	
+# Genera el id de cada una de las facturas del sistema	
 def asigna_id_unico():
 	num_pagos_reservas = len(Pago.objects.all())
 	num_recargas = len(Recargas.objects.all())
@@ -248,6 +257,7 @@ def asigna_id_unico():
 	num_opEspeciales = len(PagoOperacionesEspeciales.objects.all())
 	return (1 + num_pagos_reservas + num_recargas + num_cancelaciones + num_opEspeciales)
 
+# Busca las operaciones asociadas a una billetera dada
 def buscar_historial_billetera(identificador):
 	historial = []
 	lista_recargas = Recargas.objects.filter(billetera = identificador)
