@@ -250,31 +250,19 @@ class EsquemaTarifario(models.Model):
     tarifa_D         = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2, default=Decimal('0.00'))
     tarifa2_D        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2, default=Decimal('0.00'))
 
-    #devuelve las tarifas regulares segun el tipo de vehiculo
-    def obtenerTarifa1(self, tipoDeVehiculo):
+    #devuelve las tarifas regulares segun el tipo de vehiculo y el tipo de tarifa: tarifa, tarifa2
+    def obtenerTarifa(self, tipo, tipoDeVehiculo):
         tarifa  = 0
+        # Utilizamos eval() para obtener la variable de clase respectiva y no repetir codigo. Ej: eval('self.tarifa_C').
         if tipoDeVehiculo == "Particular":
-            tarifa  = self.tarifa
+            tarifa  = eval('self.'+tipo)
         elif tipoDeVehiculo == "Moto":
-            tarifa  = self.tarifa_M
+            tarifa  = eval('self.'+tipo+'_M')
         elif tipoDeVehiculo == "Camion":
-            tarifa  = self.tarifa_C
+            tarifa  = eval('self.'+tipo+'_C')
         elif tipoDeVehiculo == "Discapacitado":
-            tarifa  = self.tarifa_D
+            tarifa  = eval('self.'+tipo+'_D')
         return tarifa 
-
-    #devuelve las tarifas segun el tipo de vehiculo
-    def obtenerTarifa2(self, tipoDeVehiculo):
-        tarifa2 = 0
-        if tipoDeVehiculo == "Particular":
-            tarifa2 = self.tarifa2
-        elif tipoDeVehiculo == "Moto":
-            tarifa2 = self.tarifa2_M
-        elif tipoDeVehiculo == "Camion":
-            tarifa2 = self.tarifa2_C
-        elif tipoDeVehiculo == "Discapacitado":
-            tarifa2 = self.tarifa2_D
-        return tarifa2
    
     class Meta:
         abstract = True
@@ -283,7 +271,7 @@ class EsquemaTarifario(models.Model):
 
 class TarifaHora(EsquemaTarifario):
     def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
-        tarifa = self.obtenerTarifa1(tipoDeVehiculo)
+        tarifa = self.obtenerTarifa('tarifa',tipoDeVehiculo)
         a = horaFinal-horaInicio
         a = a.days*24+a.seconds/3600
         a = ceil(a) #  De las horas se calcula el techo de ellas
@@ -294,7 +282,7 @@ class TarifaHora(EsquemaTarifario):
 
 class TarifaMinuto(EsquemaTarifario):
     def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
-        tarifa = self.obtenerTarifa1(tipoDeVehiculo)
+        tarifa = self.obtenerTarifa('tarifa',tipoDeVehiculo)
         minutes = horaFinal-horaInicio
         minutes = minutes.days*24*60+minutes.seconds/60
         return (Decimal(minutes)*Decimal(tarifa/60)).quantize(Decimal('1.00'))
@@ -303,7 +291,7 @@ class TarifaMinuto(EsquemaTarifario):
 
 class TarifaHorayFraccion(EsquemaTarifario):
     def calcularPrecio(self,horaInicio,horaFinal,tipoDeVehiculo):
-        tarifa = self.obtenerTarifa1(tipoDeVehiculo)
+        tarifa = self.obtenerTarifa('tarifa',tipoDeVehiculo)
         time = horaFinal-horaInicio
         time = time.days*24*3600+time.seconds
         if(time>3600):
@@ -323,8 +311,8 @@ class TarifaHorayFraccion(EsquemaTarifario):
 
 class TarifaFinDeSemana(EsquemaTarifario):
     def calcularPrecio(self,inicio,final,tipoDeVehiculo):
-        tarifa = self.obtenerTarifa1(tipoDeVehiculo)
-        tarifa2 = self.obtenerTarifa2(tipoDeVehiculo)
+        tarifa = self.obtenerTarifa('tarifa',tipoDeVehiculo)
+        tarifa2 = self.obtenerTarifa('tarifa2',tipoDeVehiculo)
         minutosNormales    = 0
         minutosFinDeSemana = 0
         tiempoActual       = inicio
@@ -351,8 +339,8 @@ class TarifaFinDeSemana(EsquemaTarifario):
 
 class TarifaHoraPico(EsquemaTarifario):
     def calcularPrecio(self,reservaInicio,reservaFinal,tipoDeVehiculo):
-        tarifa = self.obtenerTarifa1(tipoDeVehiculo)
-        tarifa2 = self.obtenerTarifa2(tipoDeVehiculo)
+        tarifa = self.obtenerTarifa('tarifa',tipoDeVehiculo)
+        tarifa2 = self.obtenerTarifa('tarifa2',tipoDeVehiculo)
         minutosPico  = 0
         minutosValle = 0
         tiempoActual = reservaInicio
