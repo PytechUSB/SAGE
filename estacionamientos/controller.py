@@ -163,13 +163,16 @@ def get_client_ip(request):
 	return ip
 
 # Calcula la tasa de reservaciones
-def tasa_reservaciones(id_estacionamiento,prt=False):
+def tasa_reservaciones(id_estacionamiento,prt = False, vehiculoTipo = None):
 	e = Estacionamiento.objects.get(id = id_estacionamiento)
 	ahora = datetime.today().replace(hour=0,minute=0,second=0,microsecond=0)
 	reservas_filtradas = e.reserva_set.filter(finalReserva__gt=ahora)
 	pagos_cancelados = Pago.objects.filter(cancelado = True)
 	for cancelados in pagos_cancelados:
 		reservas_filtradas = reservas_filtradas.exclude(id = cancelados.reserva.id)
+		
+	if vehiculoTipo != None:
+		reservas_filtradas = reservas_filtradas.filter(vehiculoTipo = vehiculoTipo)
 		
 	lista_fechas=[(ahora+timedelta(i)).date() for i in range(7)]
 	lista_valores=[0 for i in range(7)]
@@ -201,13 +204,18 @@ def tasa_reservaciones(id_estacionamiento,prt=False):
 
 # Calcula el porcentaje de ocupacion de un estacionamiento
 def calcular_porcentaje_de_tasa(hora_apertura,hora_cierre, capacidad, ocupacion):
-	factor_divisor=timedelta(hours=hora_cierre.hour,minutes=hora_cierre.minute)
-	factor_divisor-=timedelta(hours=hora_apertura.hour,minutes=hora_apertura.minute)
-	factor_divisor=Decimal(factor_divisor.seconds)/Decimal(60)
-	if (hora_apertura==time(0,0) and hora_cierre==time(23,59)):
-		factor_divisor+=1 # Se le suma un minuto
-	for i in ocupacion.keys():
-		ocupacion[i]=(Decimal(ocupacion[i])*100/(factor_divisor*capacidad)).quantize(Decimal('1.0'))
+	if capacidad > 0:
+		factor_divisor=timedelta(hours=hora_cierre.hour,minutes=hora_cierre.minute)
+		factor_divisor-=timedelta(hours=hora_apertura.hour,minutes=hora_apertura.minute)
+		factor_divisor=Decimal(factor_divisor.seconds)/Decimal(60)
+		if (hora_apertura==time(0,0) and hora_cierre==time(23,59)):
+			factor_divisor+=1 # Se le suma un minuto
+		for i in ocupacion.keys():
+			ocupacion[i]=(Decimal(ocupacion[i])*100/(factor_divisor*capacidad)).quantize(Decimal('1.0'))
+			
+	else:
+		for i in ocupacion.keys():
+			ocupacion[i] = 0
 
 # Calcula los ingresos de un estacionamiento dado		
 def consultar_ingresos(rif):

@@ -972,7 +972,7 @@ def receive_sms(request):
     
     return HttpResponse('')
 
-# Vista para procesar el porcentaje y grafica de ocupacion del estacionamiento    
+# Vista para procesar el porcentaje de ocupacion del estacionamiento    
 def tasa_de_reservacion(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
@@ -987,15 +987,26 @@ def tasa_de_reservacion(request, _id):
             , 'mensaje' : 'Se debe parametrizar el estacionamiento primero.'
             }
         )
-    ocupacion = tasa_reservaciones(_id)
-    capacidad_total = estacionamiento.capacidadTotal()
-    calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, capacidad_total, ocupacion)
-    datos_ocupacion = urlencode(ocupacion) # Se convierten los datos del diccionario en el formato key1=value1&key2=value2&...
+        
+    vehiculos = ['Todos', 'Particular', 'Moto', 'Camion', 'Discapacitado']
+    datos_ocupacion = []
+    for vehiculoTipo in vehiculos:
+        if vehiculoTipo == 'Todos':
+            ocupacion = tasa_reservaciones(_id)
+            capacidad = estacionamiento.capacidadTotal()
+                
+        else:
+            ocupacion = tasa_reservaciones(_id, vehiculoTipo = vehiculoTipo)
+            capacidad = estacionamiento.obtenerCapacidad(vehiculoTipo)
+            
+        calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, capacidad, ocupacion)
+        datos_ocupacion.append(urlencode(ocupacion)) # Se convierten los datos del diccionario en el formato key1=value1&key2=value2&...
+    
     return render(
         request,
         'tasa-reservacion.html',
         { "ocupacion" : ocupacion
-        , "datos_ocupacion": datos_ocupacion
+        , "datos_ocupacion": datos_ocupacion[0]
         }
     )
 
