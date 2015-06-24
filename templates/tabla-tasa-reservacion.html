@@ -1,6 +1,6 @@
 <div class="control-group" >
  <div class="controls" align="center">
- <b>Tipo de gráfica:</b><br>
+ <b>Tasa para tipo de vehiculo:</b><br>
  <tr>
  	<form id="grafica"> 
     {% for choice in puestos %} 
@@ -44,8 +44,7 @@
 	var inputs=document.getElementsByTagName("input");
 	var tasa=document.getElementsByTagName("graficotasa");
 	check[0].checked=true;
-	hideAll();
-	$('#rocket').show();
+	mostrar('rocket');
 	function hideAll() {
 		for (var i=0;i<inputs.length;i++) $('#'+inputs[i].value).hide();
 	};
@@ -53,7 +52,5 @@
 	function mostrar(tipo) {
 		hideAll();
 		$('#'+tipo).show();
-		$('#id_'+tipo).show();
 	};
- 
 </script>

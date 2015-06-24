@@ -12,15 +12,8 @@
     <div class="col-md-6">
       {% include "tabla-tasa-reservacion.html" %}
     </div>
-    <div class="col-md-6"> 
-    	{% for choice,datos in datos_ocupacion %} 
-			<span value="id_{{choice}}"> 
-				<img class="img-responsive" src="/estacionamientos/grafica/?{{ datos }}">
-			</span>
-		{% endfor %}
-		<p id="demo2">asd</p>
+    <div class="col-md-6">
+		<img class="img-responsive" src="/estacionamientos/grafica/?{{ datos_ocupacion }}">
     </div>
   </div>
 {% endblock %}
-<script type="text/javascript">
-</script>

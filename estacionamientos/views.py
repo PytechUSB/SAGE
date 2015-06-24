@@ -1015,12 +1015,12 @@ def tasa_de_reservacion(request, _id):
             calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, capacidad, ocupacion[i])
             datos_ocupacion.append(urlencode(ocupacion[i])) # Se convierten los datos del diccionario en el formato key1=value1&key2=value2&...
             i += 1
-    print(datos_ocupacion)
+    # NOTA: Se deja como deuda tecnica el mostrar todas las gráficas, se mostrará solo la de capacidad total.
     return render(
         request,
         'tasa-reservacion.html',
         { "zipPuestosOcupacion": zip(puestos,ocupacion)
-        , "datos_ocupacion": zip(puestos,datos_ocupacion)
+        , "datos_ocupacion": datos_ocupacion[0]
         , "puestos": puestos
         }
     )
