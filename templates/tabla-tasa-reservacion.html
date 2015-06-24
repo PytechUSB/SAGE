@@ -1,35 +1,53 @@
 <div class="control-group" >
  <div class="controls" align="center">
  <b>Tipo de gráfica:</b><br>
- <tr> 
-    <td><i class="fa fa-rocket"></i><input type="radio" name="tipografica" value="todos" checked="checked"/>&nbsp &nbsp </td>
+ <tr>
+ 	<form id="grafica"> 
     {% for choice in puestos %} 
-   <td><i class="fa fa-{{ choice }}"></i><input type="radio" name="tipografica" value="{{ choice }}"/>&nbsp &nbsp </td>
-     {% endfor %}
+  		<td>
+  			<i class="fa fa-{{ choice }}"></i>
+  			<input type="radio" name="tipo" id="myRadio" value="{{ choice }}" onClick="ocultarOtras('{{choice}}')"/>
+  		&nbsp &nbsp </td>
+    {% endfor %}
+    </form>
  </tr>
  </div>
 </div>
-<table class="table table-striped">
-  <thead>
-	<tr>
-	  <td>
-	    <b>Fecha</b>
-	  </td>
-	  <td>
-	    <b>Porcentaje</b>
-	  </td>
-	</tr>
-  </thead>
-  <tbody>
-    {% for key, value in ocupacion.items %} 
-      <tr>
-	    <td>
-  	      {{ key }}
-        </td>
-        <td>
-  	      {{ value }}%
-        </td>
-      </tr>
-  {% endfor %}
-  </tbody>
-</table>
+{% for choice,ocupacion in zipPuestosOcupacion %} 
+	<table id="{{ choice }}" class="table table-striped">
+	  <thead>
+		<tr>
+		  <td>
+		    <b>Fecha</b>
+		  </td>
+		  <td>
+		    <b>Porcentaje</b>
+		  </td>
+		</tr>
+	  </thead>
+	  <tbody>
+	    {% for key, value in ocupacion.items %} 
+	      <tr>
+		    <td>
+	  	      {{ key }}
+	        </td>
+	        <td>
+	  	      {{ value }}%
+	        </td>
+	      </tr>
+	  {% endfor %}
+	  </tbody>
+	</table>
+{% endfor %}
+<p id="demo"></p>
+<script type="text/javascript">
+	var check=document.getElementById("grafica");
+	var arreglopuestos = "{{puestos}}".replace("[", "").replace("]", "").split(",");
+	check[0].checked=true;
+	document.getElementById("demo").innerHTML = arreglopuestos[0];
+	ocultarOtras("todos");
+	function ocultarOtras(tipo){
+		var choice="";
+    };
+ 
+</script>

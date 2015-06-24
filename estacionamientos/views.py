@@ -1015,7 +1015,7 @@ def tasa_de_reservacion(request, _id):
             calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, capacidad, ocupacion[i])
             datos_ocupacion.append(urlencode(ocupacion[i])) # Se convierten los datos del diccionario en el formato key1=value1&key2=value2&...
             i += 1
-    print(ocupacion)    
+             
     return render(
         request,
         'tasa-reservacion.html',
