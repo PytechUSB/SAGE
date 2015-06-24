@@ -989,14 +989,15 @@ def tasa_de_reservacion(request, _id):
         )
         
     puestos = []
+    puestos.append("rocket")
     if estacionamiento.capacidad > 0 :
         puestos.append("car")
     if estacionamiento.capacidad_M > 0 :
         puestos.append("motorcycle")
-    if estacionamiento.capacidad_D > 0 :
-        puestos.append("wheelchair")
     if estacionamiento.capacidad_C > 0 :
         puestos.append("truck")
+    if estacionamiento.capacidad_D > 0 :
+        puestos.append("wheelchair")
         
     vehiculos = ['Todos', 'Particular', 'Moto', 'Camion', 'Discapacitado']
     datos_ocupacion = []
@@ -1008,17 +1009,17 @@ def tasa_de_reservacion(request, _id):
             capacidad = estacionamiento.capacidadTotal()
                 
         else:
-            ocupacion.append(tasa_reservaciones(_id, vehiculoTipo = vehiculoTipo))
             capacidad = estacionamiento.obtenerCapacidad(vehiculoTipo)
-            
-        calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, capacidad, ocupacion[i])
-        datos_ocupacion.append(urlencode(ocupacion[i])) # Se convierten los datos del diccionario en el formato key1=value1&key2=value2&...
-        i += 1
-    
+            if capacidad: ocupacion.append(tasa_reservaciones(_id, vehiculoTipo = vehiculoTipo))
+        if capacidad:   
+            calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, capacidad, ocupacion[i])
+            datos_ocupacion.append(urlencode(ocupacion[i])) # Se convierten los datos del diccionario en el formato key1=value1&key2=value2&...
+            i += 1
+    print(ocupacion)    
     return render(
         request,
         'tasa-reservacion.html',
-        { "ocupacion" : ocupacion[0]
+        { "zipPuestosOcupacion": zip(puestos,ocupacion)
         , "datos_ocupacion": datos_ocupacion[0]
         , "puestos": puestos
         }
