@@ -201,13 +201,18 @@ def tasa_reservaciones(id_estacionamiento,prt=False):
 
 # Calcula el porcentaje de ocupacion de un estacionamiento
 def calcular_porcentaje_de_tasa(hora_apertura,hora_cierre, capacidad, ocupacion):
-	factor_divisor=timedelta(hours=hora_cierre.hour,minutes=hora_cierre.minute)
-	factor_divisor-=timedelta(hours=hora_apertura.hour,minutes=hora_apertura.minute)
-	factor_divisor=Decimal(factor_divisor.seconds)/Decimal(60)
-	if (hora_apertura==time(0,0) and hora_cierre==time(23,59)):
-		factor_divisor+=1 # Se le suma un minuto
-	for i in ocupacion.keys():
-		ocupacion[i]=(Decimal(ocupacion[i])*100/(factor_divisor*capacidad)).quantize(Decimal('1.0'))
+	if capacidad > 0:
+		factor_divisor=timedelta(hours=hora_cierre.hour,minutes=hora_cierre.minute)
+		factor_divisor-=timedelta(hours=hora_apertura.hour,minutes=hora_apertura.minute)
+		factor_divisor=Decimal(factor_divisor.seconds)/Decimal(60)
+		if (hora_apertura==time(0,0) and hora_cierre==time(23,59)):
+			factor_divisor+=1 # Se le suma un minuto
+		for i in ocupacion.keys():
+			ocupacion[i]=(Decimal(ocupacion[i])*100/(factor_divisor*capacidad)).quantize(Decimal('1.0'))
+			
+	else:
+		for i in ocupacion.keys():
+			ocupacion[i] = 0
 
 # Calcula los ingresos de un estacionamiento dado		
 def consultar_ingresos(rif):
