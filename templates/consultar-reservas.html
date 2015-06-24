@@ -84,17 +84,29 @@
 	            </div>
               </div>
               <div class="control-group">
-                <label></label>
-                <div class="controls">
+                <div class="controls" align="center">
                   <button type="submit" class="btn btn-primary">
                     Continuar
                   </button>
                 </div>
               </div>
           </form>
-        </div>
+        </div>  
       </div>
-      <div class="control-group" align="center">
+     <div>
+    </div>
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <i class="glyphicon glyphicon-wrench pull-right"></i>
+            <h4>
+              Mover una Reserva
+            </h4>
+          </div>
+        </div>
+        <div class="panel-body"> 
+      	<div class="control-group" align="center">
       	<div class="controls">
         	<a href="/estacionamientos/validar_reserva/mover_reserva" onClick="return popup(this, 'Validar Reservacion')">
               <button type="submit" class="btn btn-primary">
@@ -102,9 +114,10 @@
               </button>
             </a>
          </div>
+        </div>
       </div>
-    </div>
   </div>
+  
 {% endblock %}
 
 {% block scripts %}

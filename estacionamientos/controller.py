@@ -2,28 +2,82 @@
 from datetime import datetime, timedelta, time
 from decimal import Decimal
 from collections import OrderedDict
-from estacionamientos.models import Propietario, Estacionamiento, Reserva, Pago, BilleteraElectronica, Recargas,Cancelaciones
+from estacionamientos.models import (
+	Estacionamiento, 
+	Pago, 
+	BilleteraElectronica, 
+	Recargas,Cancelaciones,
+	PagoOperacionesEspeciales
+)
 
-# chequeo de horarios de extended
+# Chequeo de horarios de extended
 def HorarioEstacionamiento(HoraInicio, HoraFin):
 	return HoraFin > HoraInicio
 
-def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre):
+# Validacion de la hora y fecha de la reserva
+def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre, horizonte = 168):
+	inicioReserva=inicioReserva.replace(second=0,microsecond=0)
+	finReserva=finReserva.replace(second=0,microsecond=0)
 	if inicioReserva >= finReserva:
 		return (False, 'El horario de inicio de reservacion debe ser menor al horario de fin de la reserva.')
 	if finReserva - inicioReserva < timedelta(hours=1):
 		return (False, 'El tiempo de reserva debe ser al menos de 1 hora.')
-	if inicioReserva < datetime.now():
+	if inicioReserva < datetime.now().replace(second=0,microsecond=0):
 		return (False, 'La reserva no puede tener lugar en el pasado.')
-	if finReserva.date() > (datetime.now()+timedelta(days=7)).date():
-		return (False, 'La reserva debe estar dentro de los próximos 7 días.')
+	
 	if apertura.hour==0 and apertura.minute==0 \
 		and cierre.hour==23 and cierre.minute==59:
-		seven_days=timedelta(days=7)
-		if finReserva-inicioReserva<=seven_days :
+		fifteen_days=timedelta(days=15)
+		if finReserva-inicioReserva<=fifteen_days:
+			if finReserva > datetime.now().replace(second=0,microsecond=0)+timedelta(hours=horizonte):
+				return (False, 'La reserva debe estar dentro del horizonte de reservacion.')
 			return (True,'')
+			
 		else:
-			return(False,'Se puede reservar un puesto por un maximo de 7 dias.')
+			return(False,'Se puede reservar un puesto por un maximo de 15 dias dependiendo horizonte de reservacion.')
+		
+	if finReserva > datetime.now().replace(second=0,microsecond=0)+timedelta(hours=horizonte):
+		return (False, 'La reserva debe estar dentro del horizonte de reservacion.')
+	
+	else:
+		hora_inicio = time(hour = inicioReserva.hour, minute = inicioReserva.minute)
+		hora_final  = time(hour = finReserva.hour   , minute = finReserva.minute)
+		if hora_inicio<apertura:
+			return (False, 'El horario de inicio de reserva debe estar en un horario válido.')
+		if hora_final > cierre:
+			return (False, 'El horario de fin de la reserva debe estar en un horario válido.')
+		if inicioReserva.date()!=finReserva.date():
+			return (False, 'No puede haber reservas entre dos dias distintos')
+		return (True,'')
+	
+# Validacion de la hora y fecha de la nueva reserva movida
+def validarHorarioReservaMover(inicioReserva, finReserva, apertura, cierre, horizonte = 168):
+	inicioReserva=inicioReserva.replace(second=0,microsecond=0)
+	finReserva=finReserva.replace(second=0,microsecond=0)
+	if inicioReserva >= finReserva:
+		return (False, 'El horario de inicio de reservacion debe ser menor al horario de fin de la reserva.')
+	if finReserva - inicioReserva < timedelta(hours=1):
+		return (False, 'El tiempo de reserva debe ser al menos de 1 hora.')
+	if inicioReserva < datetime.now().replace(second=0,microsecond=0):
+		return (False, 'La reserva no puede tener lugar en el pasado.')
+	
+	if apertura.hour==0 and apertura.minute==0 \
+		and cierre.hour==23 and cierre.minute==59:
+		fifteen_days=timedelta(days=15)
+		if finReserva-inicioReserva<=fifteen_days:
+			if (porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte) < 50 or 
+			   finReserva > datetime.now() + timedelta(days = 15)) :
+				return (False, 'Una mayor proporcion de la reserva debe estar dentro del horizonte de reservacion.')
+			return (True,'')
+		
+		else:
+			return(False,'Se puede reservar un puesto por un maximo de 15 dias dependiendo horizonte de reservacion.')
+		
+	if finReserva > datetime.now().replace(second=0,microsecond=0)+timedelta(hours=horizonte):
+		if (porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte) < 50  or 
+		   finReserva > datetime.now() + timedelta(days = 15)):
+			return (False, 'Una mayor proporcion de la reserva debe estar dentro del horizonte de reservacion.')
+	
 	else:
 		hora_inicio = time(hour = inicioReserva.hour, minute = inicioReserva.minute)
 		hora_final  = time(hour = finReserva.hour   , minute = finReserva.minute)
@@ -35,7 +89,25 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre):
 			return (False, 'No puede haber reservas entre dos dias distintos')
 		return (True,'')
 
-def calcularMonto(idEstacionamiento, hIn, hOut):
+
+# Calcula el porcentaje de la reserva que queda dentro del horizonte cuando se aplica mover	
+def porcentajeReservaDentroHorizonte(inicioReserva, finReserva, horizonte):
+	total_reserva = (finReserva - inicioReserva).total_seconds()
+	horizonte = datetime.now().replace(second = 0, microsecond = 0) + timedelta(hours = horizonte)
+	if inicioReserva < horizonte:
+		if finReserva > horizonte:
+			reservaEnHorizonte = (horizonte - inicioReserva).total_seconds()
+			porcentaje = Decimal(Decimal(reservaEnHorizonte * 100) / Decimal(total_reserva)).quantize(Decimal('1.0'))
+			return porcentaje
+		
+		else:
+			return 100
+	
+	else:
+		return 0
+	
+# Calcula el monto de una reserva
+def calcularMonto(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular'):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
 	monto  = 0
 	inicio = hIn
@@ -47,9 +119,9 @@ def calcularMonto(idEstacionamiento, hIn, hOut):
 	#calcula el monto segun el esquema y el dia
 	while inicio<hOut:
 		if(e.tarifaFeriados and (str(inicio.date()) in e.feriados)):
-			monto+=e.tarifaFeriados.calcularPrecio(inicio,final)
+			monto+=e.tarifaFeriados.calcularPrecio(inicio,final, tipoDeVehiculo)
 		else:
-			monto+=e.tarifa.calcularPrecio(inicio,final)
+			monto+=e.tarifa.calcularPrecio(inicio,final, tipoDeVehiculo)
 
 		inicio=final
 		if(final.date() == hOut.date()):
@@ -58,6 +130,7 @@ def calcularMonto(idEstacionamiento, hIn, hOut):
 			final += timedelta(days=1)
 	return monto
 
+# Determina si hay o no puestos disponibles en un estacionamiento y a una fecha y hora dada
 def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular', idReservaMovida = None):
 	e = Estacionamiento.objects.get(id = idEstacionamiento)
 	ocupacion = []
@@ -80,6 +153,7 @@ def marzullo(idEstacionamiento, hIn, hOut, tipoDeVehiculo='Particular', idReserv
 			return False
 	return True
 
+
 def get_client_ip(request):
 	x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
 	if x_forwarded_for:
@@ -88,6 +162,7 @@ def get_client_ip(request):
 		ip = request.META.get('REMOTE_ADDR')
 	return ip
 
+# Calcula la tasa de reservaciones
 def tasa_reservaciones(id_estacionamiento,prt=False):
 	e = Estacionamiento.objects.get(id = id_estacionamiento)
 	ahora = datetime.today().replace(hour=0,minute=0,second=0,microsecond=0)
@@ -112,7 +187,10 @@ def tasa_reservaciones(id_estacionamiento,prt=False):
 		while (reserva_final.date()>reserva_inicio.date()): 
 			final_aux+=UN_DIA
 			longitud_reserva = final_aux-reserva_inicio
-			ocupacion_por_dia[reserva_inicio.date()] += longitud_reserva.seconds/60+longitud_reserva.days*24*60
+			try:
+				ocupacion_por_dia[reserva_inicio.date()] += longitud_reserva.seconds/60 + longitud_reserva.days*24*60
+			except:
+				ocupacion_por_dia [reserva_inicio.date()] = longitud_reserva.seconds/60 + longitud_reserva.days*24*60
 			reserva_inicio = final_aux
 		longitud_reserva=reserva_final-reserva_inicio
 		try:
@@ -121,15 +199,22 @@ def tasa_reservaciones(id_estacionamiento,prt=False):
 			ocupacion_por_dia [reserva_inicio.date()] = longitud_reserva.seconds/60 + longitud_reserva.days*24*60
 	return ocupacion_por_dia
 
+# Calcula el porcentaje de ocupacion de un estacionamiento
 def calcular_porcentaje_de_tasa(hora_apertura,hora_cierre, capacidad, ocupacion):
-	factor_divisor=timedelta(hours=hora_cierre.hour,minutes=hora_cierre.minute)
-	factor_divisor-=timedelta(hours=hora_apertura.hour,minutes=hora_apertura.minute)
-	factor_divisor=Decimal(factor_divisor.seconds)/Decimal(60)
-	if (hora_apertura==time(0,0) and hora_cierre==time(23,59)):
-		factor_divisor+=1 # Se le suma un minuto
-	for i in ocupacion.keys():
-		ocupacion[i]=(Decimal(ocupacion[i])*100/(factor_divisor*capacidad)).quantize(Decimal('1.0'))
-		
+	if capacidad > 0:
+		factor_divisor=timedelta(hours=hora_cierre.hour,minutes=hora_cierre.minute)
+		factor_divisor-=timedelta(hours=hora_apertura.hour,minutes=hora_apertura.minute)
+		factor_divisor=Decimal(factor_divisor.seconds)/Decimal(60)
+		if (hora_apertura==time(0,0) and hora_cierre==time(23,59)):
+			factor_divisor+=1 # Se le suma un minuto
+		for i in ocupacion.keys():
+			ocupacion[i]=(Decimal(ocupacion[i])*100/(factor_divisor*capacidad)).quantize(Decimal('1.0'))
+			
+	else:
+		for i in ocupacion.keys():
+			ocupacion[i] = 0
+
+# Calcula los ingresos de un estacionamiento dado		
 def consultar_ingresos(rif):
 	listaEstacionamientos = Estacionamiento.objects.filter(rif = rif)
 	ingresoTotal = 0
@@ -148,6 +233,7 @@ def consultar_ingresos(rif):
 		
 	return listaIngresos, ingresoTotal
 
+# Valida que en la base de datos haya una billetera con identificador y PIN dados
 def billetera_autenticar(identificador, PIN):
 	try:
 		billetera = BilleteraElectronica.objects.get(pk = identificador)
@@ -157,7 +243,8 @@ def billetera_autenticar(identificador, PIN):
 		
 	except(Exception):
 		return None
-	
+
+# Valida la existencia de un pago y si la cedula corresponde con la registrada	
 def pago_autenticar(identificador, cedulaTipo, cedula):
 	try:
 		pago = Pago.objects.get(pk = identificador)
@@ -167,12 +254,15 @@ def pago_autenticar(identificador, cedulaTipo, cedula):
 	except:
 		return None
 	
+# Genera el id de cada una de las facturas del sistema	
 def asigna_id_unico():
 	num_pagos_reservas = len(Pago.objects.all())
 	num_recargas = len(Recargas.objects.all())
 	num_cancelaciones = len(Cancelaciones.objects.all())
-	return (1 + num_pagos_reservas + num_recargas + num_cancelaciones)
+	num_opEspeciales = len(PagoOperacionesEspeciales.objects.all())
+	return (1 + num_pagos_reservas + num_recargas + num_cancelaciones + num_opEspeciales)
 
+# Busca las operaciones asociadas a una billetera dada
 def buscar_historial_billetera(identificador):
 	historial = []
 	lista_recargas = Recargas.objects.filter(billetera = identificador)
@@ -187,7 +277,11 @@ def buscar_historial_billetera(identificador):
 	for pag in lista_pagos:
 		historial.append(pag)
 		
+	lista_opEspeciales = PagoOperacionesEspeciales.objects.filter(billetera = identificador)
+	for opEsp in lista_opEspeciales:
+		historial.append(opEsp)
+		
 	def getKey(item):
 		return item.fechaTransaccion	
 		
-	return sorted(historial,key=getKey)
+	return sorted(historial,key=getKey) 

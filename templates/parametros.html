@@ -4,53 +4,144 @@
   <thead></thead>
   <tbody>
     {% if estacionamiento.tarifa %}
-      <tr><td><b><i class="fa fa-clock-o"></i> Horario apertura:</b></td></tr>
-      <tr><td>{{estacionamiento.apertura}}</td></tr>
-      <tr><td><b><i class="fa fa-clock-o"></i> Horario cierre:</b></td></tr>
-      <tr><td>{{estacionamiento.cierre}}</td></tr>
+      <tr><td><b><i class="fa fa-clock-o"></i> Horario del estacionamiento:</b></td></tr>
+      <tr><td>{{estacionamiento.apertura}} - {{estacionamiento.cierre}}</td></tr>
       <tr><td><b><i class="fa fa-circle"></i> Esquema:</b></td></tr>
       <tr><td>{{estacionamiento.tarifa.tipo}} </td></tr>
+
+    <!--###############-->
+    <!--ESQUEMA REGULAR-->
+    <!--###############-->
+
+    <!--TARIFAS REGULARES-->
+    <tr><td><b>&nbsp Tarifa Regular</b></td></tr>
+    <tr><td>
+      <ul class="lista_tarifas">
+      <!--PARTICULARES-->
+      {% if estacionamiento.capacidad > 0 %}
+        <li><b><i class="fa fa-car"></i></b>
+          BsF. {{estacionamiento.tarifa.tarifa|floatformat:2|intcomma}}</li>
+      {% endif %}
+      <!--MOTOS-->
+      {% if estacionamiento.capacidad_M > 0 %}
+        <li><b><i class="fa fa-motorcycle"></i></b>
+          BsF. {{estacionamiento.tarifa.tarifa_M|floatformat:2|intcomma}}</li>
+      {% endif %}
+      <!--CAMIONES-->
+      {% if estacionamiento.capacidad_C > 0 %}
+        <li><b><i class="fa fa-truck"></i></b>
+          BsF. {{estacionamiento.tarifa.tarifa_C|floatformat:2|intcomma}}</li>
+      {% endif %}
+      <!--DISCAPACITADOS-->
+      {% if estacionamiento.capacidad_D > 0 %}
+        <li><b><i class="fa fa-wheelchair"></i></b>
+          BsF. {{estacionamiento.tarifa.tarifa_D|floatformat:2|intcomma}}</li>
+      {% endif %}
+      </ul>
+    </td></tr>
     {% endif %}
-    {% if estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana con feriados" %}
-      <tr><td><b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
-      <tr><td>BsF. {{estacionamiento.tarifa}}</td></tr>
-      <tr><td><b><i class="fa fa-money"></i> Tarifa fin de semana:</b></td></tr>
-      <tr><td>BsF. {{estacionamiento.tarifa.tarifa2}}</td></tr>
-    {% elif estacionamiento.tarifa.tipo == "Tarifa diferenciada por hora pico" %}
-      <tr><td><b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
-      <tr><td>BsF. {{estacionamiento.tarifa}}</td></tr>
-      <tr><td><b><i class="fa fa-money"></i> Tarifa especial:</b></td></tr>
-      <tr><td>BsF. {{estacionamiento.tarifa.tarifa2}}</td></tr>
-      <tr><td><b><i class="fa fa-clock-o"></i> Inicio tarifa especial:</b></td></tr>
-      <tr><td>{{estacionamiento.tarifa.inicioEspecial}}</td></tr>
-      <tr><td><b><i class="fa fa-clock-o"></i> Fin tarifa especial:</b></td></tr>
-      <tr><td>{{estacionamiento.tarifa.finEspecial}}</td></tr>
-    {% elif estacionamiento.tarifa %}
-      <tr><td><b><i class="fa fa-money"></i> Tarifa:</b></td></tr>
-      <tr><td>BsF. {{estacionamiento.tarifa.tarifa|floatformat:2|intcomma}}</td></tr>
+    <!--HORARIO ESPECIAL-->
+    {% if estacionamiento.tarifa.tipo == "Tarifa diferenciada por hora pico" %}
+      <tr><td><b>&nbsp <i class="fa fa-clock-o"></i> Horario tarifa especial:</b></td></tr>
+      <tr><td>&nbsp{{estacionamiento.tarifa.inicioEspecial}} - {{estacionamiento.tarifa.finEspecial}}</td></tr>
     {% endif %}
-     <!--Campos del esquema tarifario para dias feriados-->
+
+    {% if estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifa.tipo == "Tarifa diferenciada por hora pico" %}
+      <!--TARIFAS ESPECIALES-->
+      <tr><td><b>&nbsp Tarifa Especial:</b></td></tr>
+        <!--PARTICULARES-->
+      <tr><td>
+        <ul class="lista_tarifas">
+        {% if estacionamiento.capacidad > 0 %}
+          <li><b><i class="fa fa-car"></i></b>
+            BsF. {{estacionamiento.tarifa.tarifa2|floatformat:2|intcomma}}</li>
+        {% endif %}
+        <!--MOTOS-->
+        {% if estacionamiento.capacidad_M > 0 %}
+          <li><b><i class="fa fa-motorcycle"></i></b>
+            BsF. {{estacionamiento.tarifa.tarifa2_M|floatformat:2|intcomma}}</li>
+        {% endif %}
+        <!--CAMIONES-->
+        {% if estacionamiento.capacidad_C > 0 %}
+          <li><b><i class="fa fa-truck"></i></b>
+            BsF. {{estacionamiento.tarifa.tarifa2_C|floatformat:2|intcomma}}</li>
+        {% endif %}
+        <!--DISCAPACITADOS-->
+        {% if estacionamiento.capacidad_D > 0 %}
+          <li><b><i class="fa fa-wheelchair"></i></b>
+            BsF. {{estacionamiento.tarifa.tarifa2_D|floatformat:2|intcomma}}</li>
+        {% endif %}
+        </ul>
+      </td></tr>
+    {% endif %}
+
+    <!--##########################-->
+    <!--ESQUEMA PARA DIAS FERIADOS-->
+    <!--##########################-->
     {% if estacionamiento.tarifaFeriados %}
-	      <tr><td><b><i class="fa fa-circle"></i> Esquema Feriados:</b></td></tr>
-	      <tr><td>{{estacionamiento.tarifaFeriados.tipo}} </td></tr>
-	    {% if estacionamiento.tarifaFeriados.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifa.tipo == "Tarifa diferenciada para fines de semana con feriados" %}
-	      <tr><td><b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
-	      <tr><td>BsF. {{estacionamiento.tarifaFeriados|floatformat:2|intcomma}}</td></tr>
-	      <tr><td><b><i class="fa fa-money"></i> Tarifa fin de semana:</b></td></tr>
-	      <tr><td>BsF. {{estacionamiento.tarifaFeriados.tarifa2|floatformat:2|intcomma}}</td></tr>
-	    {% elif estacionamiento.tarifaFeriados.tipo == "Tarifa diferenciada por hora pico" %}
-	      <tr><td><b><i class="fa fa-money"></i> Tarifa regular:</b></td></tr>
-	      <tr><td>BsF. {{estacionamiento.tarifaFeriados|floatformat:2|intcomma}}</td></tr>
-	      <tr><td><b><i class="fa fa-money"></i> Tarifa especial:</b></td></tr>
-	      <tr><td>BsF. {{estacionamiento.tarifaFeriados.tarifa2|floatformat:2|intcomma}}</td></tr>
-	      <tr><td><b><i class="fa fa-clock-o"></i> Inicio tarifa especial:</b></td></tr>
-	      <tr><td>{{estacionamiento.tarifaFeriados.inicioEspecial}}</td></tr>
-	      <tr><td><b><i class="fa fa-clock-o"></i> Fin tarifa especial:</b></td></tr>
-	      <tr><td>{{estacionamiento.tarifaFeriados.finEspecial}}</td></tr>
-	    {% else  %}
-	      <tr><td><b><i class="fa fa-money"></i> Tarifa días feriados:</b></td></tr>
-	      <tr><td>BsF. {{estacionamiento.tarifaFeriados|floatformat:2|intcomma}}</td></tr>
-	    {% endif %}        
+	    <tr><td><b><i class="fa fa-circle"></i> Esquema Feriados:</b></td></tr>
+	    <tr><td>{{estacionamiento.tarifaFeriados.tipo}} </td></tr>
+  	    <!--TARIFAS REGULARES-->
+      <tr><td><b>&nbsp Tarifa regular:</b></td></tr>
+      <tr><td>
+        <ul class="lista_tarifas">
+        <!--PARTICULARES-->
+        {% if estacionamiento.capacidad > 0 %}
+          <li><b><i class="fa fa-car"></i></b>
+            BsF. {{estacionamiento.tarifaFeriados.tarifa|floatformat:2|intcomma}}</li>
+        {% endif %}
+        <!--MOTOS-->
+        {% if estacionamiento.capacidad_M > 0 %}
+          <li><b><i class="fa fa-motorcycle"></i></b>
+            BsF. {{estacionamiento.tarifaFeriados.tarifa_M|floatformat:2|intcomma}}</li>
+        {% endif %}
+        <!--CAMIONES-->
+        {% if estacionamiento.capacidad_C > 0 %}
+          <li><b><i class="fa fa-truck"></i></b>
+            BsF. {{estacionamiento.tarifaFeriados.tarifa_C|floatformat:2|intcomma}}</li>
+        {% endif %}
+        <!--DISCAPACITADOS-->
+        {% if estacionamiento.capacidad_D > 0 %}
+          <li><b><i class="fa fa-wheelchair"></i></b>
+            BsF. {{estacionamiento.tarifaFeriados.tarifa_D|floatformat:2|intcomma}}</li>
+        {% endif %}
+        </ul>
+      </td></tr>
+      <!--HORARIO ESPECIAL-->
+      {% if estacionamiento.tarifaFeriados.tipo == "Tarifa diferenciada por hora pico" %}
+        <tr><td><b>&nbsp <i class="fa fa-clock-o"></i> Horario tarifa especial:</b></td></tr>
+        <tr><td>&nbsp {{estacionamiento.tarifaFeriados.inicioEspecial}} - {{estacionamiento.tarifaFeriados.finEspecial}}</td></tr>
+      {% endif %}
+
+      {% if estacionamiento.tarifaFeriados.tipo == "Tarifa diferenciada para fines de semana" or estacionamiento.tarifaFeriados.tipo == "Tarifa diferenciada por hora pico" %}
+        <!--TARIFAS ESPECIALES-->
+        <tr><td><b>&nbsp Tarifa Especial:</b></td></tr>
+          <!--PARTICULARES-->
+        <tr><td>
+          <ul class="lista_tarifas">
+          {% if estacionamiento.capacidad > 0 %}
+            <li><b><i class="fa fa-car"></i></b>
+              BsF. {{estacionamiento.tarifaFeriados.tarifa2|floatformat:2|intcomma}}</li>
+          {% endif %}
+          <!--MOTOS-->
+          {% if estacionamiento.capacidad_M > 0 %}
+            <li><b><i class="fa fa-motorcycle"></i></b>
+              BsF. {{estacionamiento.tarifaFeriados.tarifa2_M|floatformat:2|intcomma}}</li>
+          {% endif %}
+          <!--CAMIONES-->
+          {% if estacionamiento.capacidad_C > 0 %}
+            <li><b><i class="fa fa-truck"></i></b>
+              BsF. {{estacionamiento.tarifaFeriados.tarifa2_C|floatformat:2|intcomma}}</li>
+          {% endif %}
+          <!--DISCAPACITADOS-->
+          {% if estacionamiento.capacidad_D > 0 %}
+            <li><b><i class="fa fa-wheelchair"></i></b>
+              BsF. {{estacionamiento.tarifaFeriados.tarifa2_D|floatformat:2|intcomma}}</li>
+          {% endif %}
+          </ul>
+        </td></tr>
+      {% endif %}     
+
       <tr><td id="opener"><b id="feriados">
         <i class="fa fa-calendar"></i> Dias Feriados</b>
         <span id="dialog" title="Feriados"></span>

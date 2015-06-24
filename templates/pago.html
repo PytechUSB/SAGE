@@ -53,6 +53,17 @@
 		});
 </script>
 
+<script>
+
+		$('document').ready(function() {
+			
+			window.resizeTo(450,700);
+			
+		});
+		
+    </script>
+
+
 {% include "validator.js.html" %}
   <script type="text/javascript">
     function popuponclick(){
@@ -69,12 +80,20 @@
     function openlink(){
       opener.location='/estacionamientos/{{ id }}/reserva';
     }
+    
+    function openlink2(){
+      opener.location='/estacionamientos/consulta_reserva';
+    }
+    
   </script> 
  
 {% endblock %}
 
 {% block body%}
-  <body {% if mensaje %} onunload="openlink()" {% endif %}>
+  <body 
+  	{% if mensaje and not id_pago_anterior %} onunload="openlink()" {% endif %}
+  	{% if mensaje and id_pago_anterior %} onunload="openlink2()" {% endif %}
+  >
 {% endblock %}
 
 {% block menu %}{% endblock %}
@@ -204,6 +223,15 @@
                 <tr><td>
                   {{pago.id}}
                 </td></tr>
+                
+                {% if id_pago_anterior %}
+                 <tr><td><b><i class="fa fa-circle"></i>
+                  Número de Transacción Movida:
+                </b></td></tr>
+                <tr><td>
+                  {{ id_pago_anterior }}
+                </td></tr>
+                {% endif %}
 
                 <tr><td><b><i class="fa fa-clock-o"></i>
                   Fecha de Transacción:
@@ -240,18 +268,63 @@
                   {{pago.cedulaTipo}}-{{pago.cedula}}
                 </td></tr>
 
-                <tr><td><b><i class="fa fa-money"></i>
+                <tr><td><b><i class="fa fa-credit-card"></i>
                   Tipo de Tarjeta:
                 </b></td></tr>
                 <tr><td>
                   {{pago.tarjetaTipo}} </td></tr>
-
-                <tr><td><b><i class="fa fa-money"></i>
-                  Monto:
-                </b></td></tr>
-                <tr><td>
-                  BsF. {{pago.monto|floatformat:2|intcomma }}
-                </td></tr>
+				
+				{% if not id_pago_anterior %}
+                  <tr><td><b><i class="fa fa-money"></i>
+                    Monto:
+                  </b></td></tr>
+                  <tr><td>
+                    BsF. {{pago.monto|floatformat:2|intcomma }}
+                  </td></tr>
+                {% endif %}
+                
+                {% if id_pago_anterior %}
+                  <tr><td><b><i class="fa fa-money"></i>
+                    Monto de la reserva:
+                  </b></td></tr>
+                  <tr><td>
+                    BsF. {{pago.monto|floatformat:2|intcomma }}
+                  </td></tr>  
+                 
+                  <tr><td><b><i class="fa fa-money"></i>
+                    Cargo por operaciones especiales:
+                  </b></td></tr>
+                  <tr><td>
+                    BsF. {{monto_debitar|floatformat:2|intcomma }}
+                  </td></tr>
+                
+                  {% if not id_billetera %}
+                    <tr><td><b><i class="fa fa-money"></i>
+                      Monto total operacion:
+                    </b></td></tr>
+                    <tr><td>
+                      BsF. {{monto_total|floatformat:2|intcomma }}
+                    </td></tr>
+                  {% endif %}
+                
+                  {% if id_billetera%} 
+                    <tr><td><b><i class="fa fa-circle"></i>
+                      ID de Billetera Recargada:
+                    </b></td></tr>
+                    <tr><td>
+                      {{id_billetera}}
+                    </td></tr>
+                
+                    <tr><td><b><i class="fa fa-money"></i>
+                      Monto recargado:
+                    </b></td></tr>
+                    <tr><td>
+                      {{monto}}
+                    </td></tr>
+                
+                  {% endif %}
+                {% endif %}
+                
               </tbody>
             </table>
             <div>

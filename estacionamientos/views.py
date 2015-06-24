@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 from estacionamientos.controller import (
     HorarioEstacionamiento,
     validarHorarioReserva,
+    validarHorarioReservaMover,
     marzullo,
     calcularMonto,
     get_client_ip,
@@ -42,7 +43,10 @@ from estacionamientos.forms import (
     authBilleteraForm,
     CancelaReservaForm,
     MoverReservaForm,
-    PuestosForm
+    PuestosForm, 
+    TarifasForm,
+    AdministrarSAGEForm,
+    cambioPinBilleteraForm
 )
 
 from estacionamientos.models import (
@@ -57,13 +61,20 @@ from estacionamientos.models import (
     TarifaHorayFraccion,
     TarifaFinDeSemana,
     TarifaHoraPico, 
-    Cancelaciones)
+    Cancelaciones,
+    AdministracionSage
+, PagoOperacionesEspeciales)
+
+# Creacion de la unica instancia de la Administracion de SAGE
+AdministracionSage.objects.create_AdministracionSage()
+
+MAXPROPIETARIOS=6
+MAXESTACIONAMIENTOS=5
 
 # Vista para procesar los propietarios
 def propietario_all(request):
     propietarios = Propietario.objects.all()
     estacionamientos = Estacionamiento.objects.all()
-    
     
     # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
@@ -74,9 +85,8 @@ def propietario_all(request):
         # Creamos un formulario con los datos que recibimos
         form = PropietarioForm(request.POST)
 
-        # Parte de la entrega era limitar la cantidad maxima de
-        # estacionamientos a 5
-        if len(propietarios) >= 5 or 5 - len(estacionamientos) <= 0:
+        # Maximos propietarios:6
+        if len(propietarios) >= MAXPROPIETARIOS:
             return render(
                 request, 'template-mensaje.html',
                 { 'color'   : 'red'
@@ -100,7 +110,7 @@ def propietario_all(request):
                 return render(
                     request, 'template-mensaje.html',
                     { 'color'   : 'red'
-                    , 'mensaje' : 'CÃ©dula ya existente'
+                    , 'mensaje' : 'Cédula ya existente'
                     }
                 )
             # Recargamos los propietarios ya que acabamos de agregar
@@ -116,6 +126,7 @@ def propietario_all(request):
         }
     )
 
+# Vista para editar los datos del propietario
 def propietario_edit(request, _id):
     estacionamientos = Estacionamiento.objects.all()
     _id = int(_id)
@@ -179,9 +190,8 @@ def estacionamientos_all(request):
         # Creamos un formulario con los datos que recibimos
         form = EstacionamientoForm(request.POST)
 
-        # Parte de la entrega era limitar la cantidad maxima de
-        # estacionamientos a 5
-        if len(estacionamientos) >= 5:
+        # Maximo de estacionamientos
+        if len(estacionamientos) >= MAXESTACIONAMIENTOS:
             return render(
                 request, 'template-mensaje.html',
                 { 'color'   : 'red'
@@ -217,6 +227,7 @@ def estacionamientos_all(request):
         }
     )
 
+# Vista para procesar los detalles del estacionamiento
 def estacionamiento_detail(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
@@ -225,7 +236,7 @@ def estacionamiento_detail(request, _id):
     except ObjectDoesNotExist:
         raise Http404
     
-    form = EstacionamientoExtendedForm() 
+    form = EstacionamientoExtendedForm()
     form_data_puestos={
             'particulares'  : estacionamiento.capacidad,
             'camiones'      : estacionamiento.capacidad_C,
@@ -238,20 +249,18 @@ def estacionamiento_detail(request, _id):
         form_data = {
             'horarioin'  : estacionamiento.apertura,
             'horarioout' : estacionamiento.cierre,
-            'tarifa'     : estacionamiento.tarifa.tarifa,
-            'tarifa2'    : estacionamiento.tarifa.tarifa2,
             'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
             'finTarifa2' : estacionamiento.tarifa.finEspecial,
             'esquema'    : estacionamiento.tarifa.__class__.__name__,
-            'feriados'   : estacionamiento.feriados
+            'feriados'   : estacionamiento.feriados,
+            'horizonte'   : estacionamiento.horizonte
         }
         if estacionamiento.tarifaFeriados:
             form_data.update({
-                'tarifaFeriados'    : estacionamiento.tarifaFeriados.tarifa,
-                'tarifaFeriados2'   : estacionamiento.tarifaFeriados.tarifa2,
                 'inicioTarifaFeriados2' : estacionamiento.tarifaFeriados.inicioEspecial,
                 'finTarifaFeriados2' : estacionamiento.tarifaFeriados.finEspecial,
-                'esquemaFeriados'    : estacionamiento.tarifaFeriados.__class__.__name__
+                'esquemaFeriados'    : estacionamiento.tarifaFeriados.__class__.__name__,
+                'aceptaFeriados'    : True
             })
             
             
@@ -264,17 +273,15 @@ def estacionamiento_detail(request, _id):
         if form.is_valid():
             horaIn  = form.cleaned_data['horarioin']
             horaOut = form.cleaned_data['horarioout']
-            tarifa  = form.cleaned_data['tarifa']
             tipo    = form.cleaned_data['esquema']
-            inicioTarifa2   = form.cleaned_data['inicioTarifa2']
-            finTarifa2  = form.cleaned_data['finTarifa2']
-            tarifa2     = form.cleaned_data['tarifa2']
-            feriados    = form.cleaned_data['feriados']
-            tipo2       = form.cleaned_data['esquemaFeriados']
+            inicioTarifa2        = form.cleaned_data['inicioTarifa2']
+            finTarifa2           = form.cleaned_data['finTarifa2']
+            horizonte            = request.POST['horizonte']
+            aceptaFeriados       = form.cleaned_data['aceptaFeriados']
+            feriados             = form.cleaned_data['feriados']
+            tipo2                = form.cleaned_data['esquemaFeriados']
             inicioTarifaFeriados = form.cleaned_data['inicioTarifaFeriados']
             finTarifaFeriados    = form.cleaned_data['finTarifaFeriados']
-            tarifaFeriados2      = form.cleaned_data['tarifaFeriados2']
-            tarifaFeriados       = form.cleaned_data['tarifaFeriados']
             
             # debería funcionar con excepciones, y el mensaje debe ser mostrado
             # en el mismo formulario
@@ -286,34 +293,64 @@ def estacionamiento_detail(request, _id):
                     , 'mensaje': 'El horario de apertura debe ser menor al horario de cierre'
                     }
                 )
-
-            esquemaTarifa = eval(tipo)(
-                tarifa      = tarifa,
-                tarifa2     = tarifa2,
-                inicioEspecial  = inicioTarifa2,
-                finEspecial     = finTarifa2
-            )
-            if (tarifaFeriados):
-                esquemaTarifaFeriados = eval(tipo2)(
-                    tarifa      = tarifaFeriados,
-                    tarifa2     = tarifaFeriados2,
-                    inicioEspecial = inicioTarifaFeriados,
-                    finEspecial    = finTarifaFeriados
+            #Verificamos si el esquema existe, de ser asi copiamos todos sus datos
+            if (estacionamiento.tarifa):
+                esquemaTarifa = eval(tipo)(
+                    tarifa      = estacionamiento.tarifa.tarifa,
+                    tarifa2      = estacionamiento.tarifa.tarifa2,
+                    tarifa_M      = estacionamiento.tarifa.tarifa_M,
+                    tarifa2_M      = estacionamiento.tarifa.tarifa2_M,
+                    tarifa_C      = estacionamiento.tarifa.tarifa_C,
+                    tarifa2_C      = estacionamiento.tarifa.tarifa2_C,
+                    tarifa_D      = estacionamiento.tarifa.tarifa_D,
+                    tarifa2_D      = estacionamiento.tarifa.tarifa2_D,
+                    inicioEspecial  = inicioTarifa2,
+                    finEspecial     = finTarifa2
                 )
+                #Borramos el esquema anterior
+                estacionamiento.tarifa.delete()
+            else:
+                esquemaTarifa = eval(tipo)(
+                    tarifa      = 0,
+                    inicioEspecial  = inicioTarifa2,
+                    finEspecial     = finTarifa2
+                )
+            if (aceptaFeriados):
+                if (estacionamiento.tarifaFeriados):
+                    esquemaTarifaFeriados = eval(tipo2)(
+                        tarifa      = estacionamiento.tarifaFeriados.tarifa,
+                        tarifa2      = estacionamiento.tarifaFeriados.tarifa2,
+                        tarifa_M      = estacionamiento.tarifaFeriados.tarifa_M,
+                        tarifa2_M      = estacionamiento.tarifaFeriados.tarifa2_M,
+                        tarifa_C      = estacionamiento.tarifaFeriados.tarifa_C,
+                        tarifa2_C      = estacionamiento.tarifaFeriados.tarifa2_C,
+                        tarifa_D      = estacionamiento.tarifaFeriados.tarifa_D,
+                        tarifa2_D      = estacionamiento.tarifaFeriados.tarifa2_D,
+                        inicioEspecial = inicioTarifaFeriados,
+                        finEspecial    = finTarifaFeriados
+                    )
+                    #Borramos el esquema anterior
+                    estacionamiento.tarifaFeriados.delete()
+                else:    
+                    esquemaTarifaFeriados = eval(tipo2)(
+                        tarifa      = 0,
+                        inicioEspecial = inicioTarifaFeriados,
+                        finEspecial    = finTarifaFeriados
+                    )
                 esquemaTarifaFeriados.save()
                 estacionamiento.tarifaFeriados = esquemaTarifaFeriados
             else:
-                if (estacionamiento.tarifaFeriados):
+                if (estacionamiento.tarifaFeriados is not None):
                     estacionamiento.tarifaFeriados.delete()
             esquemaTarifa.save()
             
-            # debería funcionar con excepciones
             estacionamiento.feriados = feriados
+            estacionamiento.horizonte = horizonte
             estacionamiento.tarifa   = esquemaTarifa
             estacionamiento.apertura = horaIn
             estacionamiento.cierre   = horaOut
-
             estacionamiento.save()
+            
     elif request.method == 'POST' and 'botonPuestos' in request.POST:
         form_data_puestos={
                 'particulares' : request.POST['particulares'],
@@ -322,6 +359,7 @@ def estacionamiento_detail(request, _id):
                 'discapacitados' : request.POST['discapacitados']
             }
         formPuestos=PuestosForm(data=form_data_puestos)
+        
         if formPuestos.is_valid():
             estacionamiento.capacidad = request.POST['particulares']
             estacionamiento.capacidad_C = request.POST['camiones']
@@ -330,6 +368,7 @@ def estacionamiento_detail(request, _id):
             estacionamiento.save()
         else:    
             try:
+                # '__all__' expone el error definido en el clean de PuestosForm
                 formPuestos.errors['__all__']
                 mensaje='Debe haber al menos un puesto.'
             except:
@@ -343,7 +382,13 @@ def estacionamiento_detail(request, _id):
                 , 'errorDialog' : mensaje
                 }
             )
-    estacionamiento = Estacionamiento.objects.get(id=_id)    
+    estacionamiento = Estacionamiento.objects.get(id=_id) 
+    try:
+        # '__all__' expone el error definido en el clean de EstacionamientoExtendedForm
+        form.errors['__all__']
+    except:
+        pass
+
     return render(
         request,
         'detalle-estacionamiento.html',
@@ -353,6 +398,142 @@ def estacionamiento_detail(request, _id):
         }
     )
 
+# Vista que procesa las tarifas especiales
+def estacionamiento_tarifa_especial(request, _id):
+    _id = int(_id)
+    # Verificamos que el objeto exista antes de continuar
+    try:
+        estacionamiento = Estacionamiento.objects.get(id=_id)
+    except ObjectDoesNotExist:
+        raise Http404
+    if request.method == 'GET':
+        mensaje=""
+        #Extraemos la data de cada forma desde los esquemas tarifarios de estacionamiento
+        form_data = {
+            'Particulares_tarifa'   : estacionamiento.tarifa.tarifa,
+            'Particulares_tarifa2' : estacionamiento.tarifa.tarifa2
+        }
+        formParticulares=TarifasForm(data=form_data,prefix='Particulares')
+        
+        form_data = {
+            'Motos_tarifa'   : estacionamiento.tarifa.tarifa_M,
+            'Motos_tarifa2' : estacionamiento.tarifa.tarifa2_M
+        }
+        formMotos=TarifasForm(data=form_data,prefix='Motos')
+        
+        form_data = {
+            'Camiones_tarifa'   : estacionamiento.tarifa.tarifa_C,
+            'Camiones_tarifa2' : estacionamiento.tarifa.tarifa2_C
+        }
+        formCamiones=TarifasForm(data=form_data,prefix='Camiones')
+        
+        form_data = {
+            'Discapacitados_tarifa'   : estacionamiento.tarifa.tarifa_D,
+            'Discapacitados_tarifa2' : estacionamiento.tarifa.tarifa2_D
+        }
+        formDisc=TarifasForm(data=form_data,prefix='Discapacitados')
+        
+        if estacionamiento.tarifaFeriados:
+            form_data = {
+                'FeriadosParticulares_tarifa'   : estacionamiento.tarifaFeriados.tarifa,
+                'FeriadosParticulares_tarifa2' : estacionamiento.tarifaFeriados.tarifa2
+            }
+            formFeriadosParticulares = TarifasForm(data=form_data,prefix='FeriadosParticulares')
+            form_data = {
+                'FeriadosDiscapacitados_tarifa'   : estacionamiento.tarifaFeriados.tarifa_D,
+                'FeriadosDiscapacitados_tarifa2' : estacionamiento.tarifaFeriados.tarifa2_D
+            }
+            formFeriadosDisc=TarifasForm(data=form_data,prefix='FeriadosDiscapacitados')
+            form_data = {
+                'FeriadosCamiones_tarifa'   : estacionamiento.tarifaFeriados.tarifa_C,
+                'FeriadosCamiones_tarifa2' : estacionamiento.tarifaFeriados.tarifa2_C
+            }
+            formFeriadosCamiones=TarifasForm(data=form_data,prefix='FeriadosCamiones')
+            form_data = {
+                'FeriadosMotos_tarifa'   : estacionamiento.tarifaFeriados.tarifa_M,
+                'FeriadosMotos_tarifa2' : estacionamiento.tarifaFeriados.tarifa2_M
+            }
+            formFeriadosMotos=TarifasForm(data=form_data,prefix='FeriadosMotos')
+        else:
+            formFeriadosParticulares = TarifasForm(prefix='FeriadosParticulares')
+            formFeriadosDisc=TarifasForm(prefix='FeriadosDiscapacitados')
+            formFeriadosCamiones=TarifasForm(prefix='FeriadosCamiones')
+            formFeriadosMotos=TarifasForm(prefix='FeriadosMotos')
+            
+            
+    if request.method == 'POST':
+            formParticulares=TarifasForm(request.POST,prefix='Particulares')
+            formMotos = TarifasForm(request.POST,prefix='Motos')
+            formCamiones=TarifasForm(request.POST,prefix='Camiones')
+            formDisc=TarifasForm(request.POST,prefix='Discapacitados')
+            formFeriadosParticulares = TarifasForm(request.POST,prefix='FeriadosParticulares')
+            formFeriadosMotos = TarifasForm(request.POST,prefix='FeriadosMotos')
+            formFeriadosCamiones=TarifasForm(request.POST,prefix='FeriadosCamiones')
+            formFeriadosDisc=TarifasForm(request.POST,prefix='FeriadosDiscapacitados')
+            mensaje=""
+            errorFeriados=False
+            
+            #Si son válidas extraemos las tarifas regulares y feriadas
+            if formMotos.is_valid():
+                estacionamiento.tarifa.tarifa_M        = formMotos.cleaned_data['tarifa']
+                estacionamiento.tarifa.tarifa2_M       = formMotos.cleaned_data['tarifa2']
+            if formParticulares.is_valid():
+                estacionamiento.tarifa.tarifa          = formParticulares.cleaned_data['tarifa']
+                estacionamiento.tarifa.tarifa2         = formParticulares.cleaned_data['tarifa2']
+            if formCamiones.is_valid():
+                estacionamiento.tarifa.tarifa_C        = formCamiones.cleaned_data['tarifa']
+                estacionamiento.tarifa.tarifa2_C       = formCamiones.cleaned_data['tarifa2']
+            if formDisc.is_valid():
+                estacionamiento.tarifa.tarifa_D        = formDisc.cleaned_data['tarifa']
+                estacionamiento.tarifa.tarifa2_D       = formDisc.cleaned_data['tarifa2']
+            
+            if estacionamiento.tarifaFeriados:
+                if formFeriadosParticulares.is_valid():
+                    estacionamiento.tarifaFeriados.tarifa          = formFeriadosParticulares.cleaned_data['tarifa']
+                    estacionamiento.tarifaFeriados.tarifa2         = formFeriadosParticulares.cleaned_data['tarifa2']
+                if formFeriadosMotos.is_valid():
+                    estacionamiento.tarifaFeriados.tarifa_M         = formFeriadosMotos.cleaned_data['tarifa']
+                    estacionamiento.tarifaFeriados.tarifa2_M        = formFeriadosMotos.cleaned_data['tarifa2']
+                if formFeriadosCamiones.is_valid():
+                    estacionamiento.tarifaFeriados.tarifa_C        = formFeriadosCamiones.cleaned_data['tarifa']
+                    estacionamiento.tarifaFeriados.tarifa2_C       = formFeriadosCamiones.cleaned_data['tarifa2']
+                if formFeriadosDisc.is_valid():
+                    estacionamiento.tarifaFeriados.tarifa_D        = formFeriadosDisc.cleaned_data['tarifa']
+                    estacionamiento.tarifaFeriados.tarifa2_D       = formFeriadosDisc.cleaned_data['tarifa2']
+                if ((formFeriadosParticulares.errors and estacionamiento.capacidad)     or 
+                        (formFeriadosCamiones.errors and estacionamiento.capacidad_C)   or 
+                        (formFeriadosMotos.errors and estacionamiento.capacidad_M)      or
+                        (formFeriadosDisc.errors and estacionamiento.capacidad_D)): 
+                    errorFeriados=True
+                else: estacionamiento.tarifaFeriados.save() #Solo si no hay error guardamos los datos
+            print(formParticulares.errors)
+            # De morgan poderoso
+            if not(errorFeriados or ((formParticulares.errors and estacionamiento.capacidad) 
+                                        or (formCamiones.errors and estacionamiento.capacidad_C)
+                                        or (formMotos.errors and estacionamiento.capacidad_M)
+                                        or (formDisc.errors and estacionamiento.capacidad_D))): 
+                mensaje="Se han cambiado las tarifas exitosamente"
+                estacionamiento.tarifa.save()
+                estacionamiento.save() #Solo si no hay error guardamos los datos
+            
+    return render(
+                    request,
+                    'tarifas-especiales.html',
+                    { 'estacionamiento'         : estacionamiento
+                    , 'formParticulares'        : formParticulares
+                    , 'formCamiones'            : formCamiones
+                    , 'formMotos'               : formMotos
+                    , 'formDisc'                : formDisc
+                    , 'formFeriadosCamiones'    : formFeriadosCamiones
+                    , 'formFeriadosParticulares': formFeriadosParticulares
+                    , 'formFeriadosMotos'       : formFeriadosMotos
+                    , 'formFeriadosDisc'        : formFeriadosDisc
+                    , 'ocultarParametros'       : True
+                    , 'mensaje'                 : mensaje
+                    }
+                )
+ 
+# Vista para procesar las ediciones a los datos de un estacionamiento
 def estacionamiento_edit(request, _id):
     # estacionamientos = Estacionamiento.objects.all()
     _id = int(_id)
@@ -399,6 +580,7 @@ def estacionamiento_edit(request, _id):
         }
     )
 
+# Vista que procesa y valida las reservas
 def estacionamiento_reserva(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
@@ -431,6 +613,7 @@ def estacionamiento_reserva(request, _id):
                 finalReserva,
                 estacionamiento.apertura,
                 estacionamiento.cierre,
+                estacionamiento.horizonte,
             )
 
             # Si no es valido devolvemos el request
@@ -452,7 +635,7 @@ def estacionamiento_reserva(request, _id):
                 )
 
                 #calcula el monto a pagar
-                monto = Decimal(calcularMonto(estacionamiento.id, inicioReserva, finalReserva))
+                monto = Decimal(calcularMonto(estacionamiento.id, inicioReserva, finalReserva, vehiculoTipo))
                 request.session['monto'] = float(monto)
                                 
                 request.session['vehiculoTipo']        = vehiculoTipo
@@ -476,13 +659,14 @@ def estacionamiento_reserva(request, _id):
                     , 'mensaje' : 'Existe un puesto disponible'
                     }
                 )
+            
             else:
-                # Cambiar mensaje
                 return render(
                     request,
                     'template-mensaje.html',
                     {'color'   : 'red'
-                    , 'mensaje' : 'No hay un puesto disponible para ese horario'
+                    , 'mensaje' : 'No hay un puesto disponible para Vehiculo ' + str(vehiculoTipo) + 
+                                  ' en ese horario'
                     }
                 )
 
@@ -494,6 +678,7 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
+# Metodo auxiliar que permite reutilizar el codigo de generacion de facturas de pago
 def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaReservaMovida = None):
     inicioReserva = datetime(
         year   = request.session['anioinicial'],
@@ -541,7 +726,7 @@ def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaRese
         
     else:
         pagoAnterior = Pago.objects.get(pk = idFacturaReservaMovida)
-        if monto == pagoAnterior.monto or form == None:
+        if monto <= pagoAnterior.monto and form == None:
             pago = Pago(
                 id = asigna_id_unico(),
                 fechaTransaccion = datetime.now(),
@@ -573,7 +758,7 @@ def pago_reserva_aux(request, monto, estacionamiento, form = None, idFacturaRese
              
     return pago
 
-
+# Vista que permite procesar los pagos de reservas
 def estacionamiento_pago(request, _id):
     form = PagoForm()
     
@@ -589,9 +774,11 @@ def estacionamiento_pago(request, _id):
         form = PagoForm(request.POST)
         if form.is_valid():
             monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+            # Si el metodo de pago es billetera electronica
             if (form.cleaned_data['tarjetaTipo'] == 'Billetera Electronica'):
                 billeteraE = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
                 
+                # Si no existe una billetera o el pin no concuerda
                 if (billeteraE == None):
                     return render(
                         request, 'mensaje.html',
@@ -601,6 +788,7 @@ def estacionamiento_pago(request, _id):
                     )
                     
                 else:
+                    # Si no hay saldo suficiente o el monto es menor que cero
                     if(not billeteraE.validar_consumo(monto)):
                         return render(
                             request, 'mensaje.html',
@@ -608,7 +796,8 @@ def estacionamiento_pago(request, _id):
                             , 'mensaje' : 'Saldo Insuficiente'
                             }
                         ) 
-                        
+                    
+                    # Si la operacion es valida    
                     else:
                         pago = pago_reserva_aux(
                             request, 
@@ -618,6 +807,7 @@ def estacionamiento_pago(request, _id):
                         )
                         pago.save()
                         billeteraE.consumir_saldo(monto)
+                        
                         if (billeteraE.saldo == 0):
                             return render(
                                 request,
@@ -645,6 +835,7 @@ def estacionamiento_pago(request, _id):
             
             
             else:
+                # Si el metodo de pago es tarjeta de credito
                 pago = pago_reserva_aux(
                             request,
                             monto, 
@@ -668,7 +859,8 @@ def estacionamiento_pago(request, _id):
         'pago.html',
         { 'form' : form }
     )
-
+    
+# Vista para procesar la consulta de ingresos de un estacionamiento
 def estacionamiento_ingreso(request):
     form = RifForm()
     if request.method == 'POST':
@@ -693,6 +885,7 @@ def estacionamiento_ingreso(request):
         { "form" : form }
     )
 
+# Vista para procesar las consultas a reservas 
 def estacionamiento_consulta_reserva(request):
     form = CedulaForm()
     if request.method == 'POST':
@@ -759,6 +952,7 @@ def receive_sms(request):
         final_reserva,
         estacionamiento.apertura,
         estacionamiento.cierre,
+        estacionamiento.horizonte,
     )
     if m_validado[0]:
         '''reserva_sms = Reserva(
@@ -777,7 +971,8 @@ def receive_sms(request):
         return HttpResponse(m_validado[1])
     
     return HttpResponse('')
-    
+
+# Vista para procesar el porcentaje y grafica de ocupacion del estacionamiento    
 def tasa_de_reservacion(request, _id):
     _id = int(_id)
     # Verificamos que el objeto exista antes de continuar
@@ -793,7 +988,8 @@ def tasa_de_reservacion(request, _id):
             }
         )
     ocupacion = tasa_reservaciones(_id)
-    calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, estacionamiento.capacidad, ocupacion)
+    capacidad_total = estacionamiento.capacidadTotal()
+    calcular_porcentaje_de_tasa(estacionamiento.apertura, estacionamiento.cierre, capacidad_total, ocupacion)
     datos_ocupacion = urlencode(ocupacion) # Se convierten los datos del diccionario en el formato key1=value1&key2=value2&...
     return render(
         request,
@@ -803,6 +999,7 @@ def tasa_de_reservacion(request, _id):
         }
     )
 
+# Vista para procesar la grafica de ocupacion del estacionamiento
 def grafica_tasa_de_reservacion(request):
     
     # Recuperacion del diccionario para crear el grafico
@@ -830,7 +1027,7 @@ def grafica_tasa_de_reservacion(request):
     
     return response
 
-# vista para procesar los datos de la billetera
+# Vista para procesar la creacion de la billetera
 def billetera_all(request):
     billetera = BilleteraElectronica.objects.all()
     
@@ -885,7 +1082,7 @@ def billetera_all(request):
         }
     )
    
-# vista para mostar los datos de la billetera
+# Vista para mostar los datos de la billetera
 def billetera_datos(request):
     form = BilleteraForm()
     formAuth = authBilleteraForm()
@@ -928,7 +1125,7 @@ def billetera_datos(request):
                 }
             )
     
-# vista para mostar los datos de la billetera
+# Vista que procesa las recargas a la billetera
 def billetera_recarga(request, _id):
     _id = int(_id)
     try:
@@ -995,7 +1192,8 @@ def billetera_recarga(request, _id):
         { 'form': form
         }
     )
-    
+
+# Vista que valida que la reserva exista y este registrada bajo la cedula introducida    
 def validar_reserva(request, link = ''):
     form = CancelaReservaForm()
     
@@ -1053,6 +1251,7 @@ def validar_reserva(request, link = ''):
           }
     )
     
+# Vista que valida la existencia de la billetera y que el pin introducido es el correcto  
 def validar_billetera(request, id_pago, link = ''):
     id_pago = int(id_pago)
     
@@ -1098,16 +1297,26 @@ def validar_billetera(request, id_pago, link = ''):
         {'form' : form
         }
     )         
-    
+
+# Vista para procesar las cancelaciones de reservas    
 def cancelar_reserva(request, id_pago, id_billetera):
     id_pago = int(id_pago)
     id_billetera = int(id_billetera)
+    
     try:
         pago = Pago.objects.get(pk = id_pago)
         billeteraE = BilleteraElectronica.objects.get(pk = id_billetera)
     except ObjectDoesNotExist:
         raise Http404
     
+    administracion = AdministracionSage.objects.get(pk = 1)
+    aplicaCargo = pago.factura_inicial_pagada_billetera()
+    if (aplicaCargo):
+        monto_debitar = administracion.calcular_monto(pago.monto)
+    else:
+        monto_debitar = 0
+    
+    monto_reembolso = pago.monto - monto_debitar
     
     if request.method == 'POST':
         if (pago.validar_cancelacion(datetime.now()) and billeteraE.validar_recarga(pago.monto)):
@@ -1119,13 +1328,25 @@ def cancelar_reserva(request, id_pago, id_billetera):
                             fechaTransaccion = datetime.now()
             )
             cancelacion.save()
-            billeteraE.recargar_saldo(pago.monto)
+            if (aplicaCargo):
+                pago_op_especial = PagoOperacionesEspeciales(
+                                    id = asigna_id_unico(),
+                                    monto = monto_debitar,
+                                    billetera = billeteraE,
+                                    cancelacion = cancelacion,
+                                    fechaTransaccion = datetime.now()
+                )
+                pago_op_especial.save()
+                
+            billeteraE.recargar_saldo(monto_reembolso)
             pago.cancelar_reserva()
             return render(
                 request, 
                 'cancelar_reserva.html',
                 { 'pago' : pago
                 , 'billetera' : billeteraE
+                , 'monto_debitar': monto_debitar
+                , 'monto_reembolso' : monto_reembolso
                 , 'cancelacion' : cancelacion
                 , 'color' : 'green'
                 , 'mensaje2': 'Reservacion cancelada satisfactoriamente'
@@ -1157,11 +1378,14 @@ def cancelar_reserva(request, id_pago, id_billetera):
             'cancelar_reserva.html',
             { 'pago' : pago
             , 'billetera' : billeteraE
+            , 'monto_debitar': monto_debitar
+            , 'monto_reembolso' : monto_reembolso
             , 'color' : 'red'
             , 'mensaje1': '¿Desea cancelar esta reservacion?'
             }
         )
 
+# Vista que procesa las operaciones especiales de mover reserva
 def mover_reserva(request, id_pago):
     id_pago = int(id_pago)
     
@@ -1190,11 +1414,12 @@ def mover_reserva(request, id_pago):
             variacionTiempo = reserva.finalReserva - reserva.inicioReserva
             finalReserva = inicioReserva + variacionTiempo
             vehiculoTipo = reserva.vehiculoTipo
-            horarioValidado = validarHorarioReserva(
+            horarioValidado = validarHorarioReservaMover(
                 inicioReserva, 
                 finalReserva, 
                 estacionamiento.apertura, 
-                estacionamiento.cierre
+                estacionamiento.cierre,
+                estacionamiento.horizonte
             )
             
             if not horarioValidado[0]:
@@ -1214,24 +1439,8 @@ def mover_reserva(request, id_pago):
                     vehiculoTipo    = vehiculoTipo,
                 )
                 
-                feriados = estacionamiento.feriados.split(',')
-                inicio   = inicioReserva.date()
-                
-                #monto de la tarifa en dia feriaro
-                if(estacionamiento.tarifaFeriados and (str(inicio) in feriados)):
-                    monto = Decimal(
-                        estacionamiento.tarifaFeriados.calcularPrecio(
-                            inicioReserva, finalReserva
-                        )
-                    )
-
-                #monto de la tarifa en dia normal
-                else:
-                    monto = Decimal(
-                        estacionamiento.tarifa.calcularPrecio(
-                            inicioReserva, finalReserva
-                        )
-                    )
+                #calcular monto a pagar
+                monto = Decimal(calcularMonto(estacionamiento.id, inicioReserva, finalReserva, vehiculoTipo))
                 
                 request.session['vehiculoTipo']        = vehiculoTipo
                 request.session['finalReservaHora']    = finalReserva.hour
@@ -1245,7 +1454,18 @@ def mover_reserva(request, id_pago):
                 request.session['mesfinal']     = finalReserva.month
                 request.session['diafinal']     = finalReserva.day
                 
-                if monto < pago.monto: 
+                administracion = AdministracionSage.objects.get(pk = 1)
+                if pago.tarjetaTipo != 'Billetera Electronica':
+                    monto_debitar = administracion.calcular_monto(monto)
+                else:
+                    if pago.facturaMovida != None:
+                        monto_debitar = administracion.calcular_monto(monto)
+                    else:
+                        monto_debitar = 0
+                        
+                
+                request.session['cargoOperacionesEspeciales'] = float(monto_debitar)
+                if (monto + monto_debitar) < pago.monto: 
                     diferenciaMonto = Decimal(pago.monto - monto)
                     request.session['monto'] = float(diferenciaMonto)
                     return render(
@@ -1253,8 +1473,9 @@ def mover_reserva(request, id_pago):
                         'confirmar-mover.html',
                         { 'id'      : pago.id
                         , 'monto'   : monto
+                        , 'monto_debitar' : monto_debitar
                         , 'montoAnterior' : pago.monto
-                        , 'diferencia' : diferenciaMonto
+                        , 'diferencia' : diferenciaMonto - monto_debitar
                         , 'reserva' : reservaFinal
                         , 'color'   : 'green'
                         , 'mensaje' : 'Existe un puesto disponible'
@@ -1270,8 +1491,9 @@ def mover_reserva(request, id_pago):
                         'confirmar-mover.html',
                         { 'id'      : pago.id
                         , 'monto'   : monto
+                        , 'monto_debitar' : monto_debitar
                         , 'montoAnterior' : pago.monto
-                        , 'diferencia' : diferenciaMonto
+                        , 'diferencia' : diferenciaMonto + monto_debitar
                         , 'reserva' : reservaFinal
                         , 'color'   : 'green'
                         , 'mensaje' : 'Existe un puesto disponible'
@@ -1284,7 +1506,8 @@ def mover_reserva(request, id_pago):
                     request,
                     'mensaje.html',
                     {'color'   : 'red'
-                    , 'mensaje' : 'No hay un puesto disponible para ese horario'
+                    , 'mensaje' : 'No hay un puesto disponible para Vehiculo' + str(pago.reserva.vehiculoTipo) + 
+                                  ' en ese horario'
                     }
                 )
 
@@ -1296,6 +1519,7 @@ def mover_reserva(request, id_pago):
         }
     )
     
+# Vista que procesa las recargas generadas por mover una reserva a un horario mas economico    
 def recarga_mover(request, id_pago, id_billetera):
     id_pago = int(id_pago)
     id_billetera = int(id_billetera)
@@ -1307,8 +1531,10 @@ def recarga_mover(request, id_pago, id_billetera):
     except:
         raise Http404
     
+            
     estacionamiento = pago.reserva.estacionamiento
     montoARecargar = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+    monto_debitar = Decimal(request.session['cargoOperacionesEspeciales']).quantize(Decimal('1.00'))
     pago_movido = pago_reserva_aux(request, pago.monto - montoARecargar, estacionamiento, idFacturaReservaMovida = id_pago)
     pago_movido.save()
     cancelacion = Cancelaciones(
@@ -1319,22 +1545,37 @@ def recarga_mover(request, id_pago, id_billetera):
         fechaTransaccion = datetime.now()    
     )
     cancelacion.save()
+    
+    if ((pago.tarjetaTipo != 'Billetera Electronica') or 
+        (pago.tarjetaTipo == 'Billetera Electronica' and pago.facturaMovida != None)):
+        pago_op_especial = PagoOperacionesEspeciales(
+                        id = asigna_id_unico(),
+                        monto = monto_debitar,
+                        billetera = billetera,
+                        cancelacion = cancelacion,
+                        fechaTransaccion = datetime.now()
+        )
+        pago_op_especial.save()
+    
+    
     pago.fue_movido()
-    billetera.recargar_saldo(montoARecargar)
+    billetera.recargar_saldo(montoARecargar - monto_debitar)
     
     
     return render(
         request,
-        'pago-mover.html',
+        'pago.html',
         { 'pago'    : pago_movido
         , 'id_billetera' : id_billetera
         , 'id_pago_anterior' : id_pago
-        , 'monto' : montoARecargar
+        , 'monto' : montoARecargar - monto_debitar
+        , 'monto_debitar': monto_debitar
         , 'color'   : 'green'
         , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
         }
     )
-    
+
+# Vista que procesa los pagos por mover reservas a horarios de costo igual o mayor al anterior    
 def pago_mover(request, id_pago):
     idFacturaReservaMovida = int(id_pago)
     
@@ -1347,7 +1588,10 @@ def pago_mover(request, id_pago):
     if (estacionamiento.apertura is None):
         return HttpResponse(status = 403) # No esta permitido acceder a esta vista aun
     
-    if ((request.method == 'GET') and (request.session['monto'] == 0)):
+    monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+    monto_debitar = Decimal(request.session['cargoOperacionesEspeciales']).quantize(Decimal('1.00'))
+    
+    if ((request.method == 'GET') and (monto + monto_debitar == 0)):
         estacionamiento = pago.reserva.estacionamiento
         pago_movido = pago_reserva_aux(request, pago.monto, estacionamiento, idFacturaReservaMovida = id_pago)
         pago_movido.save()
@@ -1362,9 +1606,11 @@ def pago_mover(request, id_pago):
         
         return render(
             request,
-            'pago-mover.html',
+            'pago.html',
             { 'pago'    : pago_movido
             , 'id_pago_anterior' : id_pago
+            , 'monto_debitar' : monto_debitar
+            , 'monto_total' : pago_movido.monto + monto_debitar
             , 'color'   : 'green'
             , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
             }
@@ -1376,7 +1622,6 @@ def pago_mover(request, id_pago):
     if request.method == 'POST':
         form = PagoForm(request.POST)
         if form.is_valid():
-            monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
             if (form.cleaned_data['tarjetaTipo'] == 'Billetera Electronica'):
                 billeteraE = billetera_autenticar(form.cleaned_data['ID'], form.cleaned_data['PIN'])
                 
@@ -1389,7 +1634,7 @@ def pago_mover(request, id_pago):
                     )
                     
                 else:
-                    if(not billeteraE.validar_consumo(monto)):
+                    if(not billeteraE.validar_consumo(monto + monto_debitar)):
                         return render(
                             request, 'mensaje.html',
                             {'color' : 'red'
@@ -1398,6 +1643,8 @@ def pago_mover(request, id_pago):
                         ) 
                         
                     else:
+                        pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
+                        pago_movido.save()
                         cancelacion = Cancelaciones(
                             id = asigna_id_unico(),
                             pagoCancelado = pago,
@@ -1405,18 +1652,29 @@ def pago_mover(request, id_pago):
                             fechaTransaccion = datetime.now()    
                         )
                         cancelacion.save()
+                        if ((pago.tarjetaTipo != 'Billetera Electronica') or 
+                            (pago.tarjetaTipo == 'Billetera Electronica' and pago.facturaMovida != None)):
+                            pago_op_especial = PagoOperacionesEspeciales(
+                                            id = asigna_id_unico(),
+                                            monto = monto_debitar,
+                                            pago_movido = pago_movido,
+                                            billetera = billeteraE,
+                                            fechaTransaccion = datetime.now()
+                            )
+                            pago_op_especial.save()
+                            
                         pago.fue_movido()
                         estacionamiento = pago.reserva.estacionamiento
-                        pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
-                        pago_movido.save()
-                        billeteraE.consumir_saldo(monto)
+                        billeteraE.consumir_saldo(monto + monto_debitar)
                         
                         if (billeteraE.saldo == 0):
                             return render(
                                 request,
-                                'pago-mover.html',
+                                'pago.html',
                                 { 'pago'    : pago_movido
                                 , 'id_pago_anterior' : id_pago
+                                , 'monto_debitar' : monto_debitar
+                                , 'monto_total' : pago_movido.monto + monto_debitar 
                                 , 'color'   : 'green'
                                 , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
                                 , 'color2'  : 'red'
@@ -1427,9 +1685,11 @@ def pago_mover(request, id_pago):
                         else:
                             return render(
                                 request,
-                                'pago-mover.html',
+                                'pago.html',
                                 { 'pago'    : pago_movido
                                 , 'id_pago_anterior' : id_pago
+                                , 'monto_debitar' : monto_debitar
+                                , 'monto_total' : pago_movido.monto + monto_debitar 
                                 , 'color'   : 'green'
                                 , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
                                 }
@@ -1438,6 +1698,9 @@ def pago_mover(request, id_pago):
             
             
             else:
+                estacionamiento = pago.reserva.estacionamiento
+                pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
+                pago_movido.save()
                 cancelacion = Cancelaciones(
                     id = asigna_id_unico(),
                     pagoCancelado = pago,
@@ -1445,16 +1708,24 @@ def pago_mover(request, id_pago):
                     fechaTransaccion = datetime.now()    
                 )
                 cancelacion.save()
+                if ((pago.tarjetaTipo != 'Billetera Electronica') or 
+                            (pago.tarjetaTipo == 'Billetera Electronica' and pago.facturaMovida != None)):
+                            pago_op_especial = PagoOperacionesEspeciales(
+                                            id = asigna_id_unico(),
+                                            monto = monto_debitar,
+                                            pago_movido = pago_movido,
+                                            fechaTransaccion = datetime.now()
+                            )
+                            pago_op_especial.save()
                 pago.fue_movido()
-                estacionamiento = pago.reserva.estacionamiento
-                pago_movido = pago_reserva_aux(request, monto + pago.monto, estacionamiento, form, id_pago)
-                pago_movido.save()
                 
                 return render(
                     request,
-                    'pago-mover.html',
+                    'pago.html',
                     { 'pago'    : pago_movido
                     , 'id_pago_anterior' : id_pago
+                    , 'monto_debitar' : monto_debitar
+                    , 'monto_total' : pago_movido.monto + monto_debitar 
                     , 'color'   : 'green'
                     , 'mensaje' : 'Se movio la reserva satisfactoriamente.'
                     }
@@ -1462,7 +1733,104 @@ def pago_mover(request, id_pago):
 
     return render(
         request,
-        'pago-mover.html',
+        'pago.html',
         { 'form' : form }
     )
+
+# Vista que procesa la modificacion de los datos de la administracion sage    
+def administrar_sage(request):
+    administracion = AdministracionSage.objects.get(pk = 1)
+    form = AdministrarSAGEForm()
+    if request.method == 'POST':
+        # Creamos un formulario con los datos que recibimos
+        form = AdministrarSAGEForm(request.POST)
+         
+        # Si el formulario es valido, entonces creamos un objeto con
+        # el constructor del modelo
+        if form.is_valid():
+            porcentaje = form.cleaned_data['porcentaje']
+            if (porcentaje > Decimal('9.9')) or (porcentaje < 0):
+                return render(
+                    request, 
+                    'template-mensaje.html',
+                    { 'mensaje' : 'El porcentaje debe ser un número decimal entre 0 y 9.9'
+                    , 'color' : 'red' 
+                    }
+                )
+                
+            else: 
+                administracion.cambiar_porcentaje(porcentaje)
+                return render(
+                    request, 
+                    'mensaje_cambio_porcentaje.html',
+                    { 'mensaje' : 'Porcentaje cambiado satisfactoriamente'
+                    , 'color' : 'green' 
+                    }
+                )
+            
+    return render(
+        request,
+        'administrar_sage.html',
+        { 'porcentaje' : administracion.porcentaje
+        , 'form' : form 
+        }
+    )
+
+# Vista que procesa el cambio del PIN de una billetera    
+def cambio_pin(request, _id):
+    _id = int(_id)
+    try:
+        billeteraE = BilleteraElectronica.objects.get(pk = _id)
+    except ObjectDoesNotExist:
+        raise Http404
     
+    form = cambioPinBilleteraForm()
+    
+    # Si es POST, se verifica la información recibida
+    if request.method == 'POST':
+
+        try:
+            billeteraE = BilleteraElectronica.objects.get(pk = _id)
+        except ObjectDoesNotExist:
+            raise Http404
+        
+        form = cambioPinBilleteraForm(request.POST)
+             
+        # Si el formulario es valido, entonces creamos un objeto con
+        # el constructor del modelo
+        if form.is_valid():
+            pines_validados = billeteraE.validar_cambio_pin(
+                form.cleaned_data["Pin"],
+                form.cleaned_data["nuevo_Pin1"],
+                form.cleaned_data["nuevo_Pin2"]
+            )
+            if (not pines_validados[0]):
+                return render(
+                    request,
+                    'mensaje.html',
+                    {'color' : 'red'
+                    , 'mensajeFinal' : pines_validados[1]
+                    }
+                )
+                
+            else:
+                billeteraE.cambiar_pin(
+                    form.cleaned_data["Pin"],
+                    form.cleaned_data["nuevo_Pin1"],
+                    form.cleaned_data["nuevo_Pin2"]
+                )
+                return render(
+                    request,
+                    'mensaje.html',
+                    {'color' : 'green'
+                    , 'mensajeFinal' : 'Cambio de PIN realizado satisfactoriamente'
+                    }
+                )
+                           
+    return render(
+        request,
+        'cambio_pin.html', 
+        { 'form': form,
+          'billetera': billeteraE  
+        }
+    )

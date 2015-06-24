@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load firstof from future %}
+
+{% block title %}
+  SAGE - Administración
+{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-cog"></i>
+      Administración de SAGE
+    </h3>
+    <hr>
+    <div class="col-md-8">
+     <table class="table table-striped">
+       <tbody>
+          <tr><td><b><i class="fa fa-info-circle"></i>
+             Porcentaje de cobro por operaciones especiales:
+          </b></td></tr>
+          <tr><td>
+             {{porcentaje}}%
+          </td></tr>
+       </tbody>
+    </table>           
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <i class="glyphicon glyphicon-wrench pull-right"></i>
+            <h4>
+              Editar porcentaje
+            </h4>
+          </div>
+        </div>
+        <div class="panel-body">
+          <form
+            action="/estacionamientos/administrar_sage"
+            method="post"
+            class="form form-vertical"
+          >
+            {% csrf_token %}
+              <div class="control-group">
+              	<div class="controls">                
+	                <p>
+	                  <table><tbody><tr>
+	                    <td >
+	                      {{ form.porcentaje }}
+	                    </td>
+	                  </tr></tbody></table>
+	                  <span
+	                    class='error'
+	                    id='{{form.porcentaje.name}}_error'
+	                    aria-live="polite"
+	                  ></span>
+	                  {{ form.porcentaje.errors }}
+	                </p>
+	            </div>
+              </div>
+              <div class="control-group" align = 'center'>
+                <label></label>
+                <div class="controls">
+                  <button type="submit" class="btn btn-primary">
+                    Continuar
+                  </button>
+                </div>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% include "validator.js.html" %}
