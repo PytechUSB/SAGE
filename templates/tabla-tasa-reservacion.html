@@ -6,7 +6,7 @@
     {% for choice in puestos %} 
   		<td>
   			<i class="fa fa-{{ choice }}"></i>
-  			<input type="radio" name="tipo" id="myRadio" value="{{ choice }}" onClick="ocultarOtras('{{choice}}')"/>
+  			<input type="radio" name="tipo" id="myRadio" value="{{ choice }}" onClick="mostrar('{{choice}}')"/>
   		&nbsp &nbsp </td>
     {% endfor %}
     </form>
@@ -39,15 +39,21 @@
 	  </tbody>
 	</table>
 {% endfor %}
-<p id="demo"></p>
 <script type="text/javascript">
 	var check=document.getElementById("grafica");
-	var arreglopuestos = "{{puestos}}".replace("[", "").replace("]", "").split(",");
+	var inputs=document.getElementsByTagName("input");
+	var tasa=document.getElementsByTagName("graficotasa");
 	check[0].checked=true;
-	document.getElementById("demo").innerHTML = arreglopuestos[0];
-	ocultarOtras("todos");
-	function ocultarOtras(tipo){
-		var choice="";
-    };
+	hideAll();
+	$('#rocket').show();
+	function hideAll() {
+		for (var i=0;i<inputs.length;i++) $('#'+inputs[i].value).hide();
+	};
+	
+	function mostrar(tipo) {
+		hideAll();
+		$('#'+tipo).show();
+		$('#id_'+tipo).show();
+	};
  
 </script>
